@@ -4,6 +4,7 @@ const express = require("express");
 const connectDB = require("./backend/config/db");
 const authRoutes = require("./backend/routes/authRoutes");
 const adminRoutes = require("./backend/routes/adminRoutes");
+const visitRoutes = require("./backend/routes/visitRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/visits", visitRoutes);
 
 
 app.get("/", (req, res) => {

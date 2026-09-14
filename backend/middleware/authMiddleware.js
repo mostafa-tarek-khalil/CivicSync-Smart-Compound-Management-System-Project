@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -30,7 +31,26 @@ const authMiddleware = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    req.user = decoded;
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.status !== "ACTIVE") {
+      return res.status(403).json({
+        success: false,
+        message: "Account is not active",
+      });
+    }
+
+    req.user = {
+      userId: user._id,
+      role: user.role,
+    };
 
     next();
   } catch (error) {

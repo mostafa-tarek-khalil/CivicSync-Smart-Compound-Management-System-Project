@@ -1,13 +1,23 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const User = require("../models/User");
+const User = require("../models/user");
 
-const ADMIN_EMAIL = "admin@compound.com";
-const ADMIN_PASSWORD = "Admin1234";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const seedAdmin = async () => {
   try {
+    if (!process.env.DB_URI) {
+      throw new Error("DB_URI is not configured");
+    }
+
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      throw new Error(
+        "ADMIN_EMAIL and ADMIN_PASSWORD are required"
+      );
+    }
+
     await mongoose.connect(process.env.DB_URI);
 
     console.log("Database connected");

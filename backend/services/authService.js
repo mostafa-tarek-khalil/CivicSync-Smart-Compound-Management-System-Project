@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const Unit = require("../models/Unit");
+const User = require("../models/user");
+const Unit = require("../models/unit");
 
 const registerUser = async (userData) => {
   const {
@@ -129,10 +129,6 @@ const getCurrentUser = async (userId) => {
 
   if (!user) {
     throw new Error("User not found");
-  }
-
-  if (user.status !== "ACTIVE") {
-    throw new Error("Account is not active");
   }
 
   return user;

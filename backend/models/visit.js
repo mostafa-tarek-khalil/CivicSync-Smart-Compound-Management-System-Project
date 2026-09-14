@@ -116,6 +116,17 @@ const visitSchema = new mongoose.Schema(
             ref: "User",
             default: null,
         },
+
+        qrScannedAt: {
+            type: Date,
+            default: null,
+        },
+
+        qrScannedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
     },
     {
         timestamps: true,

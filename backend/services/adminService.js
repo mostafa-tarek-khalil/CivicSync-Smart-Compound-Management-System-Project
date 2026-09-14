@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const Unit = require("../models/Unit");
+const User = require("../models/user");
+const Unit = require("../models/unit");
 
 const approveUser = async (userId) => {
   const user = await User.findById(userId);
