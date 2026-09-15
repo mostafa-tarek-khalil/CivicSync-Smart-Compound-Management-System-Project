@@ -43,6 +43,8 @@ const getTicketDetails = async (ticketId, residentId) => {
   return ticket;
 };
 
+
+
 const closeTicket = async (ticketId, residentId) => {
   const ticket = await MaintenanceTicket.findOne({
     _id: ticketId,

@@ -9,6 +9,30 @@ const getAvailableTickets = async (technicianId) => {
     .sort({ createdAt: -1 });
 };
 
+
+
+const getAssignedTickets = async (technicianId) => {
+  return await MaintenanceTicket.find({ assignedTo: technicianId })
+    .populate("resident", "name email phone")
+    .sort({ createdAt: -1 });
+};
+
+const getAssignedTicketDetails = async (ticketId, technicianId) => {
+  const ticket = await MaintenanceTicket.findOne({
+    _id: ticketId,
+    assignedTo: technicianId,
+  }).populate("resident", "name email phone");
+
+  if (!ticket) {
+    const error = new Error("Ticket not found or not assigned to you");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return ticket;
+};
+
+
 const startTicket = async (ticketId, technicianId) => {
   const ticket = await MaintenanceTicket.findById(ticketId);
 
@@ -87,6 +111,8 @@ const skipTicket = async (ticketId, technicianId) => {
 
 module.exports = {
   getAvailableTickets,
+   getAssignedTickets,
+  getAssignedTicketDetails,
   startTicket,
   resolveTicket,
   skipTicket,

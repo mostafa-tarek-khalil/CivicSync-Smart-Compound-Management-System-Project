@@ -56,9 +56,39 @@ const skipTicket = async (req, res) => {
   }
 };
 
+const getAssignedTickets = async (req, res) => {
+  try {
+    const tickets = await technicianService.getAssignedTickets(req.user.userId);
+    res.status(200).json({
+      count: tickets.length,
+      tickets,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get assigned tickets",
+    });
+  }
+};
+
+const getAssignedTicketDetails = async (req, res) => {
+  try {
+    const ticket = await technicianService.getAssignedTicketDetails(
+      req.params.id,
+      req.user.userId
+    );
+    res.status(200).json({ ticket });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get ticket details",
+    });
+  }
+};
+
 module.exports = {
   getAvailableTickets,
   startTicket,
   resolveTicket,
   skipTicket,
+  getAssignedTickets,
+  getAssignedTicketDetails,
 };
