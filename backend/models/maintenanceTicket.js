@@ -64,6 +64,10 @@ const maintenanceTicketSchema = new mongoose.Schema(
             ref: "User",
             default: null,
         },
+        resolvedAt: {
+         type: Date,
+         default: null,
+        },
 
         skippedBy: [
             {

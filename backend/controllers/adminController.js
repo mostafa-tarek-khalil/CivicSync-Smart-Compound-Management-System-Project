@@ -46,6 +46,7 @@ const rejectUser = async (req, res) => {
   }
 };
 
+
 module.exports = {
   approveUser,
   rejectUser,
