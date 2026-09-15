@@ -1,10 +1,8 @@
 const visitService = require("../services/visitService");
 
-/*
-|--------------------------------------------------------------------------
-| Resident Invite - Flow 1
-|--------------------------------------------------------------------------
-*/
+// --------------------------------------------------------------------------
+// Resident Invite - Flow 1
+// --------------------------------------------------------------------------
 
 const createVisit = async (req, res) => {
     try {
@@ -106,16 +104,15 @@ const verifyVisitOtp = async (req, res) => {
     }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Visitor Request - Flow 2
-|--------------------------------------------------------------------------
-*/
+// --------------------------------------------------------------------------
+// Visitor Request - Flow 2
+// --------------------------------------------------------------------------
 
 const createVisitorRequest = async (req, res) => {
     try {
-        const result =
-            await visitService.createVisitorRequest(req.body);
+        const result = await visitService.createVisitorRequest(
+            req.body
+        );
 
         return res.status(201).json({
             success: true,
@@ -233,11 +230,9 @@ const rejectVisitorRequest = async (req, res) => {
     }
 };
 
-/*
-|--------------------------------------------------------------------------
-| QR + Security
-|--------------------------------------------------------------------------
-*/
+// --------------------------------------------------------------------------
+// QR + Security
+// --------------------------------------------------------------------------
 
 const generateVisitQr = async (req, res) => {
     try {
@@ -319,6 +314,46 @@ const checkOutVisit = async (req, res) => {
     }
 };
 
+// --------------------------------------------------------------------------
+// Security
+// --------------------------------------------------------------------------
+
+const getSecurityVisits = async (req, res) => {
+    try {
+        const visits = await visitService.getSecurityVisits();
+
+        return res.status(200).json({
+            success: true,
+            message: "Security visits retrieved successfully",
+            data: visits,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getSecurityVisitById = async (req, res) => {
+    try {
+        const visit = await visitService.getSecurityVisitById(
+            req.params.id
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Security visit retrieved successfully",
+            data: visit,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     // Flow 1
     createVisit,
@@ -340,4 +375,8 @@ module.exports = {
     scanVisitQr,
     checkInVisit,
     checkOutVisit,
+
+    // Security
+    getSecurityVisits,
+    getSecurityVisitById,
 };

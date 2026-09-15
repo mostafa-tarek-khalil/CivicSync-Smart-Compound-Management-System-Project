@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
+
 const Visit = require("../models/visit");
 const User = require("../models/user");
 const Unit = require("../models/unit");
 const Building = require("../models/building");
+
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+
 const { sendOtpEmail } = require("./emailService");
 
 // --------------------------------------------------------------------------
@@ -174,9 +177,11 @@ const generateVisitOtp = async (userId, visitId) => {
     const otpHash = await bcrypt.hash(otp, 10);
 
     visit.otpHash = otpHash;
+
     visit.otpExpiresAt = new Date(
         Date.now() + 5 * 60 * 1000
     );
+
     visit.otpAttempts = 0;
 
     await visit.save();
@@ -250,7 +255,6 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     visit.otpExpiresAt = null;
     visit.otpAttempts = 0;
 
-    // Flow 1 can directly generate QR after OTP verification
     visit.status = "QR_GENERATED";
 
     await visit.save();
@@ -377,9 +381,11 @@ const generateVisitorRequestOtp = async (visitId) => {
     const otpHash = await bcrypt.hash(otp, 10);
 
     visit.otpHash = otpHash;
+
     visit.otpExpiresAt = new Date(
         Date.now() + 5 * 60 * 1000
     );
+
     visit.otpAttempts = 0;
 
     await visit.save();
@@ -448,10 +454,6 @@ const verifyVisitorRequestOtp = async (visitId, otp) => {
         throw new Error("Invalid OTP");
     }
 
-    // ----------------------------------------------------------------------
-    // Find the resident after OTP verification
-    // ----------------------------------------------------------------------
-
     const resident = await User.findOne({
         unitId: visit.unitId,
         role: "RESIDENT",
@@ -465,11 +467,11 @@ const verifyVisitorRequestOtp = async (visitId, otp) => {
     }
 
     visit.residentId = resident._id;
+
     visit.otpHash = null;
     visit.otpExpiresAt = null;
     visit.otpAttempts = 0;
 
-    // Still waiting for resident approval
     visit.status = "PENDING";
 
     await visit.save();
@@ -588,15 +590,6 @@ const generateVisitQr = async (userId, visitId) => {
         throw new Error("Visit not found");
     }
 
-    // ----------------------------------------------------------------------
-    // Flow 1:
-    // PENDING → OTP verified → QR_GENERATED
-    //
-    // Flow 2:
-    // PENDING → OTP verified → Resident APPROVED
-    //           → Generate QR → QR_GENERATED
-    // ----------------------------------------------------------------------
-
     if (
         visit.status !== "QR_GENERATED" &&
         visit.status !== "APPROVED"
@@ -611,6 +604,7 @@ const generateVisitQr = async (userId, visitId) => {
     const qrTokenHash = await bcrypt.hash(qrToken, 10);
 
     visit.qrTokenHash = qrTokenHash;
+
     visit.qrExpiresAt = new Date(
         Date.now() + 30 * 60 * 1000
     );
@@ -788,6 +782,40 @@ const checkOutVisit = async (securityId, visitId) => {
 };
 
 // --------------------------------------------------------------------------
+// Security - Visit Management
+// --------------------------------------------------------------------------
+
+const getSecurityVisits = async () => {
+    const visits = await Visit.find({})
+        .populate("residentId", "name email phone")
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type")
+        .populate("securityId", "name email")
+        .sort({
+            visitDate: -1,
+            visitStartTime: -1,
+        });
+
+    return visits;
+};
+
+const getSecurityVisitById = async (visitId) => {
+    validateObjectId(visitId, "visit ID");
+
+    const visit = await Visit.findById(visitId)
+        .populate("residentId", "name email phone")
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type")
+        .populate("securityId", "name email");
+
+    if (!visit) {
+        throw new Error("Visit not found");
+    }
+
+    return visit;
+};
+
+// --------------------------------------------------------------------------
 // Exports
 // --------------------------------------------------------------------------
 
@@ -812,4 +840,8 @@ module.exports = {
     scanVisitQr,
     checkInVisit,
     checkOutVisit,
+
+    // Security
+    getSecurityVisits,
+    getSecurityVisitById,
 };
