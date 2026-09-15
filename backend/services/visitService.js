@@ -1,25 +1,23 @@
 const mongoose = require("mongoose");
 const Visit = require("../models/visit");
+const User = require("../models/user");
+const Unit = require("../models/unit");
+const Building = require("../models/building");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const { sendOtpEmail } = require("./emailService");
 
-const createVisit = async (userId, visitData) => {
-    const {
-        visitorName,
-        visitorEmail,
-        visitorPhone,
-        visitDate,
-        visitStartTime,
-        purpose,
-    } = visitData;
+// --------------------------------------------------------------------------
+// Helpers
+// --------------------------------------------------------------------------
 
-    if (!visitorName || !visitorEmail || !visitDate || !visitStartTime) {
-        throw new Error(
-            "Visitor name, email, visit date and start time are required"
-        );
+const validateObjectId = (id, fieldName = "ID") => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error(`Invalid ${fieldName}`);
     }
+};
 
+const validateVisitDateAndTime = (visitDate, visitStartTime) => {
     const parsedDate = new Date(visitDate);
 
     if (Number.isNaN(parsedDate.getTime())) {
@@ -41,8 +39,69 @@ const createVisit = async (userId, visitData) => {
         throw new Error("Visit start time must be in HH:mm format");
     }
 
+    return parsedDate;
+};
+
+// --------------------------------------------------------------------------
+// Resident Invite - Flow 1
+// --------------------------------------------------------------------------
+
+const createVisit = async (userId, visitData) => {
+    const {
+        visitorName,
+        visitorEmail,
+        visitorPhone,
+        visitDate,
+        visitStartTime,
+        purpose,
+    } = visitData;
+
+    if (
+        !visitorName ||
+        !visitorEmail ||
+        !visitDate ||
+        !visitStartTime
+    ) {
+        throw new Error(
+            "Visitor name, email, visit date and start time are required"
+        );
+    }
+
+    const resident = await User.findOne({
+        _id: userId,
+        role: "RESIDENT",
+        status: "ACTIVE",
+    }).select("unitId");
+
+    if (!resident) {
+        throw new Error("Resident not found");
+    }
+
+    if (!resident.unitId) {
+        throw new Error("Resident is not assigned to a unit");
+    }
+
+    const unit = await Unit.findById(resident.unitId);
+
+    if (!unit) {
+        throw new Error("Resident unit not found");
+    }
+
+    const building = await Building.findById(unit.buildingId);
+
+    if (!building) {
+        throw new Error("Resident building not found");
+    }
+
+    const parsedDate = validateVisitDateAndTime(
+        visitDate,
+        visitStartTime
+    );
+
     const visit = await Visit.create({
         residentId: userId,
+        buildingId: building._id,
+        unitId: unit._id,
         visitorName,
         visitorEmail,
         visitorPhone: visitorPhone || null,
@@ -59,23 +118,26 @@ const createVisit = async (userId, visitData) => {
 const getMyVisits = async (userId) => {
     const visits = await Visit.find({
         residentId: userId,
-    }).sort({
-        visitDate: -1,
-        createdAt: -1,
-    });
+    })
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type")
+        .sort({
+            visitDate: -1,
+            createdAt: -1,
+        });
 
     return visits;
 };
 
 const getVisitById = async (userId, visitId) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
-    }
+    validateObjectId(visitId, "visit ID");
 
     const visit = await Visit.findOne({
         _id: visitId,
         residentId: userId,
-    });
+    })
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type");
 
     if (!visit) {
         throw new Error("Visit not found");
@@ -84,14 +146,17 @@ const getVisitById = async (userId, visitId) => {
     return visit;
 };
 
+// --------------------------------------------------------------------------
+// Flow 1 - Resident Invite OTP
+// --------------------------------------------------------------------------
+
 const generateVisitOtp = async (userId, visitId) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
-    }
+    validateObjectId(visitId, "visit ID");
 
     const visit = await Visit.findOne({
         _id: visitId,
         residentId: userId,
+        source: "RESIDENT_INVITE",
     }).select("+otpHash +otpExpiresAt +otpAttempts");
 
     if (!visit) {
@@ -109,11 +174,9 @@ const generateVisitOtp = async (userId, visitId) => {
     const otpHash = await bcrypt.hash(otp, 10);
 
     visit.otpHash = otpHash;
-
     visit.otpExpiresAt = new Date(
         Date.now() + 5 * 60 * 1000
     );
-
     visit.otpAttempts = 0;
 
     await visit.save();
@@ -131,9 +194,7 @@ const generateVisitOtp = async (userId, visitId) => {
 };
 
 const verifyVisitOtp = async (userId, visitId, otp) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
-    }
+    validateObjectId(visitId, "visit ID");
 
     if (!otp || !/^\d{6}$/.test(otp)) {
         throw new Error("OTP must be a 6-digit number");
@@ -142,6 +203,7 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     const visit = await Visit.findOne({
         _id: visitId,
         residentId: userId,
+        source: "RESIDENT_INVITE",
     }).select("+otpHash +otpExpiresAt +otpAttempts");
 
     if (!visit) {
@@ -155,7 +217,9 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     }
 
     if (!visit.otpHash || !visit.otpExpiresAt) {
-        throw new Error("No OTP has been generated for this visit");
+        throw new Error(
+            "No OTP has been generated for this visit"
+        );
     }
 
     if (visit.otpAttempts >= 5) {
@@ -186,6 +250,7 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     visit.otpExpiresAt = null;
     visit.otpAttempts = 0;
 
+    // Flow 1 can directly generate QR after OTP verification
     visit.status = "QR_GENERATED";
 
     await visit.save();
@@ -196,10 +261,323 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     };
 };
 
-const generateVisitQr = async (userId, visitId) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
+// --------------------------------------------------------------------------
+// Visitor Request - Flow 2
+// --------------------------------------------------------------------------
+
+const createVisitorRequest = async (visitData) => {
+    const {
+        visitorName,
+        visitorEmail,
+        visitorPhone,
+        buildingId,
+        unitId,
+        visitDate,
+        visitStartTime,
+        purpose,
+    } = visitData;
+
+    if (
+        !visitorName ||
+        !visitorEmail ||
+        !buildingId ||
+        !unitId ||
+        !visitDate ||
+        !visitStartTime
+    ) {
+        throw new Error(
+            "Visitor name, email, building, unit, visit date and start time are required"
+        );
     }
+
+    validateObjectId(buildingId, "building ID");
+    validateObjectId(unitId, "unit ID");
+
+    const building = await Building.findById(buildingId);
+
+    if (!building) {
+        throw new Error("Building not found");
+    }
+
+    const unit = await Unit.findOne({
+        _id: unitId,
+        buildingId: buildingId,
+    });
+
+    if (!unit) {
+        throw new Error(
+            "Unit does not belong to the selected building"
+        );
+    }
+
+    if (unit.status !== "OCCUPIED") {
+        throw new Error(
+            "Visitor requests can only be sent to occupied units"
+        );
+    }
+
+    const resident = await User.findOne({
+        unitId: unit._id,
+        role: "RESIDENT",
+        status: "ACTIVE",
+    }).select("_id");
+
+    if (!resident) {
+        throw new Error(
+            "No active resident is assigned to this unit"
+        );
+    }
+
+    const parsedDate = validateVisitDateAndTime(
+        visitDate,
+        visitStartTime
+    );
+
+    const visit = await Visit.create({
+        residentId: null,
+        buildingId: building._id,
+        unitId: unit._id,
+        visitorName,
+        visitorEmail,
+        visitorPhone: visitorPhone || null,
+        source: "VISITOR_REQUEST",
+        status: "PENDING",
+        visitDate: parsedDate,
+        visitStartTime,
+        purpose: purpose || null,
+    });
+
+    return {
+        visitId: visit._id,
+        status: visit.status,
+        message: "Visitor request created. OTP is required.",
+    };
+};
+
+const generateVisitorRequestOtp = async (visitId) => {
+    validateObjectId(visitId, "visitor request ID");
+
+    const visit = await Visit.findOne({
+        _id: visitId,
+        source: "VISITOR_REQUEST",
+    }).select("+otpHash +otpExpiresAt +otpAttempts");
+
+    if (!visit) {
+        throw new Error("Visitor request not found");
+    }
+
+    if (visit.status !== "PENDING") {
+        throw new Error(
+            "OTP can only be generated for pending visitor requests"
+        );
+    }
+
+    const otp = crypto.randomInt(100000, 1000000).toString();
+
+    const otpHash = await bcrypt.hash(otp, 10);
+
+    visit.otpHash = otpHash;
+    visit.otpExpiresAt = new Date(
+        Date.now() + 5 * 60 * 1000
+    );
+    visit.otpAttempts = 0;
+
+    await visit.save();
+
+    await sendOtpEmail(
+        visit.visitorEmail,
+        otp,
+        visit.visitorName
+    );
+
+    return {
+        visitId: visit._id,
+        expiresAt: visit.otpExpiresAt,
+    };
+};
+
+const verifyVisitorRequestOtp = async (visitId, otp) => {
+    validateObjectId(visitId, "visitor request ID");
+
+    if (!otp || !/^\d{6}$/.test(otp)) {
+        throw new Error("OTP must be a 6-digit number");
+    }
+
+    const visit = await Visit.findOne({
+        _id: visitId,
+        source: "VISITOR_REQUEST",
+    }).select("+otpHash +otpExpiresAt +otpAttempts");
+
+    if (!visit) {
+        throw new Error("Visitor request not found");
+    }
+
+    if (visit.status !== "PENDING") {
+        throw new Error(
+            "OTP can only be verified for pending visitor requests"
+        );
+    }
+
+    if (!visit.otpHash || !visit.otpExpiresAt) {
+        throw new Error(
+            "No OTP has been generated for this visitor request"
+        );
+    }
+
+    if (visit.otpAttempts >= 5) {
+        throw new Error(
+            "Maximum OTP attempts exceeded. Please generate a new OTP"
+        );
+    }
+
+    if (new Date() > visit.otpExpiresAt) {
+        throw new Error(
+            "OTP has expired. Please generate a new OTP"
+        );
+    }
+
+    const isOtpCorrect = await bcrypt.compare(
+        otp,
+        visit.otpHash
+    );
+
+    if (!isOtpCorrect) {
+        visit.otpAttempts += 1;
+        await visit.save();
+
+        throw new Error("Invalid OTP");
+    }
+
+    // ----------------------------------------------------------------------
+    // Find the resident after OTP verification
+    // ----------------------------------------------------------------------
+
+    const resident = await User.findOne({
+        unitId: visit.unitId,
+        role: "RESIDENT",
+        status: "ACTIVE",
+    }).select("_id");
+
+    if (!resident) {
+        throw new Error(
+            "No active resident is assigned to this unit"
+        );
+    }
+
+    visit.residentId = resident._id;
+    visit.otpHash = null;
+    visit.otpExpiresAt = null;
+    visit.otpAttempts = 0;
+
+    // Still waiting for resident approval
+    visit.status = "PENDING";
+
+    await visit.save();
+
+    // TODO: Send notification to resident
+
+    return {
+        visitId: visit._id,
+        status: visit.status,
+        residentId: visit.residentId,
+        message: "OTP verified. Waiting for resident approval.",
+    };
+};
+
+// --------------------------------------------------------------------------
+// Resident - Visitor Requests
+// --------------------------------------------------------------------------
+
+const getResidentVisitorRequests = async (residentId) => {
+    const visits = await Visit.find({
+        residentId,
+        source: "VISITOR_REQUEST",
+    })
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type")
+        .sort({
+            createdAt: -1,
+        });
+
+    return visits;
+};
+
+const approveVisitorRequest = async (
+    residentId,
+    visitId
+) => {
+    validateObjectId(visitId, "visitor request ID");
+
+    const visit = await Visit.findOne({
+        _id: visitId,
+        residentId,
+        source: "VISITOR_REQUEST",
+    });
+
+    if (!visit) {
+        throw new Error("Visitor request not found");
+    }
+
+    if (visit.status !== "PENDING") {
+        throw new Error(
+            "Only pending visitor requests can be approved"
+        );
+    }
+
+    visit.status = "APPROVED";
+    visit.approvedAt = new Date();
+
+    await visit.save();
+
+    // TODO: Send notification to visitor
+
+    return {
+        visitId: visit._id,
+        status: visit.status,
+        approvedAt: visit.approvedAt,
+    };
+};
+
+const rejectVisitorRequest = async (
+    residentId,
+    visitId
+) => {
+    validateObjectId(visitId, "visitor request ID");
+
+    const visit = await Visit.findOne({
+        _id: visitId,
+        residentId,
+        source: "VISITOR_REQUEST",
+    });
+
+    if (!visit) {
+        throw new Error("Visitor request not found");
+    }
+
+    if (visit.status !== "PENDING") {
+        throw new Error(
+            "Only pending visitor requests can be rejected"
+        );
+    }
+
+    visit.status = "REJECTED";
+
+    await visit.save();
+
+    // TODO: Send notification to visitor
+
+    return {
+        visitId: visit._id,
+        status: visit.status,
+    };
+};
+
+// --------------------------------------------------------------------------
+// QR
+// --------------------------------------------------------------------------
+
+const generateVisitQr = async (userId, visitId) => {
+    validateObjectId(visitId, "visit ID");
 
     const visit = await Visit.findOne({
         _id: visitId,
@@ -210,7 +588,19 @@ const generateVisitQr = async (userId, visitId) => {
         throw new Error("Visit not found");
     }
 
-    if (visit.status !== "QR_GENERATED") {
+    // ----------------------------------------------------------------------
+    // Flow 1:
+    // PENDING → OTP verified → QR_GENERATED
+    //
+    // Flow 2:
+    // PENDING → OTP verified → Resident APPROVED
+    //           → Generate QR → QR_GENERATED
+    // ----------------------------------------------------------------------
+
+    if (
+        visit.status !== "QR_GENERATED" &&
+        visit.status !== "APPROVED"
+    ) {
         throw new Error(
             "QR can only be generated after OTP verification"
         );
@@ -221,10 +611,11 @@ const generateVisitQr = async (userId, visitId) => {
     const qrTokenHash = await bcrypt.hash(qrToken, 10);
 
     visit.qrTokenHash = qrTokenHash;
-
     visit.qrExpiresAt = new Date(
         Date.now() + 30 * 60 * 1000
     );
+
+    visit.status = "QR_GENERATED";
 
     await visit.save();
 
@@ -234,6 +625,10 @@ const generateVisitQr = async (userId, visitId) => {
         expiresAt: visit.qrExpiresAt,
     };
 };
+
+// --------------------------------------------------------------------------
+// Security
+// --------------------------------------------------------------------------
 
 const scanVisitQr = async (securityId, qrToken) => {
     if (!qrToken) {
@@ -292,9 +687,7 @@ const scanVisitQr = async (securityId, qrToken) => {
 };
 
 const checkInVisit = async (securityId, visitId) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
-    }
+    validateObjectId(visitId, "visit ID");
 
     const visit = await Visit.findById(visitId);
 
@@ -321,7 +714,10 @@ const checkInVisit = async (securityId, visitId) => {
         );
     }
 
-    if (visit.qrScannedBy.toString() !== securityId.toString()) {
+    if (
+        visit.qrScannedBy.toString() !==
+        securityId.toString()
+    ) {
         throw new Error(
             "QR was scanned by another security officer"
         );
@@ -345,9 +741,7 @@ const checkInVisit = async (securityId, visitId) => {
 };
 
 const checkOutVisit = async (securityId, visitId) => {
-    if (!mongoose.Types.ObjectId.isValid(visitId)) {
-        throw new Error("Invalid visit ID");
-    }
+    validateObjectId(visitId, "visit ID");
 
     const visit = await Visit.findById(visitId);
 
@@ -367,7 +761,10 @@ const checkOutVisit = async (securityId, visitId) => {
         );
     }
 
-    if (visit.securityId.toString() !== securityId.toString()) {
+    if (
+        visit.securityId.toString() !==
+        securityId.toString()
+    ) {
         throw new Error(
             "Visitor must be checked out by the same security officer"
         );
@@ -390,12 +787,27 @@ const checkOutVisit = async (securityId, visitId) => {
     };
 };
 
+// --------------------------------------------------------------------------
+// Exports
+// --------------------------------------------------------------------------
+
 module.exports = {
+    // Flow 1
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
+
+    // Flow 2
+    createVisitorRequest,
+    generateVisitorRequestOtp,
+    verifyVisitorRequestOtp,
+    getResidentVisitorRequests,
+    approveVisitorRequest,
+    rejectVisitorRequest,
+
+    // QR + Security
     generateVisitQr,
     scanVisitQr,
     checkInVisit,

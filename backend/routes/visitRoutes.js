@@ -1,11 +1,22 @@
 const express = require("express");
 
 const {
+    // Flow 1
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
+
+    // Flow 2
+    createVisitorRequest,
+    generateVisitorRequestOtp,
+    verifyVisitorRequestOtp,
+    getResidentVisitorRequests,
+    approveVisitorRequest,
+    rejectVisitorRequest,
+
+    // QR + Security
     generateVisitQr,
     scanVisitQr,
     checkInVisit,
@@ -16,6 +27,61 @@ const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
 const router = express.Router();
+
+/*
+|--------------------------------------------------------------------------
+| Visitor Request - Flow 2
+|--------------------------------------------------------------------------
+| These first 3 endpoints are public because the visitor is not a User.
+*/
+
+router.post(
+    "/visitor-requests",
+    createVisitorRequest
+);
+
+router.post(
+    "/visitor-requests/:id/otp",
+    generateVisitorRequestOtp
+);
+
+router.post(
+    "/visitor-requests/:id/otp/verify",
+    verifyVisitorRequestOtp
+);
+
+/*
+|--------------------------------------------------------------------------
+| Resident - Flow 2
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/visitor-requests",
+    authMiddleware,
+    roleMiddleware("RESIDENT"),
+    getResidentVisitorRequests
+);
+
+router.patch(
+    "/visitor-requests/:id/approve",
+    authMiddleware,
+    roleMiddleware("RESIDENT"),
+    approveVisitorRequest
+);
+
+router.patch(
+    "/visitor-requests/:id/reject",
+    authMiddleware,
+    roleMiddleware("RESIDENT"),
+    rejectVisitorRequest
+);
+
+/*
+|--------------------------------------------------------------------------
+| Resident Invite - Flow 1
+|--------------------------------------------------------------------------
+*/
 
 router.post(
     "/",
@@ -31,12 +97,24 @@ router.get(
     getMyVisits
 );
 
+/*
+|--------------------------------------------------------------------------
+| Security
+|--------------------------------------------------------------------------
+*/
+
 router.post(
     "/scan",
     authMiddleware,
     roleMiddleware("SECURITY"),
     scanVisitQr
 );
+
+/*
+|--------------------------------------------------------------------------
+| Resident - Visit Details / OTP / QR
+|--------------------------------------------------------------------------
+*/
 
 router.get(
     "/:id",
@@ -65,6 +143,12 @@ router.post(
     roleMiddleware("RESIDENT"),
     generateVisitQr
 );
+
+/*
+|--------------------------------------------------------------------------
+| Security - Check In / Check Out
+|--------------------------------------------------------------------------
+*/
 
 router.patch(
     "/:id/check-in",

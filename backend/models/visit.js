@@ -5,6 +5,18 @@ const visitSchema = new mongoose.Schema(
         residentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            default: null,
+        },
+
+        buildingId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Building",
+            required: true,
+        },
+
+        unitId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Unit",
             required: true,
         },
 

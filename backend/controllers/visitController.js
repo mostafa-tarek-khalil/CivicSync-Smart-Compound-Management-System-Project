@@ -1,5 +1,11 @@
 const visitService = require("../services/visitService");
 
+/*
+|--------------------------------------------------------------------------
+| Resident Invite - Flow 1
+|--------------------------------------------------------------------------
+*/
+
 const createVisit = async (req, res) => {
     try {
         const visit = await visitService.createVisit(
@@ -100,6 +106,139 @@ const verifyVisitOtp = async (req, res) => {
     }
 };
 
+/*
+|--------------------------------------------------------------------------
+| Visitor Request - Flow 2
+|--------------------------------------------------------------------------
+*/
+
+const createVisitorRequest = async (req, res) => {
+    try {
+        const result =
+            await visitService.createVisitorRequest(req.body);
+
+        return res.status(201).json({
+            success: true,
+            message: "Visitor request created successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const generateVisitorRequestOtp = async (req, res) => {
+    try {
+        const result =
+            await visitService.generateVisitorRequestOtp(
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request OTP generated successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const verifyVisitorRequestOtp = async (req, res) => {
+    try {
+        const result =
+            await visitService.verifyVisitorRequestOtp(
+                req.params.id,
+                req.body.otp
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request OTP verified successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getResidentVisitorRequests = async (req, res) => {
+    try {
+        const requests =
+            await visitService.getResidentVisitorRequests(
+                req.user.userId
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor requests retrieved successfully",
+            data: requests,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const approveVisitorRequest = async (req, res) => {
+    try {
+        const result =
+            await visitService.approveVisitorRequest(
+                req.user.userId,
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request approved successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const rejectVisitorRequest = async (req, res) => {
+    try {
+        const result =
+            await visitService.rejectVisitorRequest(
+                req.user.userId,
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request rejected successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+/*
+|--------------------------------------------------------------------------
+| QR + Security
+|--------------------------------------------------------------------------
+*/
+
 const generateVisitQr = async (req, res) => {
     try {
         const result = await visitService.generateVisitQr(
@@ -181,11 +320,22 @@ const checkOutVisit = async (req, res) => {
 };
 
 module.exports = {
+    // Flow 1
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
+
+    // Flow 2
+    createVisitorRequest,
+    generateVisitorRequestOtp,
+    verifyVisitorRequestOtp,
+    getResidentVisitorRequests,
+    approveVisitorRequest,
+    rejectVisitorRequest,
+
+    // QR + Security
     generateVisitQr,
     scanVisitQr,
     checkInVisit,
