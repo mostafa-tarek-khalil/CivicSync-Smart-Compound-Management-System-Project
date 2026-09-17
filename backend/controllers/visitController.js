@@ -1,9 +1,5 @@
 const visitService = require("../services/visitService");
 
-// --------------------------------------------------------------------------
-// Resident Invite - Flow 1
-// --------------------------------------------------------------------------
-
 const createVisit = async (req, res) => {
     try {
         const visit = await visitService.createVisit(
@@ -103,10 +99,6 @@ const verifyVisitOtp = async (req, res) => {
         });
     }
 };
-
-// --------------------------------------------------------------------------
-// Visitor Request - Flow 2
-// --------------------------------------------------------------------------
 
 const createVisitorRequest = async (req, res) => {
     try {
@@ -230,10 +222,6 @@ const rejectVisitorRequest = async (req, res) => {
     }
 };
 
-// --------------------------------------------------------------------------
-// QR + Security
-// --------------------------------------------------------------------------
-
 const generateVisitQr = async (req, res) => {
     try {
         const result = await visitService.generateVisitQr(
@@ -314,10 +302,6 @@ const checkOutVisit = async (req, res) => {
     }
 };
 
-// --------------------------------------------------------------------------
-// Security
-// --------------------------------------------------------------------------
-
 const getSecurityVisits = async (req, res) => {
     try {
         const visits = await visitService.getSecurityVisits();
@@ -355,28 +339,21 @@ const getSecurityVisitById = async (req, res) => {
 };
 
 module.exports = {
-    // Flow 1
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
-
-    // Flow 2
     createVisitorRequest,
     generateVisitorRequestOtp,
     verifyVisitorRequestOtp,
     getResidentVisitorRequests,
     approveVisitorRequest,
     rejectVisitorRequest,
-
-    // QR + Security
     generateVisitQr,
     scanVisitQr,
     checkInVisit,
     checkOutVisit,
-
-    // Security
     getSecurityVisits,
     getSecurityVisitById,
 };

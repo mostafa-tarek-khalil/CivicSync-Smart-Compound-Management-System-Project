@@ -10,10 +10,6 @@ const bcrypt = require("bcrypt");
 
 const { sendOtpEmail } = require("./emailService");
 
-// --------------------------------------------------------------------------
-// Helpers
-// --------------------------------------------------------------------------
-
 const validateObjectId = (id, fieldName = "ID") => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw new Error(`Invalid ${fieldName}`);
@@ -45,9 +41,6 @@ const validateVisitDateAndTime = (visitDate, visitStartTime) => {
     return parsedDate;
 };
 
-// --------------------------------------------------------------------------
-// Resident Invite - Flow 1
-// --------------------------------------------------------------------------
 
 const createVisit = async (userId, visitData) => {
     const {
@@ -148,10 +141,6 @@ const getVisitById = async (userId, visitId) => {
 
     return visit;
 };
-
-// --------------------------------------------------------------------------
-// Flow 1 - Resident Invite OTP
-// --------------------------------------------------------------------------
 
 const generateVisitOtp = async (userId, visitId) => {
     validateObjectId(visitId, "visit ID");
@@ -264,10 +253,6 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
         status: visit.status,
     };
 };
-
-// --------------------------------------------------------------------------
-// Visitor Request - Flow 2
-// --------------------------------------------------------------------------
 
 const createVisitorRequest = async (visitData) => {
     const {
@@ -486,10 +471,6 @@ const verifyVisitorRequestOtp = async (visitId, otp) => {
     };
 };
 
-// --------------------------------------------------------------------------
-// Resident - Visitor Requests
-// --------------------------------------------------------------------------
-
 const getResidentVisitorRequests = async (residentId) => {
     const visits = await Visit.find({
         residentId,
@@ -574,10 +555,6 @@ const rejectVisitorRequest = async (
     };
 };
 
-// --------------------------------------------------------------------------
-// QR
-// --------------------------------------------------------------------------
-
 const generateVisitQr = async (userId, visitId) => {
     validateObjectId(visitId, "visit ID");
 
@@ -619,10 +596,6 @@ const generateVisitQr = async (userId, visitId) => {
         expiresAt: visit.qrExpiresAt,
     };
 };
-
-// --------------------------------------------------------------------------
-// Security
-// --------------------------------------------------------------------------
 
 const scanVisitQr = async (securityId, qrToken) => {
     if (!qrToken) {
@@ -781,10 +754,6 @@ const checkOutVisit = async (securityId, visitId) => {
     };
 };
 
-// --------------------------------------------------------------------------
-// Security - Visit Management
-// --------------------------------------------------------------------------
-
 const getSecurityVisits = async () => {
     const visits = await Visit.find({})
         .populate("residentId", "name email phone")
@@ -815,33 +784,23 @@ const getSecurityVisitById = async (visitId) => {
     return visit;
 };
 
-// --------------------------------------------------------------------------
-// Exports
-// --------------------------------------------------------------------------
 
 module.exports = {
-    // Flow 1
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
-
-    // Flow 2
     createVisitorRequest,
     generateVisitorRequestOtp,
     verifyVisitorRequestOtp,
     getResidentVisitorRequests,
     approveVisitorRequest,
     rejectVisitorRequest,
-
-    // QR + Security
     generateVisitQr,
     scanVisitQr,
     checkInVisit,
     checkOutVisit,
-
-    // Security
     getSecurityVisits,
     getSecurityVisitById,
 };

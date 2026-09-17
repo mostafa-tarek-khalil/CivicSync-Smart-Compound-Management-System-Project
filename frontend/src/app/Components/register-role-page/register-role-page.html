@@ -1,0 +1,422 @@
+<div class="register-page">
+
+  <!-- Background Decorations -->
+  <div class="background-shape shape-one"></div>
+  <div class="background-shape shape-two"></div>
+
+  <div class="register-container">
+
+    <!-- ================= LEFT SIDE ================= -->
+
+    <section class="register-showcase">
+
+      <div class="showcase-content">
+
+        <!-- Brand -->
+
+        <a routerLink="/" class="brand">
+
+          <div class="brand-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <span>CivicSync</span>
+
+        </a>
+
+
+        <!-- Progress -->
+
+        <div class="progress-section">
+
+          <span class="progress-eyebrow">
+            CREATE YOUR ACCOUNT
+          </span>
+
+          <h1>
+            Choose how you
+            <span>use</span>
+            CivicSync.
+          </h1>
+
+          <p>
+            Your role determines the tools, permissions and
+            services available to you inside the compound.
+          </p>
+
+
+          <!-- Steps -->
+
+          <div class="steps">
+
+            <!-- Step 1 -->
+
+            <div class="step completed">
+
+              <div class="step-number">
+                ✓
+              </div>
+
+              <div class="step-content">
+
+                <strong>Basic information</strong>
+
+                <span>
+                  Your account information is ready.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Step 2 -->
+
+            <div class="step active">
+
+              <div class="step-number">
+                02
+              </div>
+
+              <div class="step-content">
+
+                <strong>Choose your role</strong>
+
+                <span>
+                  Select how you use CivicSync.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Step 3 -->
+
+            <div class="step">
+
+              <div class="step-number">
+                03
+              </div>
+
+              <div class="step-content">
+
+                <strong>Complete profile</strong>
+
+                <span>
+                  Add the details for your role.
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Footer -->
+
+      <div class="showcase-footer">
+
+        <span>
+          © 2026 CivicSync
+        </span>
+
+        <span>
+          Smart Compound Management
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <section class="register-form-section">
+
+      <div class="register-card">
+
+        <!-- Mobile Brand -->
+
+        <div class="mobile-brand">
+          CivicSync
+        </div>
+
+
+        <!-- Heading -->
+
+        <div class="register-heading">
+
+          <span class="form-eyebrow">
+            STEP 02 OF 03
+          </span>
+
+          <h2>
+            Choose your role
+          </h2>
+
+          <p>
+            Select the role that best describes your account.
+          </p>
+
+        </div>
+
+
+        <!-- Error -->
+
+        @if (errorMessage) {
+
+          <div class="error-message">
+
+            <span class="error-icon">
+              !
+            </span>
+
+            <span>
+              {{ errorMessage }}
+            </span>
+
+          </div>
+
+        }
+
+
+        <!-- ================= ROLE OPTIONS ================= -->
+
+        <div class="role-list">
+
+          @for (role of roles; track role.value) {
+
+            <button
+              type="button"
+              class="role-card"
+              [class.selected]="selectedRole === role.value"
+              (click)="selectRole(role.value)">
+
+              <!-- Icon -->
+
+              <span class="role-icon">
+
+                @if (role.icon === 'home') {
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <path
+                      d="M3.5 10.5L12 3.5L20.5 10.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                    <path
+                      d="M5.5 9.5V20H18.5V9.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"/>
+
+                    <path
+                      d="M9.5 20V14H14.5V20"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"/>
+
+                  </svg>
+
+                }
+
+
+                @if (role.icon === 'tools') {
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <path
+                      d="M14.5 5.5C15.9 4.1 18.1 4.1 19.5 5.5C20.9 6.9 20.9 9.1 19.5 10.5L17.5 12.5L11.5 6.5L13.5 4.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                    <path
+                      d="M10.5 17.5L5.5 22.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"/>
+
+                    <path
+                      d="M4 15.5L8.5 20"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"/>
+
+                    <path
+                      d="M6.5 13L11 17.5L17.5 11"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                  </svg>
+
+                }
+
+
+                @if (role.icon === 'shield') {
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <path
+                      d="M12 3L19 6V11.5C19 16.2 16.1 19.7 12 21C7.9 19.7 5 16.2 5 11.5V6L12 3Z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"/>
+
+                    <path
+                      d="M9 12L11 14L15.5 9.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                  </svg>
+
+                }
+
+              </span>
+
+
+              <!-- Text -->
+
+              <span class="role-content">
+
+                <strong>
+                  {{ role.title }}
+                </strong>
+
+                <span>
+                  {{ role.description }}
+                </span>
+
+              </span>
+
+
+              <!-- Selection -->
+
+              <span class="role-check">
+
+                @if (selectedRole === role.value) {
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+
+                    <path
+                      d="M5 12.5L9.5 17L19 7.5"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+
+                  </svg>
+
+                }
+
+              </span>
+
+            </button>
+
+          }
+
+        </div>
+
+
+        <!-- Continue -->
+
+        <button
+          type="button"
+          class="register-submit"
+          [class.disabled]="!selectedRole"
+          (click)="continue()">
+
+          <span>
+            Continue
+          </span>
+
+          <span class="submit-arrow">
+            →
+          </span>
+
+        </button>
+
+
+        <!-- Back -->
+
+        <button
+          type="button"
+          class="back-button"
+          (click)="goBack()">
+
+          <span class="back-arrow">
+            ←
+          </span>
+
+          <span>
+            Back to basic information
+          </span>
+
+        </button>
+
+
+        <!-- Login -->
+
+        <div class="login-link">
+
+          <span>
+            Already have an account?
+          </span>
+
+          <a routerLink="/login">
+            Sign in
+          </a>
+
+        </div>
+
+
+        <!-- Security -->
+
+        <div class="security-note">
+
+          <span class="lock-icon">
+            ⌁
+          </span>
+
+          <span>
+            Your information is securely protected.
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
