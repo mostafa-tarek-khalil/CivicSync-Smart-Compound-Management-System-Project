@@ -2,7 +2,11 @@ const reviewService = require("../services/reviewService");
 
 const createReview = async (req, res) => {
   try {
-    const review = await reviewService.createReview(req.params.ticketId, req.user.userId, req.body);
+    const review = await reviewService.CreateReview(
+      req.user.userId,
+      req.params.ticketId,
+      req.body
+    );
     res.status(201).json({
       message: "Review created successfully",
       review,
@@ -16,7 +20,11 @@ const createReview = async (req, res) => {
 
 const updateReview = async (req, res) => {
   try {
-    const review = await reviewService.updateReview(req.params.id, req.user.userId, req.body);
+    const review = await reviewService.updateReview(
+      req.params.id,
+      req.user.userId,
+      req.body
+    );
     res.status(200).json({
       message: "Review updated successfully",
       review,
@@ -30,7 +38,7 @@ const updateReview = async (req, res) => {
 
 const deleteReview = async (req, res) => {
   try {
-    await reviewService.deleteReview(req.params.id, req.user.userId);
+    await reviewService.DeleteReview(req.params.id, req.user.userId);
     res.status(200).json({
       message: "Review deleted successfully",
     });
@@ -43,7 +51,8 @@ const deleteReview = async (req, res) => {
 
 const getTechnicianReviews = async (req, res) => {
   try {
-    const reviews = await reviewService.getTechnicianReviews(req.params.technicianId);
+    const technicianId = req.params.technicianId || req.user.userId;
+    const reviews = await reviewService.getTechnicianReviews(technicianId);
     res.status(200).json({
       count: reviews.length,
       reviews,
@@ -54,7 +63,6 @@ const getTechnicianReviews = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   createReview,
