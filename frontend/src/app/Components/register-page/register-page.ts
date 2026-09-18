@@ -10,7 +10,6 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './register-page.css'
 })
 export class RegisterPage {
-
   name = '';
   phone = '';
   email = '';
@@ -118,13 +117,7 @@ export class RegisterPage {
   }
 
   isValid(): boolean {
-    return (
-      !this.nameError &&
-      !this.phoneError &&
-      !this.emailError &&
-      !this.passwordError &&
-      !this.confirmPasswordError
-    );
+    return !this.nameError && !this.phoneError && !this.emailError && !this.passwordError && !this.confirmPasswordError;
   }
 
   continue(): void {
@@ -143,11 +136,7 @@ export class RegisterPage {
       password: this.password
     };
 
-    sessionStorage.setItem(
-      'civicsync_register',
-      JSON.stringify(registerData)
-    );
-
+    sessionStorage.setItem('civicsync_register', JSON.stringify(registerData));
     this.router.navigate(['/register/role']);
   }
 }

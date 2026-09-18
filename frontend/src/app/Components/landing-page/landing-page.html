@@ -1,1343 +1,753 @@
 <div class="landing-page">
 
-  <!-- =====================================================
-       NAVBAR
-       ===================================================== -->
-
   <header class="navbar">
+    <a href="#home" class="brand">
+      <span class="brand-icon">C</span>
+      <span class="brand-text">
+        <strong>CivicSync</strong>
+        <small>Smart Compound Management</small>
+      </span>
+    </a>
 
+    <nav class="nav-links">
+      <a href="#home" [class.active]="activeSection === 'home'" (click)="setActive('home')">Home</a>
+      <a href="#platform" [class.active]="activeSection === 'platform'" (click)="setActive('platform')">Platform</a>
+      <a href="#roles" [class.active]="activeSection === 'roles'" (click)="setActive('roles')">Roles</a>
+      <a href="#workflow" [class.active]="activeSection === 'workflow'" (click)="setActive('workflow')">How it works</a>
+    </nav>
 
-<a href="#home" class="brand">
-  <span class="brand-icon">C</span>
-
-  <span class="brand-text">
-    <strong>CivicSync</strong>
-    <small>Smart Compound Management</small>
-  </span>
-</a>
-
-<nav class="nav-links">
-  <a
-    href="#home"
-    [class.active]="activeSection === 'home'"
-    (click)="setActive('home')">
-    Home
-  </a>
-
-  <a
-    href="#platform"
-    [class.active]="activeSection === 'platform'"
-    (click)="setActive('platform')">
-    Platform
-  </a>
-
-  <a
-    href="#roles"
-    [class.active]="activeSection === 'roles'"
-    (click)="setActive('roles')">
-    Roles
-  </a>
-
-  <a
-    href="#workflow"
-    [class.active]="activeSection === 'workflow'"
-    (click)="setActive('workflow')">
-    How it works
-  </a>
-</nav>
-
-<div class="nav-actions">
-
-  <a routerLink="/login" class="login-btn" style="text-decoration: none;">
-    Log in
-  </a>
-
-  <a routerLink="/register" class="primary-nav-btn">
-    Get started
-    <span>→</span>
-  </a>
-
-</div>
-
-
+    <div class="nav-actions">
+      <a routerLink="/login" class="login-btn" style="text-decoration: none;">Log in</a>
+      <a routerLink="/register" class="primary-nav-btn">Get started <span>→</span></a>
+    </div>
   </header>
 
   <main>
 
-
-<!-- =====================================================
-     HERO
-     ===================================================== -->
-<section class="hero" id="home">
-
-  <div class="hero-background">
-    <div class="hero-glow glow-one"></div>
-    <div class="hero-glow glow-two"></div>
-    <div class="hero-grid"></div>
-  </div>
-
-
-  <div class="hero-content">
-
-    <div class="hero-copy">
-
-      <div class="eyebrow">
-        <span class="status-dot"></span>
-        Smart Compound Management System
+    <section class="hero" id="home">
+      <div class="hero-background">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+        <div class="hero-grid"></div>
       </div>
 
-      <h1>
-        Your compound,
-        <span>connected.</span>
-      </h1>
-
-      <p>
-        CivicSync brings residents, technicians, visitors,
-        security, and administration together in one
-        connected digital platform.
-      </p>
-
-      <div class="hero-buttons">
-
-        <a routerLink="/register" class="hero-primary-btn">
-          Get started
-          <span>→</span>
-        </a>
-
-        <a href="#platform" class="hero-secondary-btn">
-          Explore platform
-          <span>↓</span>
-        </a>
-
-      </div>
-
-      <div class="hero-trust">
-        <span class="trust-check">✓</span>
-        <span>One platform · Four connected roles</span>
-      </div>
-
-    </div>
-
-
-    <!-- HERO VISUAL -->
-    <div class="hero-visual">
-
-      <div class="compound-orb orb-one"></div>
-      <div class="compound-orb orb-two"></div>
-
-
-      <!-- Main dashboard -->
-      <div class="dashboard-window image-hover">
-
-        <div class="dashboard-topbar">
-
-          <div class="window-controls">
-            <span></span>
-            <span></span>
-            <span></span>
+      <div class="hero-content">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="status-dot"></span>
+            Smart Compound Management System
           </div>
 
-          <span class="dashboard-title">
-            CivicSync
-          </span>
+          <h1>Your compound, <span>connected.</span></h1>
 
-          <div class="dashboard-avatar">
-            MT
+          <p>
+            CivicSync brings residents, technicians, visitors,
+            security, and administration together in one
+            connected digital platform.
+          </p>
+
+          <div class="hero-buttons">
+            <a routerLink="/register" class="hero-primary-btn">Get started <span>→</span></a>
+            <a href="#platform" class="hero-secondary-btn">Explore platform <span>↓</span></a>
           </div>
 
+          <div class="hero-trust">
+            <span class="trust-check">✓</span>
+            <span>One platform · Four connected roles</span>
+          </div>
         </div>
 
+        <div class="hero-visual">
+          <div class="compound-orb orb-one"></div>
+          <div class="compound-orb orb-two"></div>
 
-        <div class="dashboard-body">
+          <div class="dashboard-window image-hover">
+            <div class="dashboard-topbar">
+              <div class="window-controls">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
 
-          <aside class="dashboard-sidebar">
-
-            <div class="sidebar-logo">
-              C
+              <span class="dashboard-title">CivicSync</span>
+              <div class="dashboard-avatar">MT</div>
             </div>
 
-            <div class="sidebar-icon active">
-              ⌂
+            <div class="dashboard-body">
+              <aside class="dashboard-sidebar">
+                <div class="sidebar-logo">C</div>
+                <div class="sidebar-icon active">⌂</div>
+                <div class="sidebar-icon">▦</div>
+                <div class="sidebar-icon">◫</div>
+                <div class="sidebar-icon">✓</div>
+              </aside>
+
+              <div class="dashboard-content">
+                <div class="dashboard-heading">
+                  <div>
+                    <span>RESIDENT OVERVIEW</span>
+                    <h3>Good morning</h3>
+                  </div>
+                  <div class="dashboard-date">Today</div>
+                </div>
+
+                <div class="dashboard-stats">
+                  <div class="mini-stat">
+                    <span>Maintenance</span>
+                    <strong>04</strong>
+                    <small>Open requests</small>
+                  </div>
+
+                  <div class="mini-stat">
+                    <span>Visitors</span>
+                    <strong>02</strong>
+                    <small>Expected today</small>
+                  </div>
+
+                  <div class="mini-stat">
+                    <span>Offers</span>
+                    <strong>03</strong>
+                    <small>Awaiting review</small>
+                  </div>
+                </div>
+
+                <div class="activity-panel">
+                  <div class="panel-title">
+                    <strong>Recent activity</strong>
+                    <span>View all</span>
+                  </div>
+
+                  <div class="activity-row">
+                    <div class="activity-symbol maintenance-symbol">M</div>
+                    <div class="activity-text">
+                      <strong>Maintenance request</strong>
+                      <span>AC service request updated</span>
+                    </div>
+                    <small>10m</small>
+                  </div>
+
+                  <div class="activity-row">
+                    <div class="activity-symbol visitor-symbol">V</div>
+                    <div class="activity-text">
+                      <strong>Visitor approved</strong>
+                      <span>Guest request approved</span>
+                    </div>
+                    <small>32m</small>
+                  </div>
+
+                  <div class="activity-row">
+                    <div class="activity-symbol security-symbol">S</div>
+                    <div class="activity-text">
+                      <strong>Security check</strong>
+                      <span>Visitor checked out</span>
+                    </div>
+                    <small>1h</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-card qr-card image-hover">
+            <div class="floating-card-header">
+              <span>VISITOR ACCESS</span>
+              <b>ACTIVE</b>
             </div>
 
-            <div class="sidebar-icon">
-              ▦
-            </div>
-
-            <div class="sidebar-icon">
-              ◫
-            </div>
-
-            <div class="sidebar-icon">
-              ✓
-            </div>
-
-          </aside>
-
-
-          <div class="dashboard-content">
-
-            <div class="dashboard-heading">
+            <div class="qr-layout">
+              <div class="fake-qr">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
 
               <div>
-                <span>RESIDENT OVERVIEW</span>
-                <h3>Good morning</h3>
+                <strong>Guest QR</strong>
+                <small>Ready for security scan</small>
               </div>
-
-              <div class="dashboard-date">
-                Today
-              </div>
-
             </div>
-
-
-            <div class="dashboard-stats">
-
-              <div class="mini-stat">
-                <span>Maintenance</span>
-                <strong>04</strong>
-                <small>Open requests</small>
-              </div>
-
-              <div class="mini-stat">
-                <span>Visitors</span>
-                <strong>02</strong>
-                <small>Expected today</small>
-              </div>
-
-              <div class="mini-stat">
-                <span>Offers</span>
-                <strong>03</strong>
-                <small>Awaiting review</small>
-              </div>
-
-            </div>
-
-
-            <div class="activity-panel">
-
-              <div class="panel-title">
-                <strong>Recent activity</strong>
-                <span>View all</span>
-              </div>
-
-
-              <div class="activity-row">
-
-                <div class="activity-symbol maintenance-symbol">
-                  M
-                </div>
-
-                <div class="activity-text">
-                  <strong>Maintenance request</strong>
-                  <span>AC service request updated</span>
-                </div>
-
-                <small>10m</small>
-
-              </div>
-
-
-              <div class="activity-row">
-
-                <div class="activity-symbol visitor-symbol">
-                  V
-                </div>
-
-                <div class="activity-text">
-                  <strong>Visitor approved</strong>
-                  <span>Guest request approved</span>
-                </div>
-
-                <small>32m</small>
-
-              </div>
-
-
-              <div class="activity-row">
-
-                <div class="activity-symbol security-symbol">
-                  S
-                </div>
-
-                <div class="activity-text">
-                  <strong>Security check</strong>
-                  <span>Visitor checked out</span>
-                </div>
-
-                <small>1h</small>
-
-              </div>
-
-            </div>
-
           </div>
 
-        </div>
+          <div class="floating-card maintenance-card image-hover">
+            <div class="floating-icon">M</div>
 
+            <div>
+              <small>MAINTENANCE</small>
+              <strong>AC Repair Request</strong>
+              <span class="status-pill">In progress</span>
+            </div>
+          </div>
+
+          <div class="cube-decoration">
+            <div class="cube-face cube-front">C</div>
+            <div class="cube-face cube-right">S</div>
+            <div class="cube-face cube-top">C</div>
+          </div>
+        </div>
       </div>
 
+      <div class="hero-bottom-line">
+        <span>RESIDENTS</span>
+        <i></i>
+        <span>TECHNICIANS</span>
+        <i></i>
+        <span>SECURITY</span>
+        <i></i>
+        <span>ADMINISTRATION</span>
+      </div>
+    </section>
 
-      <!-- Floating QR card -->
-      <div class="floating-card qr-card image-hover">
+    <section class="platform-intro" id="platform">
+      <div class="section-label">THE CIVICSYNC PLATFORM</div>
 
-        <div class="floating-card-header">
-          <span>VISITOR ACCESS</span>
-          <b>ACTIVE</b>
+      <div class="intro-grid">
+        <h2>Everything your compound needs, <span>in one place.</span></h2>
+        <p>
+          From maintenance requests and technician offers
+          to visitor approvals and secure QR access,
+          CivicSync connects the everyday operations
+          of your residential community.
+        </p>
+      </div>
+    </section>
+
+    <section class="roles-section" id="roles">
+      <div class="section-heading">
+        <div>
+          <span class="section-label">ONE SYSTEM</span>
+          <h2>Four roles. <span>One connected experience.</span></h2>
         </div>
 
-        <div class="qr-layout">
+        <p>
+          Each role gets its own tools while the entire
+          compound stays connected through the same system.
+        </p>
+      </div>
 
-          <div class="fake-qr">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+      <div class="roles-grid">
+
+        <article class="role-card resident-card">
+          <div class="role-card-top">
+            <span class="role-number">01</span>
+            <div class="role-icon">R</div>
+          </div>
+
+          <div class="role-card-content">
+            <span class="role-label">RESIDENT</span>
+            <h3>Your home, <br>your control.</h3>
+            <p>
+              Manage maintenance requests, review technician
+              offers, invite visitors, and control access
+              from one place.
+            </p>
+          </div>
+
+          <div class="role-visual resident-visual">
+            <div class="phone-mockup image-hover">
+              <div class="phone-top"></div>
+
+              <div class="phone-screen">
+                <small>MY HOME</small>
+                <strong>Welcome back</strong>
+
+                <div class="phone-stat-row">
+                  <span>Open requests</span>
+                  <b>04</b>
+                </div>
+
+                <div class="phone-stat-row">
+                  <span>Today's visitors</span>
+                  <b>02</b>
+                </div>
+
+                <div class="phone-action">
+                  <span>+</span>
+                  Invite visitor
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="role-card technician-card">
+          <div class="role-card-top">
+            <span class="role-number">02</span>
+            <div class="role-icon">T</div>
+          </div>
+
+          <div class="role-card-content">
+            <span class="role-label">TECHNICIAN</span>
+            <h3>Requests become <br>real work.</h3>
+            <p>
+              Discover available maintenance requests,
+              submit offers, manage assigned jobs,
+              and resolve issues.
+            </p>
+          </div>
+
+          <div class="offer-mockup image-hover">
+            <div class="offer-header">
+              <span>MAINTENANCE REQUEST</span>
+              <b>OPEN</b>
+            </div>
+
+            <strong>Air conditioning repair</strong>
+            <small>Building 03 · Apartment 204</small>
+
+            <div class="offer-divider"></div>
+
+            <div class="offer-price-row">
+              <span>Your offer</span>
+              <strong>EGP 850</strong>
+            </div>
+
+            <div class="offer-button">Submit offer →</div>
+          </div>
+        </article>
+
+        <article class="role-card security-card">
+          <div class="role-card-top">
+            <span class="role-number">03</span>
+            <div class="role-icon">S</div>
+          </div>
+
+          <div class="role-card-content">
+            <span class="role-label">SECURITY</span>
+            <h3>Every visitor, <br>verified.</h3>
+            <p>
+              Security staff can scan visitor QR codes,
+              verify access, and manage check-in
+              and check-out.
+            </p>
+          </div>
+
+          <div class="security-visual">
+            <div class="scanner-ring">
+              <div class="scanner-center">
+                <span>QR</span>
+              </div>
+            </div>
+
+            <div class="scan-status">
+              <span class="status-dot"></span>
+              Ready to scan
+            </div>
+          </div>
+        </article>
+
+        <article class="role-card admin-card">
+          <div class="role-card-top">
+            <span class="role-number">04</span>
+            <div class="role-icon">A</div>
+          </div>
+
+          <div class="role-card-content">
+            <span class="role-label">ADMIN</span>
+            <h3>One view of <br>the compound.</h3>
+            <p>
+              Manage users, buildings, units, maintenance,
+              technicians, and visitor operations
+              from one administration layer.
+            </p>
+          </div>
+
+          <div class="admin-visual">
+            <div class="admin-chart">
+              <div class="chart-bars">
+                <span style="height: 38%"></span>
+                <span style="height: 62%"></span>
+                <span style="height: 48%"></span>
+                <span style="height: 78%"></span>
+                <span style="height: 68%"></span>
+                <span style="height: 92%"></span>
+              </div>
+
+              <div class="chart-line"></div>
+            </div>
+
+            <div class="admin-stat">
+              <small>ACTIVE USERS</small>
+              <strong>128</strong>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="visitor-section" id="workflow">
+      <div class="visitor-copy">
+        <span class="section-label">VISITOR ACCESS</span>
+
+        <h2>From request <span>to secure entry.</span></h2>
+
+        <p>
+          CivicSync turns visitor access into a clear,
+          connected workflow between visitors, residents,
+          and security staff.
+        </p>
+
+        <div class="visitor-steps">
+          <div class="visitor-step">
+            <span>01</span>
+            <div>
+              <strong>Visitor request</strong>
+              <p>Visitor submits their details and visit information.</p>
+            </div>
+          </div>
+
+          <div class="visitor-step">
+            <span>02</span>
+            <div>
+              <strong>OTP verification</strong>
+              <p>Visitor verifies their email before the request continues.</p>
+            </div>
+          </div>
+
+          <div class="visitor-step">
+            <span>03</span>
+            <div>
+              <strong>Resident approval</strong>
+              <p>The resident approves or rejects the visit request.</p>
+            </div>
+          </div>
+
+          <div class="visitor-step">
+            <span>04</span>
+            <div>
+              <strong>QR check-in</strong>
+              <p>Security scans the QR and manages entry and exit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="visitor-visual">
+        <div class="visitor-glow"></div>
+        <div class="visitor-orbit orbit-one"></div>
+        <div class="visitor-orbit orbit-two"></div>
+
+        <div class="qr-device image-hover">
+          <div class="device-header">
+            <span>CivicSync</span>
+            <small>VISITOR PASS</small>
+          </div>
+
+          <div class="device-body">
+            <div class="large-qr">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <strong>Visitor Access</strong>
+            <p>Valid for today's approved visit</p>
+            <div class="qr-expiry">QR ACCESS ACTIVE</div>
+          </div>
+        </div>
+
+        <div class="approval-bubble">
+          <div class="approval-icon">✓</div>
+          <div>
+            <small>RESIDENT APPROVAL</small>
+            <strong>Visit approved</strong>
+          </div>
+        </div>
+
+        <div class="security-bubble">
+          <div class="security-bubble-icon">S</div>
+          <div>
+            <small>SECURITY</small>
+            <strong>Ready for check-in</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="maintenance-section">
+      <div class="maintenance-visual">
+        <div class="maintenance-glow"></div>
+
+        <div class="ticket-window image-hover">
+          <div class="ticket-header">
+            <div>
+              <small>MAINTENANCE TICKET</small>
+              <strong>AC Repair</strong>
+            </div>
+            <span>OPEN</span>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-info">
+              <span>Category</span>
+              <strong>Air Conditioning</strong>
+            </div>
+
+            <div class="ticket-info">
+              <span>Priority</span>
+              <strong class="priority">HIGH</strong>
+            </div>
+
+            <div class="ticket-info">
+              <span>Status</span>
+              <strong>Awaiting offer</strong>
+            </div>
+          </div>
+
+          <div class="offer-stack">
+            <div class="technician-offer">
+              <div class="tech-avatar">A</div>
+
+              <div class="tech-info">
+                <strong>Ahmed Hassan</strong>
+                <small>AC Technician · 4.8 rating</small>
+              </div>
+
+              <div class="offer-value">
+                <small>OFFER</small>
+                <strong>EGP 850</strong>
+              </div>
+            </div>
+
+            <div class="technician-offer second">
+              <div class="tech-avatar">M</div>
+
+              <div class="tech-info">
+                <strong>Mohamed Ali</strong>
+                <small>AC Technician · 4.6 rating</small>
+              </div>
+
+              <div class="offer-value">
+                <small>OFFER</small>
+                <strong>EGP 900</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="maintenance-copy">
+        <span class="section-label">MAINTENANCE MANAGEMENT</span>
+
+        <h2>Turn a problem <span>into a workflow.</span></h2>
+
+        <p>
+          Residents create maintenance requests.
+          Technicians discover available work and submit
+          offers. Once an offer is accepted, the request
+          moves through a clear resolution workflow.
+        </p>
+
+        <div class="maintenance-points">
+          <div>
+            <span>01</span>
+            <strong>Create a request</strong>
           </div>
 
           <div>
-            <strong>Guest QR</strong>
-            <small>Ready for security scan</small>
+            <span>02</span>
+            <strong>Receive technician offers</strong>
           </div>
 
-        </div>
-
-      </div>
-
-
-      <!-- Floating maintenance card -->
-      <div class="floating-card maintenance-card image-hover">
-
-        <div class="floating-icon">
-          M
-        </div>
-
-        <div>
-          <small>MAINTENANCE</small>
-
-          <strong>
-            AC Repair Request
-          </strong>
-
-          <span class="status-pill">
-            In progress
-          </span>
-        </div>
-
-      </div>
-
-
-      <!-- Decorative cube -->
-      <div class="cube-decoration">
-
-        <div class="cube-face cube-front">C</div>
-        <div class="cube-face cube-right">S</div>
-        <div class="cube-face cube-top">C</div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="hero-bottom-line">
-
-    <span>RESIDENTS</span>
-    <i></i>
-
-    <span>TECHNICIANS</span>
-    <i></i>
-
-    <span>SECURITY</span>
-    <i></i>
-
-    <span>ADMINISTRATION</span>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     PLATFORM INTRO
-     ===================================================== -->
-<section class="platform-intro" id="platform">
-
-  <div class="section-label">
-    THE CIVICSYNC PLATFORM
-  </div>
-
-  <div class="intro-grid">
-
-    <h2>
-      Everything your compound needs,
-      <span>in one place.</span>
-    </h2>
-
-    <p>
-      From maintenance requests and technician offers
-      to visitor approvals and secure QR access,
-      CivicSync connects the everyday operations
-      of your residential community.
-    </p>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     ROLES
-     ===================================================== -->
-<section class="roles-section" id="roles">
-
-  <div class="section-heading">
-
-    <div>
-
-      <span class="section-label">
-        ONE SYSTEM
-      </span>
-
-      <h2>
-        Four roles.
-        <span>One connected experience.</span>
-      </h2>
-
-    </div>
-
-    <p>
-      Each role gets its own tools while the entire
-      compound stays connected through the same system.
-    </p>
-
-  </div>
-
-
-  <div class="roles-grid">
-
-
-    <!-- RESIDENT -->
-    <article class="role-card resident-card">
-
-      <div class="role-card-top">
-
-        <span class="role-number">
-          01
-        </span>
-
-        <div class="role-icon">
-          R
-        </div>
-
-      </div>
-
-
-      <div class="role-card-content">
-
-        <span class="role-label">
-          RESIDENT
-        </span>
-
-        <h3>
-          Your home,
-          <br>
-          your control.
-        </h3>
-
-        <p>
-          Manage maintenance requests, review technician
-          offers, invite visitors, and control access
-          from one place.
-        </p>
-
-      </div>
-
-
-      <div class="role-visual resident-visual">
-
-        <div class="phone-mockup image-hover">
-
-          <div class="phone-top"></div>
-
-          <div class="phone-screen">
-
-            <small>MY HOME</small>
-
-            <strong>
-              Welcome back
-            </strong>
-
-            <div class="phone-stat-row">
-              <span>Open requests</span>
-              <b>04</b>
-            </div>
-
-            <div class="phone-stat-row">
-              <span>Today's visitors</span>
-              <b>02</b>
-            </div>
-
-            <div class="phone-action">
-              <span>+</span>
-              Invite visitor
-            </div>
-
+          <div>
+            <span>03</span>
+            <strong>Track until resolved</strong>
           </div>
-
         </div>
-
       </div>
+    </section>
 
-    </article>
+    <section class="architecture-section">
+      <div class="architecture-heading">
+        <span class="section-label">CONNECTED BY DESIGN</span>
 
-
-    <!-- TECHNICIAN -->
-    <article class="role-card technician-card">
-
-      <div class="role-card-top">
-
-        <span class="role-number">
-          02
-        </span>
-
-        <div class="role-icon">
-          T
-        </div>
-
-      </div>
-
-
-      <div class="role-card-content">
-
-        <span class="role-label">
-          TECHNICIAN
-        </span>
-
-        <h3>
-          Requests become
-          <br>
-          real work.
-        </h3>
+        <h2>Different responsibilities. <span>One system.</span></h2>
 
         <p>
-          Discover available maintenance requests,
-          submit offers, manage assigned jobs,
-          and resolve issues.
+          CivicSync keeps every part of compound operations
+          connected while giving each role the right level
+          of access.
         </p>
-
       </div>
 
+      <div class="architecture-visual">
+        <div class="connection-line line-one"></div>
+        <div class="connection-line line-two"></div>
+        <div class="connection-line line-three"></div>
+        <div class="connection-line line-four"></div>
 
-      <div class="offer-mockup image-hover">
-
-        <div class="offer-header">
-          <span>MAINTENANCE REQUEST</span>
-          <b>OPEN</b>
+        <div class="architecture-node resident-node image-hover">
+          <div class="node-icon">R</div>
+          <strong>Resident</strong>
+          <small>Requests · Visitors</small>
         </div>
 
-        <strong>
-          Air conditioning repair
-        </strong>
-
-        <small>
-          Building 03 · Apartment 204
-        </small>
-
-        <div class="offer-divider"></div>
-
-        <div class="offer-price-row">
-          <span>Your offer</span>
-          <strong>EGP 850</strong>
+        <div class="architecture-node technician-node image-hover">
+          <div class="node-icon">T</div>
+          <strong>Technician</strong>
+          <small>Offers · Maintenance</small>
         </div>
 
-        <div class="offer-button">
-          Submit offer →
+        <div class="architecture-core">
+          <div class="core-ring ring-one"></div>
+          <div class="core-ring ring-two"></div>
+          <div class="core-logo">C</div>
+          <strong>CivicSync</strong>
+          <small>Compound Core</small>
         </div>
 
+        <div class="architecture-node security-node image-hover">
+          <div class="node-icon">S</div>
+          <strong>Security</strong>
+          <small>Scan · Check-in</small>
+        </div>
+
+        <div class="architecture-node admin-node image-hover">
+          <div class="node-icon">A</div>
+          <strong>Admin</strong>
+          <small>Users · Operations</small>
+        </div>
       </div>
+    </section>
 
-    </article>
+    <section class="about-section" id="about">
+      <div class="about-image image-hover">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85" alt="Modern residential compound">
+        <div class="about-image-overlay"></div>
 
-
-    <!-- SECURITY -->
-    <article class="role-card security-card">
-
-      <div class="role-card-top">
-
-        <span class="role-number">
-          03
-        </span>
-
-        <div class="role-icon">
-          S
-        </div>
-
-      </div>
-
-
-      <div class="role-card-content">
-
-        <span class="role-label">
-          SECURITY
-        </span>
-
-        <h3>
-          Every visitor,
-          <br>
-          verified.
-        </h3>
-
-        <p>
-          Security staff can scan visitor QR codes,
-          verify access, and manage check-in
-          and check-out.
-        </p>
-
-      </div>
-
-
-      <div class="security-visual">
-
-        <div class="scanner-ring">
-
-          <div class="scanner-center">
-            <span>QR</span>
-          </div>
-
-        </div>
-
-        <div class="scan-status">
+        <div class="about-image-badge">
           <span class="status-dot"></span>
-          Ready to scan
+          <div>
+            <small>CIVICSYNC</small>
+            <strong>Connected living</strong>
+          </div>
         </div>
-
       </div>
 
-    </article>
+      <div class="about-content">
+        <span class="section-label">ABOUT CIVICSYNC</span>
 
-
-    <!-- ADMIN -->
-    <article class="role-card admin-card">
-
-      <div class="role-card-top">
-
-        <span class="role-number">
-          04
-        </span>
-
-        <div class="role-icon">
-          A
-        </div>
-
-      </div>
-
-
-      <div class="role-card-content">
-
-        <span class="role-label">
-          ADMIN
-        </span>
-
-        <h3>
-          One view of
-          <br>
-          the compound.
-        </h3>
+        <h2>Built to make compound management feel simpler.</h2>
 
         <p>
-          Manage users, buildings, units, maintenance,
-          technicians, and visitor operations
-          from one administration layer.
+          CivicSync is a smart compound management system
+          designed around the real interactions inside a
+          residential community.
         </p>
-
-      </div>
-
-
-      <div class="admin-visual">
-
-        <div class="admin-chart">
-
-          <div class="chart-bars">
-            <span style="height: 38%"></span>
-            <span style="height: 62%"></span>
-            <span style="height: 48%"></span>
-            <span style="height: 78%"></span>
-            <span style="height: 68%"></span>
-            <span style="height: 92%"></span>
-          </div>
-
-          <div class="chart-line"></div>
-
-        </div>
-
-
-        <div class="admin-stat">
-          <small>ACTIVE USERS</small>
-          <strong>128</strong>
-        </div>
-
-      </div>
-
-    </article>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     VISITOR FLOW
-     ===================================================== -->
-<section class="visitor-section" id="workflow">
-
-  <div class="visitor-copy">
-
-    <span class="section-label">
-      VISITOR ACCESS
-    </span>
-
-    <h2>
-      From request
-      <span>to secure entry.</span>
-    </h2>
-
-    <p>
-      CivicSync turns visitor access into a clear,
-      connected workflow between visitors, residents,
-      and security staff.
-    </p>
-
-
-    <div class="visitor-steps">
-
-      <div class="visitor-step">
-
-        <span>01</span>
-
-        <div>
-          <strong>Visitor request</strong>
-
-          <p>
-            Visitor submits their details and visit information.
-          </p>
-        </div>
-
-      </div>
-
-
-      <div class="visitor-step">
-
-        <span>02</span>
-
-        <div>
-          <strong>OTP verification</strong>
-
-          <p>
-            Visitor verifies their email before the request continues.
-          </p>
-        </div>
-
-      </div>
-
-
-      <div class="visitor-step">
-
-        <span>03</span>
-
-        <div>
-          <strong>Resident approval</strong>
-
-          <p>
-            The resident approves or rejects the visit request.
-          </p>
-        </div>
-
-      </div>
-
-
-      <div class="visitor-step">
-
-        <span>04</span>
-
-        <div>
-          <strong>QR check-in</strong>
-
-          <p>
-            Security scans the QR and manages entry and exit.
-          </p>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- QR VISUAL -->
-  <div class="visitor-visual">
-
-    <div class="visitor-glow"></div>
-    <div class="visitor-orbit orbit-one"></div>
-    <div class="visitor-orbit orbit-two"></div>
-
-
-    <div class="qr-device image-hover">
-
-      <div class="device-header">
-
-        <span>
-          CivicSync
-        </span>
-
-        <small>
-          VISITOR PASS
-        </small>
-
-      </div>
-
-
-      <div class="device-body">
-
-        <div class="large-qr">
-
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-
-        </div>
-
-
-        <strong>
-          Visitor Access
-        </strong>
 
         <p>
-          Valid for today's approved visit
+          Instead of separating residents, technicians,
+          security, and administration into disconnected
+          processes, CivicSync brings them together through
+          one consistent digital experience.
         </p>
 
-        <div class="qr-expiry">
-          QR ACCESS ACTIVE
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- Approval -->
-    <div class="approval-bubble">
-
-      <div class="approval-icon">
-        ✓
-      </div>
-
-      <div>
-        <small>RESIDENT APPROVAL</small>
-        <strong>Visit approved</strong>
-      </div>
-
-    </div>
-
-
-    <!-- Security -->
-    <div class="security-bubble">
-
-      <div class="security-bubble-icon">
-        S
-      </div>
-
-      <div>
-        <small>SECURITY</small>
-        <strong>Ready for check-in</strong>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     MAINTENANCE
-     ===================================================== -->
-<section class="maintenance-section">
-
-  <div class="maintenance-visual">
-
-    <div class="maintenance-glow"></div>
-
-    <div class="ticket-window image-hover">
-
-      <div class="ticket-header">
-
-        <div>
-          <small>MAINTENANCE TICKET</small>
-          <strong>AC Repair</strong>
-        </div>
-
-        <span>OPEN</span>
-
-      </div>
-
-
-      <div class="ticket-body">
-
-        <div class="ticket-info">
-          <span>Category</span>
-          <strong>Air Conditioning</strong>
-        </div>
-
-        <div class="ticket-info">
-          <span>Priority</span>
-          <strong class="priority">HIGH</strong>
-        </div>
-
-        <div class="ticket-info">
-          <span>Status</span>
-          <strong>Awaiting offer</strong>
-        </div>
-
-      </div>
-
-
-      <div class="offer-stack">
-
-        <div class="technician-offer">
-
-          <div class="tech-avatar">
-            A
+        <div class="about-highlights">
+          <div>
+            <strong>04</strong>
+            <span>Connected roles</span>
           </div>
 
-          <div class="tech-info">
-            <strong>Ahmed Hassan</strong>
-            <small>AC Technician · 4.8 rating</small>
+          <div>
+            <strong>01</strong>
+            <span>Shared platform</span>
           </div>
 
-          <div class="offer-value">
-            <small>OFFER</small>
-            <strong>EGP 850</strong>
+          <div>
+            <strong>∞</strong>
+            <span>Daily interactions</span>
           </div>
-
         </div>
+      </div>
+    </section>
 
+    <section class="cta-section">
+      <div class="cta-glow"></div>
 
-        <div class="technician-offer second">
+      <div class="cta-content">
+        <span class="section-label">CIVICSYNC</span>
 
-          <div class="tech-avatar">
-            M
-          </div>
+        <h2>A smarter way to manage <span>compound life.</span></h2>
 
-          <div class="tech-info">
-            <strong>Mohamed Ali</strong>
-            <small>AC Technician · 4.6 rating</small>
-          </div>
+        <p>
+          One connected platform for residents,
+          technicians, security, and administration.
+        </p>
 
-          <div class="offer-value">
-            <small>OFFER</small>
-            <strong>EGP 900</strong>
-          </div>
-
+        <div class="cta-actions">
+          <a routerLink="/register" class="cta-primary">Get started <span>→</span></a>
+          <a routerLink="/login" class="cta-secondary">Log in</a>
         </div>
-
       </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="maintenance-copy">
-
-    <span class="section-label">
-      MAINTENANCE MANAGEMENT
-    </span>
-
-    <h2>
-      Turn a problem
-      <span>into a workflow.</span>
-    </h2>
-
-    <p>
-      Residents create maintenance requests.
-      Technicians discover available work and submit
-      offers. Once an offer is accepted, the request
-      moves through a clear resolution workflow.
-    </p>
-
-
-    <div class="maintenance-points">
-
-      <div>
-        <span>01</span>
-        <strong>Create a request</strong>
-      </div>
-
-      <div>
-        <span>02</span>
-        <strong>Receive technician offers</strong>
-      </div>
-
-      <div>
-        <span>03</span>
-        <strong>Track until resolved</strong>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     ARCHITECTURE
-     ===================================================== -->
-<section class="architecture-section">
-
-  <div class="architecture-heading">
-
-    <span class="section-label">
-      CONNECTED BY DESIGN
-    </span>
-
-    <h2>
-      Different responsibilities.
-      <span>One system.</span>
-    </h2>
-
-    <p>
-      CivicSync keeps every part of compound operations
-      connected while giving each role the right level
-      of access.
-    </p>
-
-  </div>
-
-
-  <div class="architecture-visual">
-
-    <div class="connection-line line-one"></div>
-    <div class="connection-line line-two"></div>
-    <div class="connection-line line-three"></div>
-    <div class="connection-line line-four"></div>
-
-
-    <div class="architecture-node resident-node image-hover">
-
-      <div class="node-icon">
-        R
-      </div>
-
-      <strong>Resident</strong>
-      <small>Requests · Visitors</small>
-
-    </div>
-
-
-    <div class="architecture-node technician-node image-hover">
-
-      <div class="node-icon">
-        T
-      </div>
-
-      <strong>Technician</strong>
-      <small>Offers · Maintenance</small>
-
-    </div>
-
-
-    <div class="architecture-core">
-
-      <div class="core-ring ring-one"></div>
-      <div class="core-ring ring-two"></div>
-
-      <div class="core-logo">
-        C
-      </div>
-
-      <strong>CivicSync</strong>
-      <small>Compound Core</small>
-
-    </div>
-
-
-    <div class="architecture-node security-node image-hover">
-
-      <div class="node-icon">
-        S
-      </div>
-
-      <strong>Security</strong>
-      <small>Scan · Check-in</small>
-
-    </div>
-
-
-    <div class="architecture-node admin-node image-hover">
-
-      <div class="node-icon">
-        A
-      </div>
-
-      <strong>Admin</strong>
-      <small>Users · Operations</small>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     ABOUT
-     ===================================================== -->
-<section class="about-section" id="about">
-
-  <div class="about-image image-hover">
-
-    <img
-      src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85"
-      alt="Modern residential compound" />
-
-    <div class="about-image-overlay"></div>
-
-    <div class="about-image-badge">
-
-      <span class="status-dot"></span>
-
-      <div>
-        <small>CIVICSYNC</small>
-        <strong>Connected living</strong>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="about-content">
-
-    <span class="section-label">
-      ABOUT CIVICSYNC
-    </span>
-
-    <h2>
-      Built to make compound
-      management feel simpler.
-    </h2>
-
-    <p>
-      CivicSync is a smart compound management system
-      designed around the real interactions inside a
-      residential community.
-    </p>
-
-    <p>
-      Instead of separating residents, technicians,
-      security, and administration into disconnected
-      processes, CivicSync brings them together through
-      one consistent digital experience.
-    </p>
-
-
-    <div class="about-highlights">
-
-      <div>
-        <strong>04</strong>
-        <span>Connected roles</span>
-      </div>
-
-      <div>
-        <strong>01</strong>
-        <span>Shared platform</span>
-      </div>
-
-      <div>
-        <strong>∞</strong>
-        <span>Daily interactions</span>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =====================================================
-     CTA
-     ===================================================== -->
-<section class="cta-section">
-
-  <div class="cta-glow"></div>
-
-  <div class="cta-content">
-
-    <span class="section-label">
-      CIVICSYNC
-    </span>
-
-    <h2>
-      A smarter way to manage
-      <span>compound life.</span>
-    </h2>
-
-    <p>
-      One connected platform for residents,
-      technicians, security, and administration.
-    </p>
-
-
-    <div class="cta-actions">
-
-      <a routerLink="/register" class="cta-primary">
-        Get started
-        <span>→</span>
-      </a>
-
-      <a routerLink="/login" class="cta-secondary">
-        Log in
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
+    </section>
 
   </main>
 
-  <!-- =====================================================
-       FOOTER
-       ===================================================== -->
-
   <footer class="footer">
+    <div class="footer-main">
 
+      <div class="footer-brand">
+        <a href="#home" class="brand">
+          <span class="brand-icon">C</span>
+          <span class="brand-text">
+            <strong>CivicSync</strong>
+            <small>Smart Compound Management</small>
+          </span>
+        </a>
 
-<div class="footer-main">
+        <p>
+          A connected platform for smarter
+          residential compound operations.
+        </p>
+      </div>
 
+      <div class="footer-column">
+        <span>PLATFORM</span>
+        <a href="#platform">Overview</a>
+        <a href="#roles">Roles</a>
+        <a href="#workflow">Visitor access</a>
+        <a href="#workflow">Maintenance</a>
+      </div>
 
-  <div class="footer-brand">
+      <div class="footer-column">
+        <span>ACCESS</span>
+        <a routerLink="/login">Login</a>
+        <a href="#home">Register</a>
+        <a href="#about">About CivicSync</a>
+      </div>
 
-    <a href="#home" class="brand">
+      <div class="footer-status">
+        <span class="status-dot"></span>
+        <div>
+          <small>PLATFORM STATUS</small>
+          <strong>System ready</strong>
+        </div>
+      </div>
 
-      <span class="brand-icon">
-        C
-      </span>
-
-      <span class="brand-text">
-
-        <strong>CivicSync</strong>
-
-        <small>
-          Smart Compound Management
-        </small>
-
-      </span>
-
-    </a>
-
-
-    <p>
-      A connected platform for smarter
-      residential compound operations.
-    </p>
-
-  </div>
-
-
-  <div class="footer-column">
-
-    <span>PLATFORM</span>
-
-    <a href="#platform">
-      Overview
-    </a>
-
-    <a href="#roles">
-      Roles
-    </a>
-
-    <a href="#workflow">
-      Visitor access
-    </a>
-
-    <a href="#workflow">
-      Maintenance
-    </a>
-
-  </div>
-
-
-  <div class="footer-column">
-
-    <span>ACCESS</span>
-
-    <a routerLink="/login">
-      Login
-    </a>
-
-    <a href="#home">
-      Register
-    </a>
-
-    <a href="#about">
-      About CivicSync
-    </a>
-
-  </div>
-
-
-  <div class="footer-status">
-
-    <span class="status-dot"></span>
-
-    <div>
-      <small>PLATFORM STATUS</small>
-      <strong>System ready</strong>
     </div>
 
-  </div>
-
-</div>
-
-
-<div class="footer-bottom">
-
-  <span>
-    © 2026 CivicSync
-  </span>
-
-  <span>
-    Smart Compound Management System
-  </span>
-
-</div>
-
-
+    <div class="footer-bottom">
+      <span>© 2026 CivicSync</span>
+      <span>Smart Compound Management System</span>
+    </div>
   </footer>
 
 </div>

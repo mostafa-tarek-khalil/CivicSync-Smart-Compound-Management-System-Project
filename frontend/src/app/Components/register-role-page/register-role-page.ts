@@ -16,31 +16,26 @@ interface RoleOption {
   styleUrl: './register-role-page.css'
 })
 export class RegisterRolePage {
-
   selectedRole: 'RESIDENT' | 'TECHNICIAN' | 'SECURITY' | null = null;
-
   errorMessage = '';
 
   readonly roles: RoleOption[] = [
     {
       value: 'RESIDENT',
       title: 'Resident',
-      description:
-        'Manage your unit, maintenance requests, visitors and compound services.',
+      description: 'Manage your unit, maintenance requests, visitors and compound services.',
       icon: 'home'
     },
     {
       value: 'TECHNICIAN',
       title: 'Technician',
-      description:
-        'Handle maintenance requests, offers, assigned tasks and resident reviews.',
+      description: 'Handle maintenance requests, offers, assigned tasks and resident reviews.',
       icon: 'tools'
     },
     {
       value: 'SECURITY',
       title: 'Security',
-      description:
-        'Manage visitor access, scan QR codes and monitor compound visits.',
+      description: 'Manage visitor access, scan QR codes and monitor compound visits.',
       icon: 'shield'
     }
   ];
@@ -69,14 +64,8 @@ export class RegisterRolePage {
 
     try {
       const registerData = JSON.parse(savedData);
-
       registerData.role = this.selectedRole;
-
-      sessionStorage.setItem(
-        'civicsync_register',
-        JSON.stringify(registerData)
-      );
-
+      sessionStorage.setItem('civicsync_register', JSON.stringify(registerData));
       this.router.navigate(['/register/details']);
     } catch {
       sessionStorage.removeItem('civicsync_register');
@@ -98,11 +87,7 @@ export class RegisterRolePage {
     try {
       const registerData = JSON.parse(savedData);
 
-      if (
-        registerData.role === 'RESIDENT' ||
-        registerData.role === 'TECHNICIAN' ||
-        registerData.role === 'SECURITY'
-      ) {
+      if (registerData.role === 'RESIDENT' || registerData.role === 'TECHNICIAN' || registerData.role === 'SECURITY') {
         this.selectedRole = registerData.role;
       }
     } catch {

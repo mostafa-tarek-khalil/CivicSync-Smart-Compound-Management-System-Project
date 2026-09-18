@@ -9,9 +9,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './landing-page.css'
 })
 export class LandingPage implements AfterViewInit, OnDestroy {
-
   activeSection = 'home';
-
   private observer?: IntersectionObserver;
 
   ngAfterViewInit(): void {
@@ -39,14 +37,10 @@ export class LandingPage implements AfterViewInit, OnDestroy {
       (entries) => {
         const visibleSections = entries
           .filter(entry => entry.isIntersecting)
-          .sort(
-            (a, b) =>
-              b.intersectionRatio - a.intersectionRatio
-          );
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
         if (visibleSections.length > 0) {
-          this.activeSection =
-            visibleSections[0].target.id;
+          this.activeSection = visibleSections[0].target.id;
         }
       },
       {

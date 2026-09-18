@@ -1,15 +1,6 @@
-/* =========================================================
-   CIVICSYNC REGISTER PAGE
-   ========================================================= */
-
 :host {
   display: block;
 }
-
-
-/* =========================
-   PAGE
-   ========================= */
 
 .register-page {
   min-height: 100vh;
@@ -20,11 +11,6 @@
   overflow: hidden;
   padding: 24px;
 }
-
-
-/* =========================
-   BACKGROUND SHAPES
-   ========================= */
 
 .background-shape {
   position: fixed;
@@ -49,122 +35,65 @@
   background: rgba(203, 219, 245, 0.45);
 }
 
-
-/* =========================
-   MAIN CONTAINER
-   ========================= */
-
 .register-container {
   width: min(1240px, 100%);
   min-height: calc(100vh - 48px);
   margin: 0 auto;
-
   display: grid;
   grid-template-columns: 0.92fr 1.08fr;
-
   background: rgba(255, 255, 255, 0.72);
-
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 28px;
-
   overflow: hidden;
-
-  box-shadow:
-    0 30px 80px rgba(29, 63, 104, 0.10),
-    0 8px 30px rgba(29, 63, 104, 0.05);
-
+  box-shadow: 0 30px 80px rgba(29, 63, 104, 0.10), 0 8px 30px rgba(29, 63, 104, 0.05);
   position: relative;
   z-index: 1;
 }
 
-
-/* =========================
-   LEFT SHOWCASE
-   ========================= */
-
 .register-showcase {
   position: relative;
-
   padding: 54px 55px 34px;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  background:
-    linear-gradient(
-      145deg,
-      #e5eeff 0%,
-      #eff4ff 52%,
-      #f8f9ff 100%
-    );
-
+  background: linear-gradient(145deg, #e5eeff 0%, #eff4ff 52%, #f8f9ff 100%);
   overflow: hidden;
 }
 
-
-/* Decorative circle */
-
 .register-showcase::before {
   content: "";
-
   position: absolute;
-
   width: 430px;
   height: 430px;
-
   border-radius: 50%;
-
   right: -210px;
   top: -170px;
-
   border: 1px solid rgba(49, 91, 143, 0.10);
-
-  box-shadow:
-    0 0 0 45px rgba(49, 91, 143, 0.025),
-    0 0 0 90px rgba(49, 91, 143, 0.02);
+  box-shadow: 0 0 0 45px rgba(49, 91, 143, 0.025), 0 0 0 90px rgba(49, 91, 143, 0.02);
 }
-
-
-/* Decorative square */
 
 .register-showcase::after {
   content: "";
-
   position: absolute;
-
   width: 160px;
   height: 160px;
-
   border-radius: 32px;
-
   right: 50px;
   bottom: -80px;
-
   border: 1px solid rgba(49, 91, 143, 0.08);
-
   transform: rotate(28deg);
 }
-
-
-/* =========================
-   BRAND
-   ========================= */
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 11px;
-
   width: fit-content;
-
   text-decoration: none;
   color: #142b46;
-
   font-size: 21px;
   font-weight: 800;
   letter-spacing: -0.5px;
-
   position: relative;
   z-index: 2;
 }
@@ -172,27 +101,19 @@
 .brand-icon {
   width: 38px;
   height: 38px;
-
   border-radius: 11px;
-
   background: #315b8f;
-
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 3px;
-
-  box-shadow:
-    0 8px 20px rgba(49, 91, 143, 0.20);
+  box-shadow: 0 8px 20px rgba(49, 91, 143, 0.20);
 }
 
 .brand-icon span {
   display: block;
-
   width: 4px;
-
   border-radius: 4px;
-
   background: #ffffff;
 }
 
@@ -208,44 +129,29 @@
   height: 15px;
 }
 
-
-/* =========================
-   PROGRESS SECTION
-   ========================= */
-
 .progress-section {
   position: relative;
   z-index: 2;
-
   margin-top: 95px;
 }
 
 .progress-eyebrow,
 .form-eyebrow {
   display: block;
-
   color: #315b8f;
-
   font-size: 11px;
   font-weight: 800;
-
   letter-spacing: 2px;
-
   margin-bottom: 17px;
 }
 
 .progress-section h1 {
   margin: 0;
-
   max-width: 460px;
-
   color: #142b46;
-
   font-size: clamp(40px, 4vw, 58px);
   line-height: 1.03;
-
   letter-spacing: -2.6px;
-
   font-weight: 800;
 }
 
@@ -255,42 +161,26 @@
 
 .progress-section > p {
   max-width: 430px;
-
   margin: 23px 0 0;
-
   color: #64748b;
-
   font-size: 15px;
   line-height: 1.8;
 }
 
-
-/* =========================
-   STEPS
-   ========================= */
-
 .steps {
   display: flex;
   flex-direction: column;
-
   gap: 19px;
-
   margin-top: 42px;
-
   max-width: 390px;
 }
 
 .step {
   display: flex;
   align-items: center;
-
   gap: 14px;
-
   opacity: 0.52;
-
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .step.active {
@@ -300,93 +190,58 @@
 .step-number {
   width: 38px;
   height: 38px;
-
   flex: 0 0 38px;
-
   border-radius: 11px;
-
   background: rgba(49, 91, 143, 0.08);
-
   border: 1px solid rgba(49, 91, 143, 0.08);
-
   color: #315b8f;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 11px;
   font-weight: 800;
 }
 
 .step.active .step-number {
   background: #315b8f;
-
   border-color: #315b8f;
-
   color: #ffffff;
-
-  box-shadow:
-    0 8px 20px rgba(49, 91, 143, 0.18);
+  box-shadow: 0 8px 20px rgba(49, 91, 143, 0.18);
 }
 
 .step-content {
   display: flex;
   flex-direction: column;
-
   gap: 3px;
 }
 
 .step-content strong {
   color: #1d3f68;
-
   font-size: 13px;
   font-weight: 700;
 }
 
 .step-content span {
   color: #718096;
-
   font-size: 11px;
 }
 
-
-/* =========================
-   SHOWCASE FOOTER
-   ========================= */
-
 .showcase-footer {
   display: flex;
-
   justify-content: space-between;
-
   color: #8290a5;
-
   font-size: 11px;
-
   position: relative;
   z-index: 2;
 }
 
-
-/* =========================
-   RIGHT FORM SECTION
-   ========================= */
-
 .register-form-section {
   background: rgba(255, 255, 255, 0.84);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 45px 60px;
 }
-
-
-/* =========================
-   REGISTER CARD
-   ========================= */
 
 .register-card {
   width: min(440px, 100%);
@@ -394,19 +249,11 @@
 
 .mobile-brand {
   display: none;
-
   color: #315b8f;
-
   font-size: 20px;
   font-weight: 800;
-
   margin-bottom: 30px;
 }
-
-
-/* =========================
-   HEADING
-   ========================= */
 
 .register-heading {
   margin-bottom: 27px;
@@ -414,49 +261,30 @@
 
 .register-heading h2 {
   margin: 0;
-
   color: #142b46;
-
   font-size: 31px;
   line-height: 1.15;
-
   letter-spacing: -1.2px;
-
   font-weight: 800;
 }
 
 .register-heading p {
   margin: 9px 0 0;
-
   color: #718096;
-
   font-size: 14px;
   line-height: 1.6;
 }
 
-
-/* =========================
-   ERROR MESSAGE
-   ========================= */
-
 .error-message {
   display: flex;
   align-items: center;
-
   gap: 10px;
-
   margin-bottom: 19px;
-
   padding: 11px 14px;
-
   border-radius: 12px;
-
   background: rgba(190, 40, 40, 0.06);
-
   border: 1px solid rgba(190, 40, 40, 0.12);
-
   color: #a62f2f;
-
   font-size: 12px;
   line-height: 1.4;
 }
@@ -464,59 +292,38 @@
 .error-icon {
   width: 20px;
   height: 20px;
-
   flex: 0 0 20px;
-
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #a62f2f;
-
   color: #ffffff;
-
   font-size: 12px;
   font-weight: 800;
 }
 
-
-/* =========================
-   FORM
-   ========================= */
-
 form {
   display: flex;
   flex-direction: column;
-
   gap: 15px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-
   gap: 7px;
 }
 
 .form-group label {
   color: #263a56;
-
   font-size: 12px;
   font-weight: 700;
 }
 
-
-/* =========================
-   INPUT
-   ========================= */
-
 .input-wrapper {
   height: 49px;
-
   position: relative;
-
   display: flex;
   align-items: center;
 }
@@ -524,27 +331,15 @@ form {
 .input-wrapper input {
   width: 100%;
   height: 100%;
-
   box-sizing: border-box;
-
   border: 1px solid #dce4f0;
-
   border-radius: 12px;
-
   background: #ffffff;
-
   padding: 0 47px;
-
   color: #17253d;
-
   font-size: 13px;
-
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .input-wrapper input::placeholder {
@@ -557,34 +352,20 @@ form {
 
 .input-wrapper input:focus {
   border-color: #315b8f;
-
   background: #ffffff;
-
-  box-shadow:
-    0 0 0 4px rgba(49, 91, 143, 0.08);
+  box-shadow: 0 0 0 4px rgba(49, 91, 143, 0.08);
 }
-
-
-/* =========================
-   INPUT ICON
-   ========================= */
 
 .input-icon {
   position: absolute;
-
   left: 16px;
-
   width: 18px;
   height: 18px;
-
   color: #8796aa;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 2;
-
   pointer-events: none;
 }
 
@@ -593,22 +374,14 @@ form {
   height: 100%;
 }
 
-
-/* =========================
-   INPUT ERROR
-   ========================= */
-
 .input-wrapper.input-error input {
   border-color: #c94a4a;
-
   background: rgba(190, 40, 40, 0.015);
 }
 
 .input-wrapper.input-error input:focus {
   border-color: #b83b3b;
-
-  box-shadow:
-    0 0 0 4px rgba(190, 40, 40, 0.07);
+  box-shadow: 0 0 0 4px rgba(190, 40, 40, 0.07);
 }
 
 .input-wrapper.input-error .input-icon {
@@ -617,40 +390,24 @@ form {
 
 .field-error {
   color: #b83b3b;
-
   font-size: 11px;
   line-height: 1.35;
-
   padding-left: 2px;
 }
 
-
-/* =========================
-   PASSWORD TOGGLE
-   ========================= */
-
 .password-toggle {
   position: absolute;
-
   right: 14px;
-
   width: 24px;
   height: 24px;
-
   border: none;
-
   background: transparent;
-
   padding: 0;
-
   color: #8796aa;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-
   transition: color 0.2s ease;
 }
 
@@ -663,52 +420,29 @@ form {
   height: 18px;
 }
 
-
-/* =========================
-   CONTINUE BUTTON
-   ========================= */
-
 .register-submit {
   width: 100%;
   height: 51px;
-
   margin-top: 4px;
-
   border: none;
-
   border-radius: 12px;
-
   background: #315b8f;
-
   color: #ffffff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   gap: 12px;
-
   font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
-
-  box-shadow:
-    0 12px 25px rgba(49, 91, 143, 0.20);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+  box-shadow: 0 12px 25px rgba(49, 91, 143, 0.20);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .register-submit:hover {
   background: #1d3f68;
-
   transform: translateY(-2px);
-
-  box-shadow:
-    0 15px 30px rgba(49, 91, 143, 0.25);
+  box-shadow: 0 15px 30px rgba(49, 91, 143, 0.25);
 }
 
 .register-submit:active {
@@ -718,40 +452,26 @@ form {
 .submit-arrow {
   font-size: 19px;
   line-height: 1;
-
-  transition:
-    transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .register-submit:hover .submit-arrow {
   transform: translateX(4px);
 }
 
-
-/* =========================
-   LOGIN LINK
-   ========================= */
-
 .login-link {
   display: flex;
-
   justify-content: center;
   align-items: center;
-
   gap: 5px;
-
   margin-top: 20px;
-
   color: #718096;
-
   font-size: 12px;
 }
 
 .login-link a {
   color: #315b8f;
-
   font-weight: 700;
-
   text-decoration: none;
 }
 
@@ -759,39 +479,22 @@ form {
   color: #1d3f68;
 }
 
-
-/* =========================
-   SECURITY NOTE
-   ========================= */
-
 .security-note {
   display: flex;
-
   justify-content: center;
   align-items: center;
-
   gap: 6px;
-
   margin-top: 20px;
-
   color: #9aa7b8;
-
   font-size: 10px;
 }
 
 .lock-icon {
   color: #315b8f;
-
   font-size: 15px;
 }
 
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-
 @media (max-width: 1050px) {
-
   .register-container {
     grid-template-columns: 0.82fr 1.18fr;
   }
@@ -809,19 +512,15 @@ form {
   .progress-section {
     margin-top: 70px;
   }
-
 }
 
-
 @media (max-width: 900px) {
-
   .register-page {
     padding: 16px;
   }
 
   .register-container {
     grid-template-columns: 1fr;
-
     min-height: calc(100vh - 32px);
   }
 
@@ -831,36 +530,28 @@ form {
 
   .register-form-section {
     min-height: calc(100vh - 32px);
-
     padding: 45px 35px;
   }
 
   .mobile-brand {
     display: block;
   }
-
 }
 
-
 @media (max-width: 520px) {
-
   .register-page {
     padding: 0;
   }
 
   .register-container {
     min-height: 100vh;
-
     border-radius: 0;
-
     border: none;
-
     box-shadow: none;
   }
 
   .register-form-section {
     min-height: 100vh;
-
     padding: 30px 22px;
   }
 
@@ -880,5 +571,4 @@ form {
   .login-link {
     flex-wrap: wrap;
   }
-
 }

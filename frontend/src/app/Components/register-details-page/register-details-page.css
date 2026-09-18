@@ -1,15 +1,6 @@
-/* =========================================================
-   CIVICSYNC REGISTER DETAILS PAGE
-   SAME DESIGN SYSTEM AS REGISTER ROLE PAGE
-   ========================================================= */
-
 :host {
   display: block;
 }
-
-/* =========================
-   PAGE
-   ========================= */
 
 .register-page {
   min-height: 100vh;
@@ -20,10 +11,6 @@
   overflow: hidden;
   padding: 24px;
 }
-
-/* =========================
-   BACKGROUND SHAPES
-   ========================= */
 
 .background-shape {
   position: fixed;
@@ -48,10 +35,6 @@
   background: rgba(203, 219, 245, 0.45);
 }
 
-/* =========================
-   MAIN CONTAINER
-   ========================= */
-
 .register-container {
   width: min(1240px, 100%);
   min-height: calc(100vh - 48px);
@@ -69,23 +52,13 @@
   z-index: 1;
 }
 
-/* =========================
-   LEFT SHOWCASE
-   ========================= */
-
 .register-showcase {
   position: relative;
   padding: 54px 55px 34px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background:
-    linear-gradient(
-      145deg,
-      #e5eeff 0%,
-      #eff4ff 52%,
-      #f8f9ff 100%
-    );
+  background: linear-gradient(145deg, #e5eeff 0%, #eff4ff 52%, #f8f9ff 100%);
   overflow: hidden;
 }
 
@@ -115,10 +88,6 @@
   transform: rotate(28deg);
 }
 
-/* =========================
-   BRAND
-   ========================= */
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -142,8 +111,7 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  box-shadow:
-    0 8px 20px rgba(49, 91, 143, 0.20);
+  box-shadow: 0 8px 20px rgba(49, 91, 143, 0.20);
 }
 
 .brand-icon span {
@@ -164,10 +132,6 @@
 .brand-icon span:nth-child(3) {
   height: 15px;
 }
-
-/* =========================
-   PROGRESS
-   ========================= */
 
 .progress-section {
   position: relative;
@@ -206,10 +170,6 @@
   font-size: 15px;
   line-height: 1.8;
 }
-
-/* =========================
-   STEPS
-   ========================= */
 
 .steps {
   display: flex;
@@ -250,8 +210,7 @@
   background: #315b8f;
   border-color: #315b8f;
   color: #ffffff;
-  box-shadow:
-    0 8px 20px rgba(49, 91, 143, 0.18);
+  box-shadow: 0 8px 20px rgba(49, 91, 143, 0.18);
 }
 
 .step.completed .step-number {
@@ -276,10 +235,6 @@
   font-size: 11px;
 }
 
-/* =========================
-   FOOTER
-   ========================= */
-
 .showcase-footer {
   display: flex;
   margin-top: 45px;
@@ -289,10 +244,6 @@
   position: relative;
   z-index: 2;
 }
-
-/* =========================
-   RIGHT SECTION
-   ========================= */
 
 .register-form-section {
   background: rgba(255, 255, 255, 0.84);
@@ -314,10 +265,6 @@
   margin-bottom: 30px;
 }
 
-/* =========================
-   HEADING
-   ========================= */
-
 .register-heading {
   margin-bottom: 25px;
 }
@@ -337,10 +284,6 @@
   font-size: 14px;
   line-height: 1.6;
 }
-
-/* =========================
-   ERROR
-   ========================= */
 
 .error-message {
   display: flex;
@@ -368,10 +311,6 @@
   font-size: 12px;
   font-weight: 800;
 }
-
-/* =========================================================
-   PAGE 3 ROLE DETAILS
-   ========================================================= */
 
 .role-details {
   width: 100%;
@@ -426,10 +365,6 @@
   font-size: 11px;
 }
 
-/* =========================
-   FIELD
-   ========================= */
-
 .field-group {
   width: 100%;
 }
@@ -441,10 +376,6 @@
   font-size: 11px;
   font-weight: 700;
 }
-
-/* =========================================================
-   CUSTOM SELECT
-   ========================================================= */
 
 .custom-select {
   position: relative;
@@ -488,8 +419,7 @@
 
 .custom-select.invalid .custom-select-trigger {
   border-color: #a62f2f;
-  box-shadow:
-    0 0 0 3px rgba(166, 47, 47, 0.06);
+  box-shadow: 0 0 0 3px rgba(166, 47, 47, 0.06);
 }
 
 .custom-select.disabled .custom-select-trigger,
@@ -498,10 +428,6 @@
   opacity: 0.72;
   background: #f8fafc;
 }
-
-/* =========================
-   SELECT ICON
-   ========================= */
 
 .custom-select .select-icon-box,
 .custom-select .select-icon-box.apartment-icon,
@@ -528,13 +454,8 @@
 }
 
 .custom-select.open .select-icon-box {
-  box-shadow:
-    inset 0 0 0 1px rgba(49, 91, 143, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(49, 91, 143, 0.08);
 }
-
-/* =========================
-   SELECTED UNIT
-   ========================= */
 
 .selected-unit-content {
   min-width: 0;
@@ -568,10 +489,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* =========================
-   SELECTED TYPE BADGE
-   ========================= */
 
 .selected-unit-type,
 .selected-unit-type.apartment-badge,
@@ -609,10 +526,6 @@
   height: 11px;
 }
 
-/* =========================
-   ARROW
-   ========================= */
-
 .select-arrow {
   width: 30px;
   height: 30px;
@@ -641,10 +554,6 @@
   transform: rotate(180deg);
 }
 
-/* =========================================================
-   DROPDOWN MENU
-   ========================================================= */
-
 .custom-select-menu {
   position: absolute;
   top: calc(100% + 8px);
@@ -661,10 +570,6 @@
   animation: dropdownIn 0.16s ease-out;
   box-sizing: border-box;
 }
-
-/* =========================
-   DROPDOWN HEADER
-   ========================= */
 
 .dropdown-header {
   min-height: 47px;
@@ -708,10 +613,6 @@
   box-sizing: border-box;
 }
 
-/* =========================
-   OPTIONS CONTAINER
-   ========================= */
-
 .dropdown-options {
   max-height: 250px;
   overflow-y: auto;
@@ -730,10 +631,6 @@
   background: #d4ddea;
   border-radius: 10px;
 }
-
-/* =========================
-   UNIT OPTION
-   ========================= */
 
 .unit-option,
 .unit-option.apartment-option,
@@ -773,10 +670,6 @@
   border-color: #d6e5f8;
 }
 
-/* =========================
-   OPTION ICON
-   ========================= */
-
 .unit-option-icon,
 .unit-option-icon.apartment-option-icon,
 .unit-option-icon.villa-option-icon {
@@ -813,10 +706,6 @@
   color: #ffffff;
 }
 
-/* =========================
-   OPTION INFO
-   ========================= */
-
 .unit-option-info {
   min-width: 0;
   flex: 1;
@@ -842,10 +731,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* =========================
-   OPTION TYPE BADGE
-   ========================= */
 
 .unit-option-type,
 .unit-option-type.apartment-option-type,
@@ -885,10 +770,6 @@
   border-color: #dce8f9;
 }
 
-/* =========================
-   SELECTED CHECK
-   ========================= */
-
 .unit-option-check {
   width: 21px;
   height: 21px;
@@ -906,10 +787,6 @@
   height: 12px;
 }
 
-/* =========================
-   FIELD ERROR
-   ========================= */
-
 .field-error {
   display: block;
   margin-top: 7px;
@@ -917,10 +794,6 @@
   font-size: 9px;
   line-height: 1.4;
 }
-
-/* =========================
-   SPECIALIZATIONS
-   ========================= */
 
 .specialization-grid {
   display: grid;
@@ -956,16 +829,14 @@
   border-color: #c2d1e4;
   background: #fcfdff;
   transform: translateY(-1px);
-  box-shadow:
-    0 8px 20px rgba(29, 63, 104, 0.05);
+  box-shadow: 0 8px 20px rgba(29, 63, 104, 0.05);
 }
 
 .specialization-card.selected {
   border-color: #315b8f;
   background: rgba(49, 91, 143, 0.035);
   color: #315b8f;
-  box-shadow:
-    0 0 0 3px rgba(49, 91, 143, 0.07);
+  box-shadow: 0 0 0 3px rgba(49, 91, 143, 0.07);
 }
 
 .specialization-icon {
@@ -991,10 +862,6 @@
   width: 16px;
   height: 16px;
 }
-
-/* =========================
-   SECURITY
-   ========================= */
 
 .security-profile {
   padding: 15px;
@@ -1041,11 +908,6 @@
   line-height: 1.5;
 }
 
-/* =========================
-   CREATE ACCOUNT
-   SAME STYLE AS PAGE 2
-   ========================= */
-
 .register-submit {
   width: 100%;
   height: 51px;
@@ -1062,8 +924,7 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow:
-    0 12px 25px rgba(49, 91, 143, 0.20);
+  box-shadow: 0 12px 25px rgba(49, 91, 143, 0.20);
   transition:
     transform 0.2s ease,
     background 0.2s ease,
@@ -1073,8 +934,7 @@
 .register-submit:hover:not(:disabled) {
   background: #1d3f68;
   transform: translateY(-2px);
-  box-shadow:
-    0 15px 30px rgba(49, 91, 143, 0.25);
+  box-shadow: 0 15px 30px rgba(49, 91, 143, 0.25);
 }
 
 .register-submit.disabled,
@@ -1087,17 +947,12 @@
 .submit-arrow {
   font-size: 19px;
   line-height: 1;
-  transition:
-    transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .register-submit:hover:not(:disabled) .submit-arrow {
   transform: translateX(4px);
 }
-
-/* =========================
-   LOADER
-   ========================= */
 
 .button-loader {
   width: 13px;
@@ -1107,11 +962,6 @@
   border-radius: 50%;
   animation: buttonSpin 0.7s linear infinite;
 }
-
-/* =========================
-   BACK BUTTON
-   SAME STYLE AS PAGE 2
-   ========================= */
 
 .back-button {
   width: 100%;
@@ -1127,8 +977,7 @@
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .back-button:hover:not(:disabled) {
@@ -1142,18 +991,12 @@
 
 .back-arrow {
   font-size: 16px;
-  transition:
-    transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .back-button:hover:not(:disabled) .back-arrow {
   transform: translateX(-3px);
 }
-
-/* =========================
-   LOGIN
-   SAME STYLE AS PAGE 2
-   ========================= */
 
 .login-link {
   display: flex;
@@ -1175,10 +1018,6 @@
   color: #1d3f68;
 }
 
-/* =========================
-   SECURITY NOTE
-   ========================= */
-
 .security-note {
   display: flex;
   justify-content: center;
@@ -1193,10 +1032,6 @@
   color: #315b8f;
   font-size: 15px;
 }
-
-/* =========================
-   ANIMATIONS
-   ========================= */
 
 @keyframes dropdownIn {
   from {
@@ -1215,11 +1050,6 @@
     transform: rotate(360deg);
   }
 }
-
-/* =========================
-   RESPONSIVE
-   SAME AS PAGE 2
-   ========================= */
 
 @media (max-width: 1050px) {
   .register-container {
@@ -1290,7 +1120,6 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* KEEP APARTMENT / VILLA VISIBLE */
   .selected-unit-type,
   .selected-unit-type.apartment-badge,
   .selected-unit-type.villa-badge {

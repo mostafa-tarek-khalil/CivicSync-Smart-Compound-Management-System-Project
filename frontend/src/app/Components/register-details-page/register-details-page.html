@@ -1,1117 +1,365 @@
 <div class="register-page">
-
-  <!-- ================= BACKGROUND DECORATIONS ================= -->
-
   <div class="background-shape shape-one"></div>
   <div class="background-shape shape-two"></div>
 
   <div class="register-container">
-
-
-<!-- ================= LEFT SIDE ================= -->
-
-<section class="register-showcase">
-
-  <div class="showcase-content">
-
-    <!-- Brand -->
-
-    <a routerLink="/" class="brand">
-
-      <div class="brand-icon">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-
-      <span>CivicSync</span>
-
-    </a>
-
-
-    <!-- Progress -->
-
-    <div class="progress-section">
-
-      <span class="progress-eyebrow">
-        CREATE YOUR ACCOUNT
-      </span>
-
-      <h1>
-        Complete your
-        <span>profile.</span>
-      </h1>
-
-      <p>
-        Add the details required for your selected role
-        to finish creating your CivicSync account.
-      </p>
-
-
-      <!-- Steps -->
-
-      <div class="steps">
-
-        <!-- Step 1 -->
-
-        <div class="step completed">
-
-          <div class="step-number">
-            ✓
+    <section class="register-showcase">
+      <div class="showcase-content">
+        <a routerLink="/" class="brand">
+          <div class="brand-icon">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
-
-          <div class="step-content">
-
-            <strong>
-              Basic information
-            </strong>
-
-            <span>
-              Your account information is ready.
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- Step 2 -->
-
-        <div class="step completed">
-
-          <div class="step-number">
-            ✓
-          </div>
-
-          <div class="step-content">
-
-            <strong>
-              Choose your role
-            </strong>
-
-            <span>
-              Your role has been selected.
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- Step 3 -->
-
-        <div class="step active">
-
-          <div class="step-number">
-            03
-          </div>
-
-          <div class="step-content">
-
-            <strong>
-              Complete profile
-            </strong>
-
-            <span>
-              Add the details for your role.
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- Footer -->
-
-  <div class="showcase-footer">
-
-    <span>
-      © 2026 CivicSync
-    </span>
-
-    <span>
-      Smart Compound Management
-    </span>
-
-  </div>
-
-</section>
-
-
-<!-- ================= RIGHT SIDE ================= -->
-
-<section class="register-form-section">
-
-  <div class="register-card">
-
-    <!-- Mobile Brand -->
-
-    <div class="mobile-brand">
-      CivicSync
-    </div>
-
-
-    <!-- Heading -->
-
-    <div class="register-heading">
-
-      <span class="form-eyebrow">
-        STEP 03 OF 03
-      </span>
-
-      <h2>
-        Complete your account
-      </h2>
-
-      <p>
-        Add the final details to complete your
-        CivicSync registration.
-      </p>
-
-    </div>
-
-
-    <!-- Error -->
-
-    @if (errorMessage) {
-
-      <div class="error-message">
-
-        <span class="error-icon">
-          !
-        </span>
-
-        <span>
-          {{ errorMessage }}
-        </span>
-
-      </div>
-
-    }
-
-
-    <!-- =================================================
-         RESIDENT
-         ================================================= -->
-
-    @if (role === 'RESIDENT') {
-
-      <div class="role-details">
-
-        <div class="details-intro">
-
-          <div class="details-icon resident-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M3.5 10.5L12 3.5L20.5 10.5"></path>
-              <path d="M5.5 9.5V20H18.5V9.5"></path>
-              <path d="M9.5 20V14H14.5V20"></path>
-            </svg>
-
-          </div>
-
-          <div>
-
-            <strong>
-              Your residence
-            </strong>
-
-            <span>
-              Select the unit you live in.
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- ================= CUSTOM UNIT DROPDOWN ================= -->
-
-        <div class="field-group">
-
-          <label for="unitDropdownButton">
-            Unit
-          </label>
-
-
-          <div
-            class="custom-select"
-            [class.open]="unitDropdownOpen"
-            [class.invalid]="unitIdError"
-            [class.disabled]="
-              loading ||
-              loadingUnits ||
-              availableUnits.length === 0
-            "
-          >
-
-            <!-- TRIGGER -->
-
-            <button
-              id="unitDropdownButton"
-              type="button"
-              class="custom-select-trigger"
-              [disabled]="
-                loading ||
-                loadingUnits ||
-                availableUnits.length === 0
-              "
-              (click)="toggleUnitDropdown()"
-              aria-haspopup="listbox"
-              [attr.aria-expanded]="unitDropdownOpen"
-            >
-
-              <!-- TYPE ICON -->
-
-              <span
-                class="select-icon-box"
-                [class.apartment-icon]="
-                  selectedUnit?.type === 'APARTMENT'
-                "
-                [class.villa-icon]="
-                  selectedUnit?.type === 'VILLA'
-                "
-              >
-
-                @if (selectedUnit?.type === 'VILLA') {
-
-                  <!-- VILLA ICON -->
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M3 10.5L12 3l9 7.5"></path>
-                    <path d="M5 9.5V21h14V9.5"></path>
-                    <path d="M9 21v-6h6v6"></path>
-                    <path d="M7 13h2"></path>
-                    <path d="M15 13h2"></path>
-                  </svg>
-
-                } @else {
-
-                  <!-- APARTMENT ICON -->
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.9"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
-                    <path d="M2 21h20"></path>
-                    <path d="M8 7h2"></path>
-                    <path d="M14 7h2"></path>
-                    <path d="M8 11h2"></path>
-                    <path d="M14 11h2"></path>
-                    <path d="M8 15h2"></path>
-                    <path d="M14 15h2"></path>
-                    <path d="M10 21v-3h4v3"></path>
-                  </svg>
-
-                }
-
-              </span>
-
-
-              <!-- SELECTED UNIT -->
-
-              <span class="selected-unit-content">
-
-                @if (loadingUnits) {
-
-                  <span class="selected-unit-main">
-                    Loading available units...
-                  </span>
-
-                  <span class="selected-unit-sub">
-                    Please wait a moment
-                  </span>
-
-                } @else if (selectedUnit) {
-
-                  <span class="selected-unit-main">
-                    Unit {{ selectedUnit.unitNumber }}
-                  </span>
-
-                  <span class="selected-unit-sub">
-                    Building
-                    {{ selectedUnit.buildingId.buildingNumber }}
-                    · Floor
-                    {{ selectedUnit.floor }}
-                  </span>
-
-                } @else {
-
-                  <span class="selected-unit-main placeholder">
-                    Select your unit
-                  </span>
-
-                  <span class="selected-unit-sub">
-                    Choose from available compound units
-                  </span>
-
-                }
-
-              </span>
-
-
-              <!-- TYPE BADGE -->
-
-              @if (selectedUnit) {
-
-                <span
-                  class="selected-unit-type"
-                  [class.apartment-badge]="
-                    selectedUnit.type === 'APARTMENT'
-                  "
-                  [class.villa-badge]="
-                    selectedUnit.type === 'VILLA'
-                  "
-                >
-
-                  @if (selectedUnit.type === 'APARTMENT') {
-
-                    <span class="badge-mini-icon">
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
-                        <path d="M2 21h20"></path>
-                      </svg>
-
-                    </span>
-
-                    Apartment
-
-                  } @else {
-
-                    <span class="badge-mini-icon">
-
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M3 10.5L12 3l9 7.5"></path>
-                        <path d="M5 9.5V21h14V9.5"></path>
-                      </svg>
-
-                    </span>
-
-                    Villa
-
-                  }
-
-                </span>
-
-              }
-
-
-              <!-- ARROW -->
-
-              <span class="select-arrow">
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-
-              </span>
-
-            </button>
-
-
-            <!-- DROPDOWN MENU -->
-
-            @if (
-              unitDropdownOpen &&
-              !loadingUnits &&
-              availableUnits.length > 0
-            ) {
-
-              <div
-                class="custom-select-menu"
-                role="listbox"
-              >
-
-                <!-- HEADER -->
-
-                <div class="dropdown-header">
-
-                  <div>
-
-                    <strong>
-                      Available units
-                    </strong>
-
-                    <span>
-                      Select the unit assigned to you
-                    </span>
-
-                  </div>
-
-                  <span class="available-count">
-                    {{ availableUnits.length }}
-                  </span>
-
-                </div>
-
-
-                <!-- OPTIONS -->
-
-                <div class="dropdown-options">
-
-                  @for (
-                    unit of availableUnits;
-                    track unit._id
-                  ) {
-
-                    <button
-                      type="button"
-                      class="unit-option"
-                      [class.apartment-option]="
-                        unit.type === 'APARTMENT'
-                      "
-                      [class.villa-option]="
-                        unit.type === 'VILLA'
-                      "
-                      [class.selected]="
-                        unitId === unit._id
-                      "
-                      (click)="selectUnit(unit)"
-                      role="option"
-                      [attr.aria-selected]="
-                        unitId === unit._id
-                      "
-                    >
-
-                      <!-- OPTION ICON -->
-
-                      <span
-                        class="unit-option-icon"
-                        [class.apartment-option-icon]="
-                          unit.type === 'APARTMENT'
-                        "
-                        [class.villa-option-icon]="
-                          unit.type === 'VILLA'
-                        "
-                      >
-
-                        @if (unit.type === 'VILLA') {
-
-                          <!-- VILLA -->
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.9"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path d="M3 10.5L12 3l9 7.5"></path>
-                            <path d="M5 9.5V21h14V9.5"></path>
-                            <path d="M9 21v-6h6v6"></path>
-                            <path d="M7 13h2"></path>
-                            <path d="M15 13h2"></path>
-                          </svg>
-
-                        } @else {
-
-                          <!-- APARTMENT -->
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.9"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
-                            <path d="M2 21h20"></path>
-                            <path d="M8 7h2"></path>
-                            <path d="M14 7h2"></path>
-                            <path d="M8 11h2"></path>
-                            <path d="M14 11h2"></path>
-                            <path d="M8 15h2"></path>
-                            <path d="M14 15h2"></path>
-                            <path d="M10 21v-3h4v3"></path>
-                          </svg>
-
-                        }
-
-                      </span>
-
-
-                      <!-- OPTION INFO -->
-
-                      <span class="unit-option-info">
-
-                        <span class="unit-option-title">
-                          Unit {{ unit.unitNumber }}
-                        </span>
-
-                        <span class="unit-option-meta">
-                          Building
-                          {{ unit.buildingId.buildingNumber }}
-                          · Floor
-                          {{ unit.floor }}
-                        </span>
-
-                      </span>
-
-
-                      <!-- TYPE BADGE -->
-
-                      <span
-                        class="unit-option-type"
-                        [class.apartment-option-type]="
-                          unit.type === 'APARTMENT'
-                        "
-                        [class.villa-option-type]="
-                          unit.type === 'VILLA'
-                        "
-                      >
-
-                        @if (unit.type === 'APARTMENT') {
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
-                            <path d="M2 21h20"></path>
-                          </svg>
-
-                          Apartment
-
-                        } @else {
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <path d="M3 10.5L12 3l9 7.5"></path>
-                            <path d="M5 9.5V21h14V9.5"></path>
-                          </svg>
-
-                          Villa
-
-                        }
-
-                      </span>
-
-
-                      <!-- SELECTED CHECK -->
-
-                      @if (unitId === unit._id) {
-
-                        <span class="unit-option-check">
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2.8"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-
-                        </span>
-
-                      }
-
-                    </button>
-
-                  }
-
-                </div>
-
+          <span>CivicSync</span>
+        </a>
+
+        <div class="progress-section">
+          <span class="progress-eyebrow">CREATE YOUR ACCOUNT</span>
+          <h1>Complete your <span>profile.</span></h1>
+          <p>Add the details required for your selected role to finish creating your CivicSync account</p>
+
+          <div class="steps">
+            <div class="step completed">
+              <div class="step-number">✓</div>
+              <div class="step-content">
+                <strong>Basic information</strong>
+                <span>Your account information is ready.</span>
               </div>
+            </div>
 
-            }
+            <div class="step completed">
+              <div class="step-number">✓</div>
+              <div class="step-content">
+                <strong>Choose your role</strong>
+                <span>Your role has been selected.</span>
+              </div>
+            </div>
 
+            <div class="step active">
+              <div class="step-number">03</div>
+              <div class="step-content">
+                <strong>Complete profile</strong>
+                <span>Add the details for your role.</span>
+              </div>
+            </div>
           </div>
-
-
-          <!-- NO UNITS -->
-
-          @if (
-            !loadingUnits &&
-            availableUnits.length === 0 &&
-            !errorMessage
-          ) {
-
-            <span class="field-error">
-              No vacant units are currently available.
-            </span>
-
-          }
-
-
-          <!-- UNIT ERROR -->
-
-          @if (unitIdError) {
-
-            <span class="field-error">
-              {{ unitIdError }}
-            </span>
-
-          }
-
         </div>
-
       </div>
 
-    }
+      <div class="showcase-footer">
+        <span>© 2026 CivicSync</span>
+        <span>Smart Compound Management</span>
+      </div>
+    </section>
 
+    <section class="register-form-section">
+      <div class="register-card">
+        <div class="mobile-brand">CivicSync</div>
 
-    <!-- =================================================
-         TECHNICIAN
-         ================================================= -->
-
-    @if (role === 'TECHNICIAN') {
-
-      <div class="role-details">
-
-        <div class="details-intro">
-
-          <div class="details-icon technician-icon">
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.1 2.1-2.8-.7-.7-2.8 2.1-2.1z"></path>
-            </svg>
-
-          </div>
-
-          <div>
-
-            <strong>
-              Your specialization
-            </strong>
-
-            <span>
-              Select the services you can provide.
-            </span>
-
-          </div>
-
+        <div class="register-heading">
+          <span class="form-eyebrow">STEP 03 OF 03</span>
+          <h2>Complete your account</h2>
+          <p>Add the final details to complete your CivicSync registration.</p>
         </div>
 
-
-        <div class="specialization-grid">
-
-          <!-- Plumbing -->
-
-          <button
-            type="button"
-            class="specialization-card"
-            [class.selected]="
-              isSpecializationSelected('PLUMBING')
-            "
-            (click)="
-              selectSpecialization('PLUMBING')
-            "
-          >
-
-            <span class="specialization-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M7 3v8"></path>
-                <path d="M5 3v8"></path>
-                <path d="M9 3v8"></path>
-                <path d="M7 11v10"></path>
-                <path d="M17 3v18"></path>
-                <path d="M17 3c-2 2-3 4-3 6s1 3 3 3"></path>
-              </svg>
-
-            </span>
-
-            <span>
-              Plumbing
-            </span>
-
-          </button>
-
-
-          <!-- Electricity -->
-
-          <button
-            type="button"
-            class="specialization-card"
-            [class.selected]="
-              isSpecializationSelected('ELECTRICITY')
-            "
-            (click)="
-              selectSpecialization('ELECTRICITY')
-            "
-          >
-
-            <span class="specialization-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-              </svg>
-
-            </span>
-
-            <span>
-              Electricity
-            </span>
-
-          </button>
-
-
-          <!-- Elevator -->
-
-          <button
-            type="button"
-            class="specialization-card"
-            [class.selected]="
-              isSpecializationSelected('ELEVATOR')
-            "
-            (click)="
-              selectSpecialization('ELEVATOR')
-            "
-          >
-
-            <span class="specialization-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect
-                  x="5"
-                  y="3"
-                  width="14"
-                  height="18"
-                  rx="2"
-                ></rect>
-
-                <path d="M9 8l3-3 3 3"></path>
-                <path d="M15 16l-3 3-3-3"></path>
-
-              </svg>
-
-            </span>
-
-            <span>
-              Elevator
-            </span>
-
-          </button>
-
-
-          <!-- AC -->
-
-          <button
-            type="button"
-            class="specialization-card"
-            [class.selected]="
-              isSpecializationSelected('AC')
-            "
-            (click)="
-              selectSpecialization('AC')
-            "
-          >
-
-            <span class="specialization-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect
-                  x="3"
-                  y="6"
-                  width="18"
-                  height="12"
-                  rx="2"
-                ></rect>
-
-                <path d="M7 10h10"></path>
-                <path d="M8 14h.01"></path>
-                <path d="M12 14h.01"></path>
-                <path d="M16 14h.01"></path>
-
-              </svg>
-
-            </span>
-
-            <span>
-              AC
-            </span>
-
-          </button>
-
-
-          <!-- General -->
-
-          <button
-            type="button"
-            class="specialization-card"
-            [class.selected]="
-              isSpecializationSelected('GENERAL')
-            "
-            (click)="
-              selectSpecialization('GENERAL')
-            "
-          >
-
-            <span class="specialization-icon">
-
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                ></circle>
-
-                <path d="M12 8v8"></path>
-                <path d="M8 12h8"></path>
-
-              </svg>
-
-            </span>
-
-            <span>
-              General
-            </span>
-
-          </button>
-
-        </div>
-
-
-        @if (specializationsError) {
-
-          <span class="field-error">
-            {{ specializationsError }}
-          </span>
-
+        @if (errorMessage) {
+          <div class="error-message">
+            <span class="error-icon">!</span>
+            <span>{{ errorMessage }}</span>
+          </div>
         }
 
-      </div>
+        @if (role === 'RESIDENT') {
+          <div class="role-details">
+            <div class="details-intro">
+              <div class="details-icon resident-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3.5 10.5L12 3.5L20.5 10.5"></path>
+                  <path d="M5.5 9.5V20H18.5V9.5"></path>
+                  <path d="M9.5 20V14H14.5V20"></path>
+                </svg>
+              </div>
+              <div>
+                <strong>Your residence</strong>
+                <span>Select the unit you live in.</span>
+              </div>
+            </div>
 
-    }
+            <div class="field-group">
+              <label for="unitDropdownButton">Unit</label>
 
+              <div class="custom-select" [class.open]="unitDropdownOpen" [class.invalid]="unitIdError" [class.disabled]="loading || loadingUnits || availableUnits.length === 0">
+                <button id="unitDropdownButton" type="button" class="custom-select-trigger" [disabled]="loading || loadingUnits || availableUnits.length === 0" (click)="toggleUnitDropdown()" aria-haspopup="listbox" [attr.aria-expanded]="unitDropdownOpen">
+                  <span class="select-icon-box" [class.apartment-icon]="selectedUnit?.type === 'APARTMENT'" [class.villa-icon]="selectedUnit?.type === 'VILLA'">
+                    @if (selectedUnit?.type === 'VILLA') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 10.5L12 3l9 7.5"></path>
+                        <path d="M5 9.5V21h14V9.5"></path>
+                        <path d="M9 21v-6h6v6"></path>
+                        <path d="M7 13h2"></path>
+                        <path d="M15 13h2"></path>
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
+                        <path d="M2 21h20"></path>
+                        <path d="M8 7h2"></path>
+                        <path d="M14 7h2"></path>
+                        <path d="M8 11h2"></path>
+                        <path d="M14 11h2"></path>
+                        <path d="M8 15h2"></path>
+                        <path d="M14 15h2"></path>
+                        <path d="M10 21v-3h4v3"></path>
+                      </svg>
+                    }
+                  </span>
 
-    <!-- =================================================
-         SECURITY
-         ================================================= -->
+                  <span class="selected-unit-content">
+                    @if (loadingUnits) {
+                      <span class="selected-unit-main">Loading available units...</span>
+                      <span class="selected-unit-sub">Please wait a moment</span>
+                    } @else if (selectedUnit) {
+                      <span class="selected-unit-main">Unit {{ selectedUnit.unitNumber }}</span>
+                      <span class="selected-unit-sub">Building {{ selectedUnit.buildingId.buildingNumber }} · Floor {{ selectedUnit.floor }}</span>
+                    } @else {
+                      <span class="selected-unit-main placeholder">Select your unit</span>
+                      <span class="selected-unit-sub">Choose from available compound units</span>
+                    }
+                  </span>
 
-    @if (role === 'SECURITY') {
+                  @if (selectedUnit) {
+                    <span class="selected-unit-type" [class.apartment-badge]="selectedUnit.type === 'APARTMENT'" [class.villa-badge]="selectedUnit.type === 'VILLA'">
+                      @if (selectedUnit.type === 'APARTMENT') {
+                        <span class="badge-mini-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
+                            <path d="M2 21h20"></path>
+                          </svg>
+                        </span>
+                        Apartment
+                      } @else {
+                        <span class="badge-mini-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10.5L12 3l9 7.5"></path>
+                            <path d="M5 9.5V21h14V9.5"></path>
+                          </svg>
+                        </span>
+                        Villa
+                      }
+                    </span>
+                  }
 
-      <div class="security-profile">
+                  <span class="select-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </button>
 
-        <div class="security-icon">
+                @if (unitDropdownOpen && !loadingUnits && availableUnits.length > 0) {
+                  <div class="custom-select-menu" role="listbox">
+                    <div class="dropdown-header">
+                      <div>
+                        <strong>Available units</strong>
+                        <span>Select the unit assigned to you</span>
+                      </div>
+                      <span class="available-count">{{ availableUnits.length }}</span>
+                    </div>
 
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"></path>
+                    <div class="dropdown-options">
+                      @for (unit of availableUnits; track unit._id) {
+                        <button type="button" class="unit-option" [class.apartment-option]="unit.type === 'APARTMENT'" [class.villa-option]="unit.type === 'VILLA'" [class.selected]="unitId === unit._id" (click)="selectUnit(unit)" role="option" [attr.aria-selected]="unitId === unit._id">
+                          <span class="unit-option-icon" [class.apartment-option-icon]="unit.type === 'APARTMENT'" [class.villa-option-icon]="unit.type === 'VILLA'">
+                            @if (unit.type === 'VILLA') {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 10.5L12 3l9 7.5"></path>
+                                <path d="M5 9.5V21h14V9.5"></path>
+                                <path d="M9 21v-6h6v6"></path>
+                                <path d="M7 13h2"></path>
+                                <path d="M15 13h2"></path>
+                              </svg>
+                            } @else {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
+                                <path d="M2 21h20"></path>
+                                <path d="M8 7h2"></path>
+                                <path d="M14 7h2"></path>
+                                <path d="M8 11h2"></path>
+                                <path d="M14 11h2"></path>
+                                <path d="M8 15h2"></path>
+                                <path d="M14 15h2"></path>
+                                <path d="M10 21v-3h4v3"></path>
+                              </svg>
+                            }
+                          </span>
 
-            <polyline points="9 12 11 14 15 10"></polyline>
+                          <span class="unit-option-info">
+                            <span class="unit-option-title">Unit {{ unit.unitNumber }}</span>
+                            <span class="unit-option-meta">Building {{ unit.buildingId.buildingNumber }} · Floor {{ unit.floor }}</span>
+                          </span>
 
-          </svg>
+                          <span class="unit-option-type" [class.apartment-option-type]="unit.type === 'APARTMENT'" [class.villa-option-type]="unit.type === 'VILLA'">
+                            @if (unit.type === 'APARTMENT') {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"></path>
+                                <path d="M2 21h20"></path>
+                              </svg>
+                              Apartment
+                            } @else {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 10.5L12 3l9 7.5"></path>
+                                <path d="M5 9.5V21h14V9.5"></path>
+                              </svg>
+                              Villa
+                            }
+                          </span>
 
+                          @if (unitId === unit._id) {
+                            <span class="unit-option-check">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </span>
+                          }
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+
+              @if (!loadingUnits && availableUnits.length === 0 && !errorMessage) {
+                <span class="field-error">No vacant units are currently available.</span>
+              }
+
+              @if (unitIdError) {
+                <span class="field-error">{{ unitIdError }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (role === 'TECHNICIAN') {
+          <div class="role-details">
+            <div class="details-intro">
+              <div class="details-icon technician-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.1 2.1-2.8-.7-.7-2.8 2.1-2.1z"></path>
+                </svg>
+              </div>
+              <div>
+                <strong>Your specialization</strong>
+                <span>Select the services you can provide.</span>
+              </div>
+            </div>
+
+            <div class="specialization-grid">
+              <button type="button" class="specialization-card" [class.selected]="isSpecializationSelected('PLUMBING')" (click)="selectSpecialization('PLUMBING')">
+                <span class="specialization-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 3v8"></path>
+                    <path d="M5 3v8"></path>
+                    <path d="M9 3v8"></path>
+                    <path d="M7 11v10"></path>
+                    <path d="M17 3v18"></path>
+                    <path d="M17 3c-2 2-3 4-3 6s1 3 3 3"></path>
+                  </svg>
+                </span>
+                <span>Plumbing</span>
+              </button>
+
+              <button type="button" class="specialization-card" [class.selected]="isSpecializationSelected('ELECTRICITY')" (click)="selectSpecialization('ELECTRICITY')">
+                <span class="specialization-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                  </svg>
+                </span>
+                <span>Electricity</span>
+              </button>
+
+              <button type="button" class="specialization-card" [class.selected]="isSpecializationSelected('ELEVATOR')" (click)="selectSpecialization('ELEVATOR')">
+                <span class="specialization-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                    <path d="M9 8l3-3 3 3"></path>
+                    <path d="M15 16l-3 3-3-3"></path>
+                  </svg>
+                </span>
+                <span>Elevator</span>
+              </button>
+
+              <button type="button" class="specialization-card" [class.selected]="isSpecializationSelected('AC')" (click)="selectSpecialization('AC')">
+                <span class="specialization-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                    <path d="M7 10h10"></path>
+                    <path d="M8 14h.01"></path>
+                    <path d="M12 14h.01"></path>
+                    <path d="M16 14h.01"></path>
+                  </svg>
+                </span>
+                <span>AC</span>
+              </button>
+
+              <button type="button" class="specialization-card" [class.selected]="isSpecializationSelected('GENERAL')" (click)="selectSpecialization('GENERAL')">
+                <span class="specialization-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 8v8"></path>
+                    <path d="M8 12h8"></path>
+                  </svg>
+                </span>
+                <span>General</span>
+              </button>
+            </div>
+
+            @if (specializationsError) {
+              <span class="field-error">{{ specializationsError }}</span>
+            }
+          </div>
+        }
+
+        @if (role === 'SECURITY') {
+          <div class="security-profile">
+            <div class="security-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <div>
+              <strong>Security account ready</strong>
+              <span>Your account will be available for security operations after approval.</span>
+            </div>
+          </div>
+        }
+
+        <button type="button" class="register-submit" [class.disabled]="loading" [disabled]="loading" (click)="completeRegistration()">
+          @if (loading) {
+            <span class="button-loader"></span>
+            <span>Creating account...</span>
+          } @else {
+            <span>Create account</span>
+            <span class="submit-arrow"> →</span>
+          }
+        </button>
+
+        <button type="button" class="back-button" [disabled]="loading" (click)="goBack()">
+          <span class="back-arrow"> ←</span>
+          <span>Back to role selection</span>
+        </button>
+
+        <div class="login-link">
+          <span>Already have an account?</span>
+          <a routerLink="/login">Sign in</a>
         </div>
 
-        <div>
-
-          <strong>
-            Security account ready
-          </strong>
-
-          <span>
-            Your account will be available for
-            security operations after approval.
-          </span>
-
+        <div class="security-note">
+          <span class="lock-icon">⌁</span>
+          <span>Your information is securely protected.</span>
         </div>
-
       </div>
-
-    }
-
-
-    <!-- =================================================
-         ACTIONS
-         ================================================= -->
-
-    <button
-      type="button"
-      class="register-submit"
-      [class.disabled]="loading"
-      [disabled]="loading"
-      (click)="completeRegistration()"
-    >
-
-      @if (loading) {
-
-        <span class="button-loader"></span>
-
-        <span>
-          Creating account...
-        </span>
-
-      } @else {
-
-        <span>
-          Create account
-        </span>
-
-        <span class="submit-arrow">
-          →
-        </span>
-
-      }
-
-    </button>
-
-
-    <!-- Back -->
-
-    <button
-      type="button"
-      class="back-button"
-      [disabled]="loading"
-      (click)="goBack()"
-    >
-
-      <span class="back-arrow">
-        ←
-      </span>
-
-      <span>
-        Back to role selection
-      </span>
-
-    </button>
-
-
-    <!-- Login -->
-
-    <div class="login-link">
-
-      <span>
-        Already have an account?
-      </span>
-
-      <a routerLink="/login">
-        Sign in
-      </a>
-
-    </div>
-
-
-    <!-- Security -->
-
-    <div class="security-note">
-
-      <span class="lock-icon">
-        ⌁
-      </span>
-
-      <span>
-        Your information is securely protected.
-      </span>
-
-    </div>
-
+    </section>
   </div>
-
-</section>
-
-
-  </div>
-
 </div>

@@ -1,272 +1,115 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient } from '@angular/common/http';
-
 import { Observable, tap } from 'rxjs';
 
 interface LoginResponse {
-
   success: boolean;
-
   message: string;
-
   data: {
-
     token: string;
-
     user: {
-
       id: string;
-
       name: string;
-
       email: string;
-
       role: string;
-
       status: string;
-
       phone?: string;
-
       unitId?: string | null;
-
     };
-
   };
-
 }
 
 interface RegisterResponse {
-
   success: boolean;
-
   message: string;
-
   data: {
-
     id: string;
-
     name: string;
-
     email: string;
-
     role: string;
-
     status: string;
-
   };
-
 }
 
 interface MeResponse {
-
   success: boolean;
-
   message: string;
-
   data: {
-
     id: string;
-
     name: string;
-
     email: string;
-
     phone: string | null;
-
     role: string;
-
     status: string;
-
     profileImage: string | null;
-
     unitId: string | null;
-
     specializations: string[];
-
     rating: number;
-
     totalReviews: number;
-
     lastLoginAt: string | null;
-
   };
-
 }
 
 @Injectable({
-
   providedIn: 'root'
-
 })
-
 export class AuthService {
+  private readonly apiUrl = 'http://localhost:3000/api/auth';
 
-  private readonly apiUrl =
-    'http://localhost:3000/api/auth';
+  constructor(private http: HttpClient) {}
 
-  constructor(
-
-    private http: HttpClient
-
-  ) {}
-
-  // =====================================================
-  // LOGIN
-  // =====================================================
-
-  login(
-
-    email: string,
-
-    password: string
-
-  ): Observable<LoginResponse> {
-
+  login(email: string, password: string): Observable<LoginResponse> {
     return this.http
-
-      .post<LoginResponse>(
-
-        `${this.apiUrl}/login`,
-
-        {
-
-          email,
-
-          password
-
-        }
-
-      )
-
+      .post<LoginResponse>(`${this.apiUrl}/login`, {
+        email,
+        password
+      })
       .pipe(
-
         tap(response => {
-
-          localStorage.setItem(
-
-            'token',
-
-            response.data.token
-
-          );
-
-          localStorage.setItem(
-
-            'user',
-
-            JSON.stringify(
-
-              response.data.user
-
-            )
-
-          );
-
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
         })
-
       );
-
   }
-
-  // =====================================================
-  // REGISTER
-  // =====================================================
 
   register(
-
     data: {
-
       name: string;
-
       phone: string;
-
       email: string;
-
       password: string;
-
       role: 'RESIDENT' | 'TECHNICIAN' | 'SECURITY';
-
       unitId?: string;
-
       specializations?: string[];
-
     }
-
   ): Observable<RegisterResponse> {
-
     return this.http.post<RegisterResponse>(
-
       `${this.apiUrl}/register`,
-
       data
-
     );
-
   }
-
-  // =====================================================
-  // GET CURRENT USER
-  // =====================================================
 
   getMe(): Observable<MeResponse> {
-
     return this.http.get<MeResponse>(
-
       `${this.apiUrl}/me`
-
     );
-
   }
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
 
   logout(): void {
-
     localStorage.removeItem('token');
-
     localStorage.removeItem('user');
-
   }
-
-  // =====================================================
-  // TOKEN
-  // =====================================================
 
   getToken(): string | null {
-
     return localStorage.getItem('token');
-
   }
-
-  // =====================================================
-  // USER
-  // =====================================================
 
   getUser(): LoginResponse['data']['user'] | null {
-
-    const user =
-
-      localStorage.getItem('user');
-
-    return user
-
-      ? JSON.parse(user)
-
-      : null;
-
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
-
-  // =====================================================
-  // LOGIN STATE
-  // =====================================================
 
   isLoggedIn(): boolean {
-
     return !!this.getToken();
-
   }
-
 }
