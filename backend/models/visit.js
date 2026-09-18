@@ -108,6 +108,17 @@ const visitSchema = new mongoose.Schema(
             default: null,
         },
 
+        visitorChatTokenHash: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        visitorChatTokenExpiresAt: {
+            type: Date,
+            default: null,
+        },
+
         approvedAt: {
             type: Date,
             default: null,

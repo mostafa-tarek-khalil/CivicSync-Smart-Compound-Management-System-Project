@@ -8,16 +8,16 @@ const messageSchema = new mongoose.Schema(
             required: true,
         },
 
-        senderId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+        senderType: {
+            type: String,
+            enum: ["USER", "VISITOR"],
             required: true,
         },
 
-        receiverId: {
+        senderId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            default: null,
         },
 
         message: {
@@ -31,6 +31,13 @@ const messageSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+
+        readBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         timestamps: true,
@@ -43,10 +50,12 @@ messageSchema.index({
 });
 
 messageSchema.index({
-    receiverId: 1,
-    isRead: 1,
+    senderId: 1,
+    createdAt: -1,
 });
 
-const Message = mongoose.model("Message", messageSchema);
+messageSchema.index({
+    readBy: 1,
+});
 
-module.exports = Message;
+module.exports = mongoose.model("Message", messageSchema);

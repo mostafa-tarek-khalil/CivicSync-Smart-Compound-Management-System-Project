@@ -1,0 +1,684 @@
+<div class="chat-page">
+
+  <!-- =========================
+       CONVERSATIONS SIDEBAR
+  ========================== -->
+
+  <aside class="conversations-panel">
+
+    <div class="sidebar-header">
+
+      <div class="sidebar-title">
+
+        <h1>Messages</h1>
+
+        <span>
+          {{ conversations.length }}
+          {{ conversations.length === 1 ? 'conversation' : 'conversations' }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- Search -->
+
+    <div class="search-wrapper">
+
+      <span
+        class="search-icon"
+        aria-hidden="true"
+      >
+        ⌕
+      </span>
+
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="filterConversations()"
+        placeholder="Search conversations"
+        autocomplete="off"
+        aria-label="Search conversations"
+      />
+
+      <button
+        *ngIf="searchQuery"
+        type="button"
+        class="clear-search"
+        (click)="searchQuery = ''; filterConversations()"
+        aria-label="Clear search"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- Conversations Loading -->
+
+    <div
+      *ngIf="loadingConversations"
+      class="conversation-loading"
+    >
+
+      <div
+        *ngFor="let item of [1, 2, 3, 4]"
+        class="conversation-skeleton"
+      >
+
+        <div class="skeleton skeleton-avatar"></div>
+
+        <div class="skeleton-content">
+
+          <div class="skeleton skeleton-title"></div>
+
+          <div class="skeleton skeleton-subtitle"></div>
+
+          <div class="skeleton skeleton-message"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- No Conversations -->
+
+    <div
+      *ngIf="
+        !loadingConversations &&
+        conversations.length === 0
+      "
+      class="sidebar-empty"
+    >
+
+      <div class="empty-state-icon">
+        <span>💬</span>
+      </div>
+
+      <h3>
+        No conversations yet
+      </h3>
+
+      <p>
+        Your conversations will appear here
+        when you start chatting.
+      </p>
+
+    </div>
+
+
+    <!-- No Search Results -->
+
+    <div
+      *ngIf="
+        !loadingConversations &&
+        conversations.length > 0 &&
+        filteredConversations.length === 0
+      "
+      class="sidebar-empty search-empty"
+    >
+
+      <div class="empty-state-icon subtle">
+        <span>⌕</span>
+      </div>
+
+      <h3>
+        No results
+      </h3>
+
+      <p>
+        Try a different name or message.
+      </p>
+
+    </div>
+
+
+    <!-- Conversation List -->
+
+    <div
+      class="conversation-list"
+      *ngIf="
+        !loadingConversations &&
+        filteredConversations.length > 0
+      "
+    >
+
+      <button
+        *ngFor="
+          let conversation of filteredConversations
+        "
+        type="button"
+        class="conversation"
+        [class.active]="
+          selectedConversation?._id ===
+          conversation._id
+        "
+        (click)="selectConversation(conversation)"
+      >
+
+        <div class="conversation-avatar">
+
+          {{
+            getConversationAvatar(conversation)
+          }}
+
+        </div>
+
+
+        <div class="conversation-content">
+
+          <div class="conversation-top">
+
+            <div class="conversation-title">
+
+              {{
+                getConversationTitle(conversation)
+              }}
+
+            </div>
+
+
+            <div class="conversation-meta">
+
+              <span
+                *ngIf="conversation.lastMessageAt"
+                class="conversation-time"
+              >
+
+                {{
+                  conversation.lastMessageAt
+                    | date:'shortTime'
+                }}
+
+              </span>
+
+
+              <span
+                *ngIf="
+                  conversation.unreadCount &&
+                  conversation.unreadCount > 0
+                "
+                class="unread-badge"
+              >
+
+                {{
+                  conversation.unreadCount > 99
+                    ? '99+'
+                    : conversation.unreadCount
+                }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="conversation-last-message">
+
+            {{
+              getLastMessagePreview(conversation)
+            }}
+
+          </div>
+
+        </div>
+
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       CHAT AREA
+  ========================== -->
+
+  <main
+    class="chat-panel"
+    [class.mobile-active]="selectedConversation"
+  >
+
+    <!-- No Conversation Selected -->
+
+    <div
+      *ngIf="!selectedConversation"
+      class="no-chat"
+    >
+
+      <div class="no-chat-content">
+
+        <div class="no-chat-icon">
+          <span>✦</span>
+        </div>
+
+        <h2>
+          Your conversations
+        </h2>
+
+        <p>
+          Select a conversation from the left
+          to start chatting.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- Active Conversation -->
+
+    <ng-container
+      *ngIf="selectedConversation"
+    >
+
+      <!-- Header -->
+
+      <header class="chat-header">
+
+        <button
+          type="button"
+          class="mobile-back-button"
+          (click)="backToConversations()"
+          aria-label="Back to conversations"
+        >
+          <span>←</span>
+        </button>
+
+
+        <div class="chat-header-avatar">
+
+          {{
+            getConversationAvatar(
+              selectedConversation
+            )
+          }}
+
+        </div>
+
+
+        <div class="chat-header-info">
+
+          <h2>
+
+            {{
+              getConversationTitle(
+                selectedConversation
+              )
+            }}
+
+          </h2>
+
+          <span>
+
+            {{
+              getConversationSubtitle(
+                selectedConversation
+              )
+            }}
+
+          </span>
+
+        </div>
+
+
+        <!-- Group Members Button -->
+
+        <button
+          *ngIf="
+            selectedConversation.type === 'GROUP'
+          "
+          type="button"
+          class="group-members-button"
+          (click)="toggleGroupMembers()"
+          [attr.aria-expanded]="showGroupMembers"
+          aria-label="View group members"
+        >
+
+          <span
+            class="members-icon"
+            aria-hidden="true"
+          >
+            <span class="person person-back"></span>
+            <span class="person person-front"></span>
+          </span>
+
+          <span class="members-count">
+
+            {{
+              getGroupMembers(
+                selectedConversation
+              ).length
+            }}
+
+          </span>
+
+          <span
+            class="members-chevron"
+            [class.open]="showGroupMembers"
+            aria-hidden="true"
+          ></span>
+
+        </button>
+
+      </header>
+
+
+      <!-- Group Members -->
+
+      <div
+        *ngIf="
+          selectedConversation.type === 'GROUP' &&
+          showGroupMembers
+        "
+        class="group-members-panel"
+      >
+
+        <div class="group-members-header">
+
+          <div>
+
+            <strong>
+              Group members
+            </strong>
+
+            <span>
+              People in this conversation
+            </span>
+
+          </div>
+
+          <span class="group-members-total">
+
+            {{
+              getGroupMembers(
+                selectedConversation
+              ).length
+            }}
+
+          </span>
+
+        </div>
+
+
+        <div class="group-members-list">
+
+          <div
+            *ngFor="
+              let member of getGroupMembers(
+                selectedConversation
+              )
+            "
+            class="group-member"
+          >
+
+            <div class="group-member-avatar">
+
+              {{
+                (member?.name || 'U')
+                  .charAt(0)
+                  .toUpperCase()
+              }}
+
+            </div>
+
+
+            <div class="group-member-info">
+
+              <div class="group-member-name">
+
+                <span>
+                  {{ member?.name || 'User' }}
+                </span>
+
+                <span
+                  *ngIf="
+                    isCurrentUser(member?._id)
+                  "
+                  class="you-label"
+                >
+                  You
+                </span>
+
+              </div>
+
+
+              <div class="group-member-role">
+
+                {{
+                  getGroupMemberRole(member)
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Messages -->
+
+      <section class="messages">
+
+        <!-- Loading -->
+
+        <div
+          *ngIf="loadingMessages"
+          class="messages-loading"
+        >
+
+          <div class="message-skeleton received">
+
+            <div class="skeleton skeleton-message-line large"></div>
+
+            <div class="skeleton skeleton-message-line small"></div>
+
+          </div>
+
+
+          <div class="message-skeleton sent">
+
+            <div class="skeleton skeleton-message-line medium"></div>
+
+          </div>
+
+
+          <div class="message-skeleton received">
+
+            <div class="skeleton skeleton-message-line medium"></div>
+
+            <div class="skeleton skeleton-message-line small"></div>
+
+          </div>
+
+
+          <div class="message-skeleton sent">
+
+            <div class="skeleton skeleton-message-line large"></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Empty -->
+
+        <div
+          *ngIf="
+            !loadingMessages &&
+            messages.length === 0
+          "
+          class="messages-empty"
+        >
+
+          <div class="messages-empty-line"></div>
+
+          <h3>
+            No messages yet
+          </h3>
+
+          <p>
+            Start the conversation by sending
+            a message below.
+          </p>
+
+        </div>
+
+
+        <!-- Messages List -->
+
+        <ng-container
+          *ngIf="
+            !loadingMessages &&
+            messages.length > 0
+          "
+        >
+
+          <div
+            *ngFor="let message of messages"
+            class="message-row"
+            [class.mine]="isMyMessage(message)"
+          >
+
+            <div class="message-bubble">
+
+              <!-- Sender -->
+
+              <div class="sender">
+
+                <span class="sender-name">
+
+                  {{
+                    isMyMessage(message)
+                      ? 'You'
+                      : getMessageSenderName(message)
+                  }}
+
+                </span>
+
+
+                <span
+                  *ngIf="
+                    selectedConversation.type === 'GROUP' &&
+                    !isMyMessage(message) &&
+                    getMessageSenderRole(message)
+                  "
+                  class="sender-role"
+                >
+
+                  {{
+                    getMessageSenderRole(message)
+                  }}
+
+                </span>
+
+              </div>
+
+
+              <!-- Message -->
+
+              <div class="message-text">
+
+                {{ message.message }}
+
+              </div>
+
+
+              <!-- Time -->
+
+              <div class="message-time">
+
+                {{
+                  message.createdAt
+                    | date:'shortTime'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </ng-container>
+
+
+        <div
+          #messagesEnd
+          class="messages-end"
+          aria-hidden="true"
+        ></div>
+
+      </section>
+
+
+      <!-- Message Input -->
+
+      <form
+        class="message-input"
+        (ngSubmit)="sendMessage()"
+      >
+
+        <div class="input-wrapper">
+
+          <textarea
+            [(ngModel)]="newMessage"
+            name="message"
+            rows="1"
+            maxlength="2000"
+            placeholder="Write a message..."
+            autocomplete="off"
+            (keydown)="handleMessageKeydown($event)"
+          ></textarea>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="send-button"
+          [disabled]="
+            !newMessage.trim() ||
+            sendingMessage
+          "
+          aria-label="Send message"
+        >
+
+          <span class="send-label">
+            Send
+          </span>
+
+          <span class="send-icon">
+            →
+          </span>
+
+        </button>
+
+      </form>
+
+    </ng-container>
+
+  </main>
+
+
+  <!-- Error -->
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message"
+  >
+
+    <span class="error-dot"></span>
+
+    {{ errorMessage }}
+
+  </div>
+
+</div>

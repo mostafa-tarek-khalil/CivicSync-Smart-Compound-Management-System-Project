@@ -1,0 +1,45 @@
+<section class="messages">
+
+  <div
+    *ngIf="loadingMessages"
+    class="loading"
+  >
+    Loading messages...
+  </div>
+
+  <div
+    *ngIf="!loadingMessages && messages.length === 0"
+    class="empty"
+  >
+    No messages yet.
+  </div>
+
+  <div
+    *ngFor="let message of messages"
+    class="message-row"
+    [class.mine]="isMyMessage(message)"
+  >
+
+    <div class="message-bubble">
+
+      <div class="sender">
+        {{
+          isMyMessage(message)
+            ? 'You'
+            : message.senderType
+        }}
+      </div>
+
+      <div class="message-text">
+        {{ message.message }}
+      </div>
+
+      <div class="message-time">
+        {{ message.createdAt | date:'short' }}
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

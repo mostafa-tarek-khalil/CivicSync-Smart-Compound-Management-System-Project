@@ -61,13 +61,13 @@ export class LoginPage {
 
           switch (user.role) {
             case 'RESIDENT':
-              this.router.navigate(['/resident']);
+              this.router.navigate(['/chat']);
               break;
             case 'TECHNICIAN':
               this.router.navigate(['/technician']);
               break;
             case 'SECURITY':
-              this.router.navigate(['/security']);
+              this.router.navigate(['/chat']);
               break;
             case 'ADMIN':
               this.router.navigate(['/admin']);

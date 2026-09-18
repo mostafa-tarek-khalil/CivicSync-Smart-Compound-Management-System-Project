@@ -4,6 +4,8 @@ import { LoginPage } from './Components/login-page/login-page';
 import { RegisterPage } from './Components/register-page/register-page';
 import { RegisterRolePage } from './Components/register-role-page/register-role-page';
 import { RegisterDetailsPage } from './Components/register-details-page/register-details-page';
+import { ChatTest } from './Components/chat-test/chat-test';
+import { Chat } from './Components/chat/chat';
 
 export const routes: Routes = [
   {
@@ -25,5 +27,13 @@ export const routes: Routes = [
   {
     path: 'register/details',
     component: RegisterDetailsPage
+  },
+  {
+    path: 'chat-test',
+    component: ChatTest
+  },
+  {
+    path: 'chat',
+    component: Chat
   }
 ];
