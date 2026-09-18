@@ -186,9 +186,15 @@ const acceptOffer = async (offerId, residentId) => {
         throw error;
     }
 
+    
     offer.status = "ACCEPTED";
     await offer.save();
 
+    ticket.status = "ASSIGNED";
+    ticket.assignedTo = offer.technicianId;
+    await ticket.save();
+
+   
     await OfferModel.updateMany(
         {
             ticketId: offer.ticketId,
