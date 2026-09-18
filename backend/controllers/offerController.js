@@ -42,6 +42,7 @@ const withdrawOffer = async (req, res) => {
   }
 };
 
+//user
 const getTicketOffers = async (req, res) => {
   try {
     const offers = await offerService.getTicketOffers(req.params.ticketId, req.user.userId);
@@ -56,21 +57,45 @@ const getTicketOffers = async (req, res) => {
   }
 };
 
-const acceptOffer = async (req, res) => {
-  try {
-    const result = await offerService.acceptOffer(req.params.id, req.user.userId);
-    res.status(200).json({
-      message: "Offer accepted successfully",
-      ...result,
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Failed to accept offer",
-    });
-  }
+//technicaianoffers
+const technicaianoffers = async (req, res) => {
+    try {
+        const offers = await offerService.getMyOffers(req.user.userId);
+
+        res.status(200).json({
+            count: offers.length,
+            offers
+        });
+
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            message: error.message || "Failed to get offers"
+        });
+    }
 };
 
+const acceptOffer = async (req, res) => {
+    try {
+        const offer = await offerService.acceptOffer(
+            req.params.offerId,
+            req.user.userId
+        );
+
+        res.status(200).json({
+            message: "Offer accepted successfully",
+            offer
+        });
+
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            message: error.message || "Failed to accept offer"
+        });
+    }
+};
+
+
 module.exports = {
+  technicaianoffers,
   createOffer,
   updateOffer,
   withdrawOffer,

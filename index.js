@@ -5,7 +5,8 @@ const connectDB = require("./backend/config/db");
 const authRoutes = require("./backend/routes/authRoutes");
 const adminRoutes = require("./backend/routes/adminRoutes");
 const visitRoutes = require("./backend/routes/visitRoutes");
-
+const residentRoutes = require("./backend/routes/ResidentRoutes");
+const technicianRoutes = require("./backend/routes/technicianRoutes")
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
@@ -13,8 +14,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/visits", visitRoutes);
-
-
+app.use("/api/resident",residentRoutes)
+app.use("/api/technician",technicianRoutes)
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,

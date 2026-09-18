@@ -14,20 +14,6 @@ const createReview = async (req, res) => {
   }
 };
 
-const getTechnicianReviews = async (req, res) => {
-  try {
-    const reviews = await reviewService.getTechnicianReviews(req.params.technicianId);
-    res.status(200).json({
-      count: reviews.length,
-      reviews,
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Failed to get reviews",
-    });
-  }
-};
-
 const updateReview = async (req, res) => {
   try {
     const review = await reviewService.updateReview(req.params.id, req.user.userId, req.body);
@@ -54,6 +40,21 @@ const deleteReview = async (req, res) => {
     });
   }
 };
+
+const getTechnicianReviews = async (req, res) => {
+  try {
+    const reviews = await reviewService.getTechnicianReviews(req.params.technicianId);
+    res.status(200).json({
+      count: reviews.length,
+      reviews,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get reviews",
+    });
+  }
+};
+
 
 module.exports = {
   createReview,
