@@ -5,6 +5,18 @@ const visitSchema = new mongoose.Schema(
         residentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            default: null,
+        },
+
+        buildingId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Building",
+            required: true,
+        },
+
+        unitId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Unit",
             required: true,
         },
 
@@ -92,6 +104,17 @@ const visitSchema = new mongoose.Schema(
         },
 
         qrExpiresAt: {
+            type: Date,
+            default: null,
+        },
+
+        visitorChatTokenHash: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        visitorChatTokenExpiresAt: {
             type: Date,
             default: null,
         },

@@ -17,11 +17,6 @@ router.patch(
     approveUser
 );
 
-router.patch(
-    "/users/:userId/reject",
-    authMiddleware,
-    roleMiddleware("ADMIN"),
-    rejectUser
-);
+router.patch("/users/:userId/reject", authMiddleware, roleMiddleware("ADMIN"), rejectUser);
 
 module.exports = router;

@@ -100,6 +100,128 @@ const verifyVisitOtp = async (req, res) => {
     }
 };
 
+const createVisitorRequest = async (req, res) => {
+    try {
+        const result = await visitService.createVisitorRequest(
+            req.body
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: "Visitor request created successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const generateVisitorRequestOtp = async (req, res) => {
+    try {
+        const result =
+            await visitService.generateVisitorRequestOtp(
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request OTP generated successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const verifyVisitorRequestOtp = async (req, res) => {
+    try {
+        const result =
+            await visitService.verifyVisitorRequestOtp(
+                req.params.id,
+                req.body.otp
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request OTP verified successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getResidentVisitorRequests = async (req, res) => {
+    try {
+        const requests =
+            await visitService.getResidentVisitorRequests(
+                req.user.userId
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor requests retrieved successfully",
+            data: requests,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const approveVisitorRequest = async (req, res) => {
+    try {
+        const result =
+            await visitService.approveVisitorRequest(
+                req.user.userId,
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request approved successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const rejectVisitorRequest = async (req, res) => {
+    try {
+        const result =
+            await visitService.rejectVisitorRequest(
+                req.user.userId,
+                req.params.id
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "Visitor request rejected successfully",
+            data: result,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 const generateVisitQr = async (req, res) => {
     try {
         const result = await visitService.generateVisitQr(
@@ -180,14 +302,58 @@ const checkOutVisit = async (req, res) => {
     }
 };
 
+const getSecurityVisits = async (req, res) => {
+    try {
+        const visits = await visitService.getSecurityVisits();
+
+        return res.status(200).json({
+            success: true,
+            message: "Security visits retrieved successfully",
+            data: visits,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getSecurityVisitById = async (req, res) => {
+    try {
+        const visit = await visitService.getSecurityVisitById(
+            req.params.id
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Security visit retrieved successfully",
+            data: visit,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     createVisit,
     getMyVisits,
     getVisitById,
     generateVisitOtp,
     verifyVisitOtp,
+    createVisitorRequest,
+    generateVisitorRequestOtp,
+    verifyVisitorRequestOtp,
+    getResidentVisitorRequests,
+    approveVisitorRequest,
+    rejectVisitorRequest,
     generateVisitQr,
     scanVisitQr,
     checkInVisit,
     checkOutVisit,
+    getSecurityVisits,
+    getSecurityVisitById,
 };
