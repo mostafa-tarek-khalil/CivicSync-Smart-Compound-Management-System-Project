@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+
 const Conversation = require("../models/conversation");
 const Message = require("../models/message");
 const User = require("../models/user");
@@ -8,47 +9,78 @@ const Building = require("../models/building");
 const Visit = require("../models/visit");
 const MaintenanceTicket = require("../models/maintenanceTicket");
 
-const VISITOR_CHAT_DURATION = 24 * 60 * 60 * 1000;
-
 const isValidObjectId = (id) => {
     return mongoose.Types.ObjectId.isValid(id);
 };
 
+// =========================================================
+// USER HELPERS
+// =========================================================
+
 const getActiveUserById = async (userId) => {
     if (!isValidObjectId(userId)) {
-        throw new Error("Invalid user ID");
+        const error = new Error("Invalid user ID");
+        error.statusCode = 400;
+        throw error;
     }
 
-    const user = await User.findById(userId).select("_id name email phone role status unitId");
+    const user = await User.findById(userId).select(
+        "_id name email phone role status unitId profileImage"
+    );
 
     if (!user) {
-        throw new Error("User not found");
+        const error = new Error("User not found");
+        error.statusCode = 404;
+        throw error;
     }
 
     if (user.status !== "ACTIVE") {
-        throw new Error("User is not active");
+        const error = new Error("User is not active");
+        error.statusCode = 403;
+        throw error;
     }
 
     return user;
 };
 
+// =========================================================
+// SEARCH USERS
+// =========================================================
+
 const searchUsersByPhone = async (userId, phone) => {
     await getActiveUserById(userId);
 
     if (!phone || typeof phone !== "string") {
-        throw new Error("Phone number is required");
+        const error = new Error("Phone number is required");
+        error.statusCode = 400;
+        throw error;
     }
 
+    const searchPhone = phone.trim();
+
     const users = await User.find({
-        phone: phone.trim(),
+        phone: {
+            $regex: `^${searchPhone}`,
+        },
         status: "ACTIVE",
-        _id: { $ne: userId },
-    }).select("_id name phone role unitId");
+        _id: {
+            $ne: userId,
+        },
+    }).select(
+        "_id name phone role unitId profileImage"
+    );
 
     return users;
 };
 
-const canResidentAndTechnicianChat = async (residentId, technicianId) => {
+// =========================================================
+// DIRECT CHAT PERMISSIONS
+// =========================================================
+
+const canResidentAndTechnicianChat = async (
+    residentId,
+    technicianId
+) => {
     const ticket = await MaintenanceTicket.findOne({
         residentId,
         assignedTo: technicianId,
@@ -62,114 +94,222 @@ const canDirectChat = async (sender, receiver) => {
         return false;
     }
 
-    if (sender.status !== "ACTIVE" || receiver.status !== "ACTIVE") {
+    if (
+        sender.status !== "ACTIVE" ||
+        receiver.status !== "ACTIVE"
+    ) {
         return false;
     }
 
-    if (sender.role === "ADMIN" || receiver.role === "ADMIN") {
+    // Admin can chat with everyone.
+    if (
+        sender.role === "ADMIN" ||
+        receiver.role === "ADMIN"
+    ) {
         return true;
     }
 
+    // Resident
     if (sender.role === "RESIDENT") {
-        if (receiver.role === "RESIDENT" || receiver.role === "SECURITY") {
+        if (
+            receiver.role === "RESIDENT" ||
+            receiver.role === "SECURITY"
+        ) {
             return true;
         }
 
         if (receiver.role === "TECHNICIAN") {
-            return canResidentAndTechnicianChat(sender._id, receiver._id);
+            return canResidentAndTechnicianChat(
+                sender._id,
+                receiver._id
+            );
         }
 
         return false;
     }
 
+    // Security -> Resident
     if (sender.role === "SECURITY") {
         return receiver.role === "RESIDENT";
     }
 
+    // Technician -> Resident
     if (sender.role === "TECHNICIAN") {
         if (receiver.role !== "RESIDENT") {
             return false;
         }
 
-        return canResidentAndTechnicianChat(receiver._id, sender._id);
+        return canResidentAndTechnicianChat(
+            receiver._id,
+            sender._id
+        );
     }
 
     return false;
 };
 
-const getOrCreateDirectConversation = async (senderId, receiverId) => {
-    const sender = await getActiveUserById(senderId);
-    const receiver = await getActiveUserById(receiverId);
-    const allowed = await canDirectChat(sender, receiver);
+// =========================================================
+// CREATE / REUSE DIRECT CHAT
+// =========================================================
 
-    if (!allowed) {
-        throw new Error("You are not allowed to chat with this user");
+const getOrCreateDirectConversation = async (
+    senderId,
+    receiverId
+) => {
+    if (!isValidObjectId(receiverId)) {
+        const error = new Error("Invalid receiver ID");
+        error.statusCode = 400;
+        throw error;
     }
 
-    const participants = [sender._id, receiver._id].sort((a, b) => a.toString().localeCompare(b.toString()));
+    const sender = await getActiveUserById(senderId);
+    const receiver = await getActiveUserById(receiverId);
 
-    let conversation = await Conversation.findOne({
-        type: "DIRECT",
-        participants: {
-            $all: participants,
-            $size: 2,
-        },
-    });
+    const allowed = await canDirectChat(
+        sender,
+        receiver
+    );
+
+    if (!allowed) {
+        const error = new Error(
+            "You are not allowed to chat with this user"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    const participants = [
+        sender._id,
+        receiver._id,
+    ].sort((a, b) =>
+        a.toString().localeCompare(b.toString())
+    );
+
+    let conversation =
+        await Conversation.findOne({
+            type: "DIRECT",
+            participants: {
+                $all: participants,
+                $size: 2,
+            },
+        });
 
     if (!conversation) {
         conversation = await Conversation.create({
             type: "DIRECT",
             participants,
         });
-    }
-
-    return conversation;
-};
-
-const getCompoundGroup = async (userId) => {
-    const user = await getActiveUserById(userId);
-
-    if (!["RESIDENT", "SECURITY", "ADMIN"].includes(user.role)) {
-        throw new Error("You are not allowed to access the compound group");
-    }
-
-    const participants = await User.find({
-        role: {
-            $in: ["RESIDENT", "SECURITY", "ADMIN"],
-        },
-        status: "ACTIVE",
-    }).select("_id");
-
-    let conversation = await Conversation.findOne({
-        type: "GROUP",
-        groupType: "COMPOUND",
-    });
-
-    const participantIds = participants.map((participant) => participant._id);
-
-    if (!conversation) {
-        conversation = await Conversation.create({
-            type: "GROUP",
-            groupType: "COMPOUND",
-            participants: participantIds,
-        });
     } else {
-        conversation.participants = participantIds;
+        // Only restore visibility for the user opening
+        // the conversation.
+        conversation.deletedFor =
+            conversation.deletedFor.filter(
+                (userId) =>
+                    userId.toString() !==
+                    sender._id.toString()
+            );
+
         await conversation.save();
     }
 
     return conversation;
 };
 
-const getBuildingGroup = async (userId, buildingId) => {
+// =========================================================
+// COMPOUND GROUP
+// =========================================================
+
+const getCompoundGroup = async (userId) => {
     const user = await getActiveUserById(userId);
 
-    if (!["RESIDENT", "SECURITY", "ADMIN"].includes(user.role)) {
-        throw new Error("You are not allowed to access building groups");
+    if (
+        !["RESIDENT", "SECURITY", "ADMIN"].includes(
+            user.role
+        )
+    ) {
+        const error = new Error(
+            "You are not allowed to access the compound group"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    const participants = await User.find({
+        role: {
+            $in: [
+                "RESIDENT",
+                "SECURITY",
+                "ADMIN",
+            ],
+        },
+        status: "ACTIVE",
+    }).select("_id");
+
+    const participantIds = participants.map(
+        (participant) => participant._id
+    );
+
+    let conversation =
+        await Conversation.findOne({
+            type: "GROUP",
+            groupType: "COMPOUND",
+        });
+
+    if (!conversation) {
+        conversation =
+            await Conversation.create({
+                type: "GROUP",
+                groupType: "COMPOUND",
+                participants: participantIds,
+            });
+    } else {
+        conversation.participants = participantIds;
+
+        conversation.deletedFor =
+            conversation.deletedFor.filter(
+                (id) =>
+                    id.toString() !==
+                    userId.toString()
+            );
+
+        await conversation.save();
+    }
+
+    return conversation;
+};
+
+// =========================================================
+// BUILDING GROUP
+// =========================================================
+
+const getBuildingGroup = async (
+    userId,
+    buildingId
+) => {
+    const user = await getActiveUserById(userId);
+
+    if (
+        !["RESIDENT", "SECURITY", "ADMIN"].includes(
+            user.role
+        )
+    ) {
+        const error = new Error(
+            "You are not allowed to access building groups"
+        );
+
+        error.statusCode = 403;
+        throw error;
     }
 
     if (!isValidObjectId(buildingId)) {
-        throw new Error("Invalid building ID");
+        const error = new Error(
+            "Invalid building ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
     const buildingExists = await Building.exists({
@@ -177,22 +317,48 @@ const getBuildingGroup = async (userId, buildingId) => {
     });
 
     if (!buildingExists) {
-        throw new Error("Building not found");
+        const error = new Error(
+            "Building not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
     if (user.role === "RESIDENT") {
         if (!user.unitId) {
-            throw new Error("Resident is not assigned to a unit");
+            const error = new Error(
+                "Resident is not assigned to a unit"
+            );
+
+            error.statusCode = 400;
+            throw error;
         }
 
-        const residentUnit = await Unit.findById(user.unitId).select("buildingId");
+        const residentUnit =
+            await Unit.findById(
+                user.unitId
+            ).select("buildingId");
 
         if (!residentUnit) {
-            throw new Error("Resident unit not found");
+            const error = new Error(
+                "Resident unit not found"
+            );
+
+            error.statusCode = 404;
+            throw error;
         }
 
-        if (residentUnit.buildingId.toString() !== buildingId.toString()) {
-            throw new Error("You can only access your building group");
+        if (
+            residentUnit.buildingId.toString() !==
+            buildingId.toString()
+        ) {
+            const error = new Error(
+                "You can only access your building group"
+            );
+
+            error.statusCode = 403;
+            throw error;
         }
     }
 
@@ -200,7 +366,9 @@ const getBuildingGroup = async (userId, buildingId) => {
         buildingId,
     }).select("_id");
 
-    const unitIds = units.map((unit) => unit._id);
+    const unitIds = units.map(
+        (unit) => unit._id
+    );
 
     const residents = await User.find({
         role: "RESIDENT",
@@ -210,318 +378,827 @@ const getBuildingGroup = async (userId, buildingId) => {
         },
     }).select("_id");
 
-    const securityAndAdmins = await User.find({
-        role: {
-            $in: ["SECURITY", "ADMIN"],
-        },
-        status: "ACTIVE",
-    }).select("_id");
+    const securityAndAdmins =
+        await User.find({
+            role: {
+                $in: [
+                    "SECURITY",
+                    "ADMIN",
+                ],
+            },
+            status: "ACTIVE",
+        }).select("_id");
 
     const participantIds = [
-        ...residents.map((resident) => resident._id),
-        ...securityAndAdmins.map((user) => user._id),
+        ...residents.map(
+            (resident) => resident._id
+        ),
+        ...securityAndAdmins.map(
+            (member) => member._id
+        ),
     ];
 
-    let conversation = await Conversation.findOne({
-        type: "GROUP",
-        groupType: "BUILDING",
-        buildingId,
-    });
-
-    if (!conversation) {
-        conversation = await Conversation.create({
+    let conversation =
+        await Conversation.findOne({
             type: "GROUP",
             groupType: "BUILDING",
             buildingId,
-            participants: participantIds,
         });
+
+    if (!conversation) {
+        conversation =
+            await Conversation.create({
+                type: "GROUP",
+                groupType: "BUILDING",
+                buildingId,
+                participants: participantIds,
+            });
     } else {
-        conversation.participants = participantIds;
+        conversation.participants =
+            participantIds;
+
+        conversation.deletedFor =
+            conversation.deletedFor.filter(
+                (id) =>
+                    id.toString() !==
+                    userId.toString()
+            );
+
         await conversation.save();
     }
 
     return conversation;
 };
 
-const verifyVisitorChatToken = async (visitId, token) => {
+// =========================================================
+// VISITOR TOKEN
+// =========================================================
+
+const verifyVisitorChatToken = async (
+    visitId,
+    token
+) => {
     if (!isValidObjectId(visitId)) {
-        throw new Error("Invalid visit ID");
+        const error = new Error(
+            "Invalid visit ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    if (!token || typeof token !== "string") {
-        throw new Error("Visitor chat token is required");
+    if (
+        !token ||
+        typeof token !== "string"
+    ) {
+        const error = new Error(
+            "Visitor chat token is required"
+        );
+
+        error.statusCode = 401;
+        throw error;
     }
 
-    const visit = await Visit.findById(visitId).select("+visitorChatTokenHash");
+    const visit =
+        await Visit.findById(
+            visitId
+        ).select("+visitorChatTokenHash");
 
     if (!visit) {
-        throw new Error("Visit not found");
+        const error = new Error(
+            "Visit not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
     if (!visit.visitorChatTokenHash) {
-        throw new Error("Visitor chat is not initialized");
+        const error = new Error(
+            "Visitor chat is not initialized"
+        );
+
+        error.statusCode = 403;
+        throw error;
     }
 
-    if (!visit.visitorChatTokenExpiresAt || visit.visitorChatTokenExpiresAt < new Date()) {
-        throw new Error("Visitor chat token has expired");
+    if (
+        !visit.visitorChatTokenExpiresAt ||
+        visit.visitorChatTokenExpiresAt <
+            new Date()
+    ) {
+        const error = new Error(
+            "Visitor chat token has expired"
+        );
+
+        error.statusCode = 401;
+        throw error;
     }
 
-    if (!["APPROVED", "QR_GENERATED", "CHECKED_IN"].includes(visit.status)) {
-        throw new Error("Chat is not available for this visit");
+    if (
+        ![
+            "APPROVED",
+            "QR_GENERATED",
+            "CHECKED_IN",
+        ].includes(visit.status)
+    ) {
+        const error = new Error(
+            "Chat is not available for this visit"
+        );
+
+        error.statusCode = 403;
+        throw error;
     }
 
-    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const tokenHash =
+        crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
 
-    if (tokenHash !== visit.visitorChatTokenHash) {
-        throw new Error("Invalid visitor chat token");
+    if (
+        tokenHash !==
+        visit.visitorChatTokenHash
+    ) {
+        const error = new Error(
+            "Invalid visitor chat token"
+        );
+
+        error.statusCode = 401;
+        throw error;
     }
 
     return visit;
 };
 
-const getOrCreateVisitorConversation = async (visitId, token) => {
-    const visit = await verifyVisitorChatToken(visitId, token);
+// =========================================================
+// VISITOR CONVERSATION
+// =========================================================
 
-    let conversation = await Conversation.findOne({
-        type: "VISITOR",
-        relatedVisitId: visit._id,
-    });
+const getOrCreateVisitorConversation =
+    async (
+        visitId,
+        token
+    ) => {
+        const visit =
+            await verifyVisitorChatToken(
+                visitId,
+                token
+            );
 
-    if (!conversation) {
-        try {
-            conversation = await Conversation.create({
+        let conversation =
+            await Conversation.findOne({
                 type: "VISITOR",
                 relatedVisitId: visit._id,
-                participants: [visit.residentId],
             });
-        } catch (error) {
-            if (error.code === 11000) {
-                conversation = await Conversation.findOne({
-                    type: "VISITOR",
-                    relatedVisitId: visit._id,
-                });
-            } else {
-                throw error;
+
+        if (!conversation) {
+            try {
+                conversation =
+                    await Conversation.create({
+                        type: "VISITOR",
+                        relatedVisitId:
+                            visit._id,
+                        participants: [
+                            visit.residentId,
+                        ],
+                    });
+            } catch (error) {
+                if (error.code === 11000) {
+                    conversation =
+                        await Conversation.findOne(
+                            {
+                                type: "VISITOR",
+                                relatedVisitId:
+                                    visit._id,
+                            }
+                        );
+                } else {
+                    throw error;
+                }
             }
         }
-    }
 
-    return conversation;
-};
+        return conversation;
+    };
 
-const getUnreadCount = async (userId, conversation) => {
-    if (conversation.type === "VISITOR") {
+// =========================================================
+// UNREAD COUNT
+// =========================================================
+
+const getUnreadCount = async (
+    userId,
+    conversation
+) => {
+    if (
+        conversation.type ===
+        "VISITOR"
+    ) {
         return Message.countDocuments({
-            conversationId: conversation._id,
+            conversationId:
+                conversation._id,
+
             senderType: "VISITOR",
+
             isRead: false,
+
+            deletedFor: {
+                $ne: userId,
+            },
+
+            isDeleted: false,
         });
     }
 
-    if (conversation.type === "GROUP") {
+    if (
+        conversation.type ===
+        "GROUP"
+    ) {
         return Message.countDocuments({
-            conversationId: conversation._id,
+            conversationId:
+                conversation._id,
+
             senderId: {
                 $ne: userId,
             },
+
             readBy: {
                 $ne: userId,
             },
+
+            deletedFor: {
+                $ne: userId,
+            },
+
+            isDeleted: false,
         });
     }
 
     return Message.countDocuments({
-        conversationId: conversation._id,
+        conversationId:
+            conversation._id,
+
         senderId: {
             $ne: userId,
         },
+
         isRead: false,
+
+        deletedFor: {
+            $ne: userId,
+        },
+
+        isDeleted: false,
     });
 };
 
-const getMyConversations = async (userId) => {
+// =========================================================
+// GET MY CONVERSATIONS
+// =========================================================
+
+const getMyConversations = async (
+    userId
+) => {
     await getActiveUserById(userId);
 
-    const conversations = await Conversation.find({
-        participants: userId,
-    })
-        .populate("participants", "_id name phone role profileImage")
-        .populate("buildingId", "_id name buildingNumber")
-        .populate("relatedVisitId", "_id visitorName visitorPhone visitDate status")
-        .populate("lastMessage", "_id senderId senderType message createdAt")
-        .sort({
-            lastMessageAt: -1,
-            updatedAt: -1,
-        });
+    const conversations =
+        await Conversation.find({
+            participants: userId,
 
-    const conversationsWithUnreadCount = await Promise.all(
-        conversations.map(async (conversation) => {
-            const unreadCount = await getUnreadCount(userId, conversation);
-            const conversationObject = conversation.toObject();
-            conversationObject.unreadCount = unreadCount;
-            return conversationObject;
+            deletedFor: {
+                $ne: userId,
+            },
         })
-    );
+            .populate(
+                "participants",
+                "_id name phone role profileImage"
+            )
+            .populate(
+                "buildingId",
+                "_id name buildingNumber"
+            )
+            .populate(
+                "relatedVisitId",
+                "_id visitorName visitorPhone visitDate status"
+            )
+            .populate(
+                "lastMessage",
+                "_id senderId senderType message createdAt isDeleted deletedAt"
+            )
+            .sort({
+                lastMessageAt: -1,
+                updatedAt: -1,
+            });
 
-    return conversationsWithUnreadCount;
+    const result =
+        await Promise.all(
+            conversations.map(
+                async (conversation) => {
+                    const unreadCount =
+                        await getUnreadCount(
+                            userId,
+                            conversation
+                        );
+
+                    const object =
+                        conversation.toObject();
+
+                    object.unreadCount =
+                        unreadCount;
+
+                    if (
+                        object.lastMessage
+                            ?.isDeleted
+                    ) {
+                        object.lastMessage.message =
+                            "This message was deleted";
+                    }
+
+                    return object;
+                }
+            )
+        );
+
+    return result;
 };
 
-const getConversationById = async (userId, conversationId) => {
-    if (!isValidObjectId(conversationId)) {
-        throw new Error("Invalid conversation ID");
+// =========================================================
+// GET CONVERSATION
+// =========================================================
+
+const getConversationById = async (
+    userId,
+    conversationId
+) => {
+    if (
+        !isValidObjectId(
+            conversationId
+        )
+    ) {
+        const error = new Error(
+            "Invalid conversation ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
     await getActiveUserById(userId);
 
-    const conversation = await Conversation.findById(conversationId)
-        .populate("participants", "_id name phone role profileImage")
-        .populate("buildingId", "_id name buildingNumber")
-        .populate("relatedVisitId", "_id visitorName visitorPhone visitDate status");
+    const conversation =
+        await Conversation.findById(
+            conversationId
+        )
+            .populate(
+                "participants",
+                "_id name phone role profileImage"
+            )
+            .populate(
+                "buildingId",
+                "_id name buildingNumber"
+            )
+            .populate(
+                "relatedVisitId",
+                "_id visitorName visitorPhone visitDate status"
+            );
 
     if (!conversation) {
-        throw new Error("Conversation not found");
+        const error = new Error(
+            "Conversation not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
-    const isParticipant = conversation.participants.some(
-        (participant) => participant._id.toString() === userId.toString()
-    );
+    const isParticipant =
+        conversation.participants.some(
+            (participant) =>
+                participant._id.toString() ===
+                userId.toString()
+        );
 
     if (!isParticipant) {
-        throw new Error("You are not allowed to access this conversation");
+        const error = new Error(
+            "You are not allowed to access this conversation"
+        );
+
+        error.statusCode = 403;
+        throw error;
     }
 
     return conversation;
 };
 
-const sendUserMessage = async (userId, conversationId, messageText) => {
-    if (!isValidObjectId(conversationId)) {
-        throw new Error("Invalid conversation ID");
+// =========================================================
+// SEND USER MESSAGE
+// =========================================================
+
+const sendUserMessage = async (
+    userId,
+    conversationId,
+    messageText
+) => {
+    if (
+        !isValidObjectId(
+            conversationId
+        )
+    ) {
+        const error = new Error(
+            "Invalid conversation ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    if (!messageText || typeof messageText !== "string" || !messageText.trim()) {
-        throw new Error("Message is required");
+    if (
+        !messageText ||
+        typeof messageText !== "string" ||
+        !messageText.trim()
+    ) {
+        const error = new Error(
+            "Message is required"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    const sender = await getActiveUserById(userId);
-    const conversation = await Conversation.findById(conversationId);
+    const sender =
+        await getActiveUserById(
+            userId
+        );
+
+    const conversation =
+        await Conversation.findById(
+            conversationId
+        );
 
     if (!conversation) {
-        throw new Error("Conversation not found");
+        const error = new Error(
+            "Conversation not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
-    const isParticipant = conversation.participants.some(
-        (participantId) => participantId.toString() === sender._id.toString()
-    );
+    const isParticipant =
+        conversation.participants.some(
+            (participantId) =>
+                participantId.toString() ===
+                sender._id.toString()
+        );
 
     if (!isParticipant) {
-        throw new Error("You are not allowed to send messages in this conversation");
+        const error = new Error(
+            "You are not allowed to send messages in this conversation"
+        );
+
+        error.statusCode = 403;
+        throw error;
     }
 
     const messageData = {
-        conversationId: conversation._id,
+        conversationId:
+            conversation._id,
+
         senderType: "USER",
-        senderId: sender._id,
-        message: messageText.trim(),
+
+        senderId:
+            sender._id,
+
+        message:
+            messageText.trim(),
     };
 
-    if (conversation.type === "GROUP") {
-        messageData.readBy = [sender._id];
+    if (
+        conversation.type ===
+        "GROUP"
+    ) {
+        messageData.readBy = [
+            sender._id,
+        ];
     }
 
-    const message = await Message.create(messageData);
+    const message =
+        await Message.create(
+            messageData
+        );
 
-    conversation.lastMessage = message._id;
-    conversation.lastMessageAt = message.createdAt;
+    conversation.lastMessage =
+        message._id;
+
+    conversation.lastMessageAt =
+        message.createdAt;
+
+    // Sending a new message restores
+    // visibility only for the sender.
+    conversation.deletedFor =
+        conversation.deletedFor.filter(
+            (id) =>
+                id.toString() !==
+                sender._id.toString()
+        );
 
     await conversation.save();
 
     return message;
 };
 
-const sendVisitorMessage = async (visitId, token, conversationId, messageText) => {
-    if (!isValidObjectId(conversationId)) {
-        throw new Error("Invalid conversation ID");
+// =========================================================
+// SEND VISITOR MESSAGE
+// =========================================================
+
+const sendVisitorMessage = async (
+    visitId,
+    token,
+    conversationId,
+    messageText
+) => {
+    if (
+        !isValidObjectId(
+            conversationId
+        )
+    ) {
+        const error = new Error(
+            "Invalid conversation ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    if (!messageText || typeof messageText !== "string" || !messageText.trim()) {
-        throw new Error("Message is required");
+    if (
+        !messageText ||
+        typeof messageText !== "string" ||
+        !messageText.trim()
+    ) {
+        const error = new Error(
+            "Message is required"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    const visit = await verifyVisitorChatToken(visitId, token);
+    const visit =
+        await verifyVisitorChatToken(
+            visitId,
+            token
+        );
 
-    const conversation = await Conversation.findOne({
-        _id: conversationId,
-        type: "VISITOR",
-        relatedVisitId: visit._id,
-    });
+    const conversation =
+        await Conversation.findOne({
+            _id: conversationId,
+            type: "VISITOR",
+            relatedVisitId: visit._id,
+        });
 
     if (!conversation) {
-        throw new Error("Visitor conversation not found");
+        const error = new Error(
+            "Visitor conversation not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
-    const message = await Message.create({
-        conversationId: conversation._id,
-        senderType: "VISITOR",
-        senderId: null,
-        message: messageText.trim(),
-    });
+    const message =
+        await Message.create({
+            conversationId:
+                conversation._id,
 
-    conversation.lastMessage = message._id;
-    conversation.lastMessageAt = message.createdAt;
+            senderType:
+                "VISITOR",
+
+            senderId: null,
+
+            message:
+                messageText.trim(),
+        });
+
+    conversation.lastMessage =
+        message._id;
+
+    conversation.lastMessageAt =
+        message.createdAt;
 
     await conversation.save();
 
     return message;
 };
 
-const getMessages = async (userId, conversationId) => {
-    await getConversationById(userId, conversationId);
+// =========================================================
+// GET USER MESSAGES
+// =========================================================
+
+const getMessages = async (
+    userId,
+    conversationId
+) => {
+    await getConversationById(
+        userId,
+        conversationId
+    );
 
     return Message.find({
         conversationId,
+
+        deletedFor: {
+            $ne: userId,
+        },
     })
-        .populate("senderId", "_id name phone role profileImage")
-        .populate("readBy", "_id name phone role profileImage")
+        .populate(
+            "senderId",
+            "_id name phone role profileImage"
+        )
+        .populate(
+            "readBy",
+            "_id name phone role profileImage"
+        )
         .sort({
             createdAt: 1,
         });
 };
 
-const getVisitorMessages = async (visitId, token, conversationId) => {
-    const visit = await verifyVisitorChatToken(visitId, token);
+// =========================================================
+// GET VISITOR MESSAGES
+// =========================================================
 
-    const conversation = await Conversation.findOne({
-        _id: conversationId,
-        type: "VISITOR",
-        relatedVisitId: visit._id,
-    });
+const getVisitorMessages = async (
+    visitId,
+    token,
+    conversationId
+) => {
+    const visit =
+        await verifyVisitorChatToken(
+            visitId,
+            token
+        );
+
+    const conversation =
+        await Conversation.findOne({
+            _id: conversationId,
+            type: "VISITOR",
+            relatedVisitId: visit._id,
+        });
 
     if (!conversation) {
-        throw new Error("Visitor conversation not found");
+        const error = new Error(
+            "Visitor conversation not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
     }
 
     return Message.find({
         conversationId,
     })
-        .populate("senderId", "_id name phone role profileImage")
+        .populate(
+            "senderId",
+            "_id name phone role profileImage"
+        )
         .sort({
             createdAt: 1,
         });
 };
 
-const markMessagesAsRead = async (userId, conversationId) => {
-    if (!isValidObjectId(conversationId)) {
-        throw new Error("Invalid conversation ID");
+// =========================================================
+// MARK USER MESSAGES AS READ
+// =========================================================
+
+const markMessagesAsRead = async (
+    userId,
+    conversationId
+) => {
+    if (
+        !isValidObjectId(
+            conversationId
+        )
+    ) {
+        const error = new Error(
+            "Invalid conversation ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    const conversation = await getConversationById(userId, conversationId);
+    const conversation =
+        await getConversationById(
+            userId,
+            conversationId
+        );
 
-    if (conversation.type === "VISITOR") {
-        const result = await Message.updateMany(
+    if (
+        conversation.type ===
+        "VISITOR"
+    ) {
+        const result =
+            await Message.updateMany(
+                {
+                    conversationId,
+
+                    senderType:
+                        "VISITOR",
+
+                    isRead: false,
+
+                    deletedFor: {
+                        $ne: userId,
+                    },
+
+                    isDeleted: false,
+                },
+                {
+                    $set: {
+                        isRead: true,
+                    },
+                }
+            );
+
+        return {
+            modifiedCount:
+                result.modifiedCount,
+        };
+    }
+
+    if (
+        conversation.type ===
+        "GROUP"
+    ) {
+        const messages =
+            await Message.find({
+                conversationId,
+
+                senderId: {
+                    $ne: userId,
+                },
+
+                readBy: {
+                    $ne: userId,
+                },
+
+                deletedFor: {
+                    $ne: userId,
+                },
+
+                isDeleted: false,
+            }).select("_id");
+
+        if (
+            messages.length === 0
+        ) {
+            return {
+                modifiedCount: 0,
+            };
+        }
+
+        const messageIds =
+            messages.map(
+                (message) =>
+                    message._id
+            );
+
+        const result =
+            await Message.updateMany(
+                {
+                    _id: {
+                        $in: messageIds,
+                    },
+                },
+                {
+                    $addToSet: {
+                        readBy: userId,
+                    },
+                }
+            );
+
+        return {
+            modifiedCount:
+                result.modifiedCount,
+        };
+    }
+
+    const result =
+        await Message.updateMany(
             {
                 conversationId,
-                senderType: "VISITOR",
+
+                senderId: {
+                    $ne: userId,
+                },
+
                 isRead: false,
+
+                deletedFor: {
+                    $ne: userId,
+                },
+
+                isDeleted: false,
             },
             {
                 $set: {
@@ -530,115 +1207,390 @@ const markMessagesAsRead = async (userId, conversationId) => {
             }
         );
 
+    return {
+        modifiedCount:
+            result.modifiedCount,
+    };
+};
+
+// =========================================================
+// MARK VISITOR MESSAGES AS READ
+// =========================================================
+
+const markVisitorMessagesAsRead =
+    async (
+        visitId,
+        token,
+        conversationId
+    ) => {
+        const visit =
+            await verifyVisitorChatToken(
+                visitId,
+                token
+            );
+
+        const conversation =
+            await Conversation.findOne({
+                _id: conversationId,
+                type: "VISITOR",
+                relatedVisitId:
+                    visit._id,
+            });
+
+        if (!conversation) {
+            const error = new Error(
+                "Visitor conversation not found"
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const result =
+            await Message.updateMany(
+                {
+                    conversationId,
+
+                    senderType:
+                        "USER",
+
+                    isRead: false,
+                },
+                {
+                    $set: {
+                        isRead: true,
+                    },
+                }
+            );
+
         return {
-            modifiedCount: result.modifiedCount,
+            modifiedCount:
+                result.modifiedCount,
         };
+    };
+
+// =========================================================
+// DELETE MESSAGE FOR ME
+// =========================================================
+
+const deleteMessageForMe = async (
+    userId,
+    messageId
+) => {
+    if (
+        !isValidObjectId(
+            messageId
+        )
+    ) {
+        const error = new Error(
+            "Invalid message ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
     }
 
-    if (conversation.type === "GROUP") {
-        const messages = await Message.find({
-            conversationId,
-            senderId: {
-                $ne: userId,
-            },
-            readBy: {
-                $ne: userId,
-            },
-        }).select("_id");
+    await getActiveUserById(
+        userId
+    );
 
-        if (messages.length === 0) {
+    const message =
+        await Message.findById(
+            messageId
+        );
+
+    if (!message) {
+        const error = new Error(
+            "Message not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
+    }
+
+    // Visitor messages cannot be deleted
+    // using the user delete-for-me endpoint.
+    if (
+        message.senderType ===
+        "VISITOR"
+    ) {
+        const error = new Error(
+            "Visitor messages cannot be deleted by users"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    const conversation =
+        await Conversation.findById(
+            message.conversationId
+        );
+
+    if (!conversation) {
+        const error = new Error(
+            "Conversation not found"
+        );
+
+        error.statusCode = 404;
+        throw error;
+    }
+
+    const isParticipant =
+        conversation.participants.some(
+            (participantId) =>
+                participantId.toString() ===
+                userId.toString()
+        );
+
+    if (!isParticipant) {
+        const error = new Error(
+            "You are not allowed to delete this message"
+        );
+
+        error.statusCode = 403;
+        throw error;
+    }
+
+    const alreadyDeleted =
+        message.deletedFor.some(
+            (id) =>
+                id.toString() ===
+                userId.toString()
+        );
+
+    if (!alreadyDeleted) {
+        message.deletedFor.push(
+            userId
+        );
+
+        await message.save();
+    }
+
+    return {
+        messageId:
+            message._id,
+
+        conversationId:
+            message.conversationId,
+    };
+};
+
+// =========================================================
+// DELETE MESSAGE FOR EVERYONE
+// =========================================================
+
+const deleteMessageForEveryone =
+    async (
+        userId,
+        messageId
+    ) => {
+        if (
+            !isValidObjectId(
+                messageId
+            )
+        ) {
+            const error = new Error(
+                "Invalid message ID"
+            );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const sender =
+            await getActiveUserById(
+                userId
+            );
+
+        const message =
+            await Message.findById(
+                messageId
+            );
+
+        if (!message) {
+            const error = new Error(
+                "Message not found"
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (
+            message.senderType !==
+            "USER"
+        ) {
+            const error = new Error(
+                "This message cannot be deleted for everyone"
+            );
+
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (
+            !message.senderId
+        ) {
+            const error = new Error(
+                "Message sender not found"
+            );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (
+            message.senderId.toString() !==
+            sender._id.toString()
+        ) {
+            const error = new Error(
+                "You can only delete your own messages for everyone"
+            );
+
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (
+            message.isDeleted
+        ) {
             return {
-                modifiedCount: 0,
+                messageId:
+                    message._id,
+
+                conversationId:
+                    message.conversationId,
+
+                message,
             };
         }
 
-        const messageIds = messages.map((message) => message._id);
+        message.isDeleted = true;
+        message.deletedAt = new Date();
 
-        const result = await Message.updateMany(
-            {
-                _id: {
-                    $in: messageIds,
-                },
-            },
-            {
-                $addToSet: {
-                    readBy: userId,
-                },
-            }
-        );
+        message.message =
+            "This message was deleted";
+
+        await message.save();
 
         return {
-            modifiedCount: result.modifiedCount,
+            messageId:
+                message._id,
+
+            conversationId:
+                message.conversationId,
+
+            message,
         };
-    }
-
-    const result = await Message.updateMany(
-        {
-            conversationId,
-            senderId: {
-                $ne: userId,
-            },
-            isRead: false,
-        },
-        {
-            $set: {
-                isRead: true,
-            },
-        }
-    );
-
-    return {
-        modifiedCount: result.modifiedCount,
     };
-};
 
-const markVisitorMessagesAsRead = async (visitId, token, conversationId) => {
-    const visit = await verifyVisitorChatToken(visitId, token);
+// =========================================================
+// DELETE CONVERSATION FOR ME
+// =========================================================
 
-    const conversation = await Conversation.findOne({
-        _id: conversationId,
-        type: "VISITOR",
-        relatedVisitId: visit._id,
-    });
+const deleteConversationForMe =
+    async (
+        userId,
+        conversationId
+    ) => {
+        if (
+            !isValidObjectId(
+                conversationId
+            )
+        ) {
+            const error = new Error(
+                "Invalid conversation ID"
+            );
 
-    if (!conversation) {
-        throw new Error("Visitor conversation not found");
-    }
-
-    const result = await Message.updateMany(
-        {
-            conversationId,
-            senderType: "USER",
-            isRead: false,
-        },
-        {
-            $set: {
-                isRead: true,
-            },
+            error.statusCode = 400;
+            throw error;
         }
-    );
 
-    return {
-        modifiedCount: result.modifiedCount,
+        await getActiveUserById(
+            userId
+        );
+
+        const conversation =
+            await Conversation.findById(
+                conversationId
+            );
+
+        if (!conversation) {
+            const error = new Error(
+                "Conversation not found"
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const isParticipant =
+            conversation.participants.some(
+                (participantId) =>
+                    participantId.toString() ===
+                    userId.toString()
+            );
+
+        if (!isParticipant) {
+            const error = new Error(
+                "You are not allowed to delete this conversation"
+            );
+
+            error.statusCode = 403;
+            throw error;
+        }
+
+        const alreadyDeleted =
+            conversation.deletedFor.some(
+                (id) =>
+                    id.toString() ===
+                    userId.toString()
+            );
+
+        if (!alreadyDeleted) {
+            conversation.deletedFor.push(
+                userId
+            );
+
+            await conversation.save();
+        }
+
+        return {
+            conversationId:
+                conversation._id,
+        };
     };
-};
 
 module.exports = {
     searchUsersByPhone,
+
     canDirectChat,
     canResidentAndTechnicianChat,
+
     getOrCreateDirectConversation,
+
     getCompoundGroup,
     getBuildingGroup,
+
     verifyVisitorChatToken,
     getOrCreateVisitorConversation,
+
     getMyConversations,
     getConversationById,
+
     sendUserMessage,
     sendVisitorMessage,
+
     getMessages,
     getVisitorMessages,
+
     markMessagesAsRead,
     markVisitorMessagesAsRead,
+
     getUnreadCount,
+
+    deleteMessageForMe,
+    deleteMessageForEveryone,
+    deleteConversationForMe,
 };

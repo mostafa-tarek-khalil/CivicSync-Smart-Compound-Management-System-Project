@@ -1,5 +1,16 @@
 const chatService = require("../services/chatService");
 
+const handleError = (res, error) => {
+    return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal server error",
+    });
+};
+
+// =========================================================
+// USER CHAT
+// =========================================================
+
 const searchUsers = async (req, res) => {
     try {
         const users = await chatService.searchUsersByPhone(
@@ -12,10 +23,7 @@ const searchUsers = async (req, res) => {
             users,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -32,10 +40,7 @@ const createDirectConversation = async (req, res) => {
             conversation,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -51,10 +56,7 @@ const getCompoundGroup = async (req, res) => {
             conversation,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -71,10 +73,7 @@ const getBuildingGroup = async (req, res) => {
             conversation,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -90,10 +89,7 @@ const getMyConversations = async (req, res) => {
             conversations,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -110,10 +106,7 @@ const getConversation = async (req, res) => {
             conversation,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -131,10 +124,7 @@ const sendMessage = async (req, res) => {
             message,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -151,10 +141,7 @@ const getMessages = async (req, res) => {
             messages,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -171,12 +158,13 @@ const markMessagesAsRead = async (req, res) => {
             ...result,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
+
+// =========================================================
+// VISITOR CHAT
+// =========================================================
 
 const createVisitorConversation = async (req, res) => {
     try {
@@ -191,10 +179,7 @@ const createVisitorConversation = async (req, res) => {
             conversation,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -213,10 +198,7 @@ const sendVisitorMessage = async (req, res) => {
             message,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -225,7 +207,7 @@ const getVisitorMessages = async (req, res) => {
         const messages =
             await chatService.getVisitorMessages(
                 req.params.visitId,
-                req.body.token,
+                req.query.token,
                 req.params.conversationId
             );
 
@@ -234,10 +216,7 @@ const getVisitorMessages = async (req, res) => {
             messages,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        handleError(res, error);
     }
 };
 
@@ -255,10 +234,70 @@ const markVisitorMessagesAsRead = async (req, res) => {
             ...result,
         });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
+        handleError(res, error);
+    }
+};
+
+// =========================================================
+// DELETE MESSAGE FOR ME
+// =========================================================
+
+const deleteMessageForMe = async (req, res) => {
+    try {
+        const result =
+            await chatService.deleteMessageForMe(
+                req.user.userId,
+                req.params.messageId
+            );
+
+        res.status(200).json({
+            success: true,
+            ...result,
         });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
+// =========================================================
+// DELETE MESSAGE FOR EVERYONE
+// =========================================================
+
+const deleteMessageForEveryone = async (req, res) => {
+    try {
+        const result =
+            await chatService.deleteMessageForEveryone(
+                req.user.userId,
+                req.params.messageId
+            );
+
+        res.status(200).json({
+            success: true,
+            ...result,
+        });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
+// =========================================================
+// DELETE CONVERSATION FOR ME
+// =========================================================
+
+const deleteConversationForMe = async (req, res) => {
+    try {
+        const result =
+            await chatService.deleteConversationForMe(
+                req.user.userId,
+                req.params.conversationId
+            );
+
+        res.status(200).json({
+            success: true,
+            ...result,
+        });
+    } catch (error) {
+        handleError(res, error);
     }
 };
 
@@ -272,8 +311,13 @@ module.exports = {
     sendMessage,
     getMessages,
     markMessagesAsRead,
+
     createVisitorConversation,
     sendVisitorMessage,
     getVisitorMessages,
     markVisitorMessagesAsRead,
+
+    deleteMessageForMe,
+    deleteMessageForEveryone,
+    deleteConversationForMe,
 };

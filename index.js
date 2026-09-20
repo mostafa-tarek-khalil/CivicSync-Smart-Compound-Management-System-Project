@@ -11,6 +11,8 @@ const adminRoutes = require("./backend/routes/adminRoutes");
 const visitRoutes = require("./backend/routes/visitRoutes");
 const unitRoutes = require("./backend/routes/unitRoutes");
 const chatRoutes = require("./backend/routes/chatRoutes");
+const residentRoutes = require("./backend/routes/residentRoutes");
+const technicianRoutes = require("./backend/routes/technicianRoutes");
 const initializeChatSocket = require("./backend/socket/chatSocket");
 
 const app = express();
@@ -31,6 +33,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/visits", visitRoutes);
 app.use("/api/units", unitRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/resident", residentRoutes);
+app.use("/api/technician", technicianRoutes);
 
 
 const io = new Server(server, {

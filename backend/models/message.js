@@ -38,6 +38,25 @@ const messageSchema = new mongoose.Schema(
                 ref: "User",
             },
         ],
+
+        // Hidden only for specific users
+        deletedFor: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+
+        // Deleted for everyone
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps: true,
@@ -58,4 +77,11 @@ messageSchema.index({
     readBy: 1,
 });
 
-module.exports = mongoose.model("Message", messageSchema);
+messageSchema.index({
+    deletedFor: 1,
+});
+
+module.exports = mongoose.model(
+    "Message",
+    messageSchema
+);

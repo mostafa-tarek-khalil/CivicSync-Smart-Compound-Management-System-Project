@@ -44,6 +44,14 @@ const conversationSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+
+        // Users who hid this conversation for themselves
+        deletedFor: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         timestamps: true,
@@ -62,7 +70,9 @@ conversationSchema.index({
 });
 
 conversationSchema.index(
-    { relatedVisitId: 1 },
+    {
+        relatedVisitId: 1,
+    },
     {
         unique: true,
         partialFilterExpression: {
@@ -74,6 +84,10 @@ conversationSchema.index(
         },
     }
 );
+
+conversationSchema.index({
+    deletedFor: 1,
+});
 
 module.exports = mongoose.model(
     "Conversation",

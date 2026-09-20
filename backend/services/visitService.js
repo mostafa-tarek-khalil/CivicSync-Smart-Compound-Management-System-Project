@@ -239,7 +239,7 @@ const verifyVisitOtp = async (userId, visitId, otp) => {
     visit.otpHash = null;
     visit.otpExpiresAt = null;
     visit.otpAttempts = 0;
-    visit.status = "QR_GENERATED";
+    visit.status = "APPROVED";
 
     await visit.save();
 
