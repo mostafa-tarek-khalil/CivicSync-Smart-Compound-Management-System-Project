@@ -31,13 +31,8 @@ Smart Compound Management System`,
                 <p style="color: #666; margin-top: 0;">
                     Smart Compound Management System
                 </p>
-
                 <p>Hello ${visitorName},</p>
-
-                <p>
-                    Your visitor verification OTP is:
-                </p>
-
+                <p>Your visitor verification OTP is:</p>
                 <div style="
                     font-size: 32px;
                     font-weight: bold;
@@ -46,17 +41,9 @@ Smart Compound Management System`,
                 ">
                     ${otp}
                 </div>
-
-                <p>
-                    This OTP will expire in <strong>5 minutes</strong>.
-                </p>
-
-                <p>
-                    If you did not request this verification, please ignore this email.
-                </p>
-
+                <p>This OTP will expire in <strong>5 minutes</strong>.</p>
+                <p>If you did not request this verification, please ignore this email.</p>
                 <hr>
-
                 <p style="color: #888; font-size: 12px;">
                     CivicSync — Smart Compound Management System
                 </p>

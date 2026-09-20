@@ -5,10 +5,6 @@ const Invoice = require("../models/invoice");
 const MaintenanceTicket = require("../models/maintenanceTicket");
 const Visit = require("../models/visit");
 
-/* =========================================================
-   USERS
-========================================================= */
-
 const getAllUsers = async (filters = {}) => {
     const query = {};
 
@@ -109,14 +105,8 @@ const rejectUser = async (userId) => {
     return user;
 };
 
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
-
 const getBuildings = async () => {
-    const buildings = await Building.find()
-        .sort({ buildingNumber: 1 });
+    const buildings = await Building.find().sort({ buildingNumber: 1 });
 
     return buildings;
 };
@@ -152,10 +142,7 @@ const updateBuilding = async (buildingId, data) => {
         throw new Error("Building not found");
     }
 
-    if (
-        data.buildingNumber !== undefined &&
-        data.buildingNumber !== building.buildingNumber
-    ) {
+    if (data.buildingNumber !== undefined && data.buildingNumber !== building.buildingNumber) {
         const existingBuilding = await Building.findOne({
             buildingNumber: data.buildingNumber,
             _id: { $ne: buildingId },
@@ -181,11 +168,6 @@ const updateBuilding = async (buildingId, data) => {
     return building;
 };
 
-
-/* =========================================================
-   UNITS
-========================================================= */
-
 const getUnits = async (filters = {}) => {
     const query = {};
 
@@ -202,10 +184,7 @@ const getUnits = async (filters = {}) => {
     }
 
     const units = await Unit.find(query)
-        .populate(
-            "buildingId",
-            "name buildingNumber description"
-        )
+        .populate("buildingId", "name buildingNumber description")
         .sort({
             buildingId: 1,
             floor: 1,
@@ -224,15 +203,8 @@ const createUnit = async (data) => {
         status,
     } = data;
 
-    if (
-        !buildingId ||
-        unitNumber === undefined ||
-        floor === undefined ||
-        !type
-    ) {
-        throw new Error(
-            "Building, unit number, floor and type are required"
-        );
+    if (!buildingId || unitNumber === undefined || floor === undefined || !type) {
+        throw new Error("Building, unit number, floor and type are required");
     }
 
     const building = await Building.findById(buildingId);
@@ -247,9 +219,7 @@ const createUnit = async (data) => {
     });
 
     if (existingUnit) {
-        throw new Error(
-            "Unit number already exists in this building"
-        );
+        throw new Error("Unit number already exists in this building");
     }
 
     const unit = await Unit.create({
@@ -303,20 +273,13 @@ const updateUnit = async (unitId, data) => {
     });
 
     if (duplicateUnit) {
-        throw new Error(
-            "Unit number already exists in this building"
-        );
+        throw new Error("Unit number already exists in this building");
     }
 
     await unit.save();
 
     return unit;
 };
-
-
-/* =========================================================
-   INVOICES
-========================================================= */
 
 const getInvoices = async (filters = {}) => {
     const query = {};
@@ -334,14 +297,8 @@ const getInvoices = async (filters = {}) => {
     }
 
     const invoices = await Invoice.find(query)
-        .populate(
-            "residentId",
-            "name email phone role status unitId"
-        )
-        .populate(
-            "ticketId",
-            "title category priority status"
-        )
+        .populate("residentId", "name email phone role status unitId")
+        .populate("ticketId", "title category priority status")
         .sort({ createdAt: -1 });
 
     return invoices;
@@ -355,15 +312,8 @@ const createInvoice = async (data) => {
         dueDate,
     } = data;
 
-    if (
-        !residentId ||
-        !ticketId ||
-        amount === undefined ||
-        !dueDate
-    ) {
-        throw new Error(
-            "Resident, ticket, amount and due date are required"
-        );
+    if (!residentId || !ticketId || amount === undefined || !dueDate) {
+        throw new Error("Resident, ticket, amount and due date are required");
     }
 
     const resident = await User.findById(residentId);
@@ -382,13 +332,8 @@ const createInvoice = async (data) => {
         throw new Error("Maintenance ticket not found");
     }
 
-    if (
-        ticket.residentId.toString() !==
-        residentId.toString()
-    ) {
-        throw new Error(
-            "Invoice resident must match ticket resident"
-        );
+    if (ticket.residentId.toString() !== residentId.toString()) {
+        throw new Error("Invoice resident must match ticket resident");
     }
 
     const existingInvoice = await Invoice.findOne({
@@ -396,9 +341,7 @@ const createInvoice = async (data) => {
     });
 
     if (existingInvoice) {
-        throw new Error(
-            "An invoice already exists for this ticket"
-        );
+        throw new Error("An invoice already exists for this ticket");
     }
 
     const invoice = await Invoice.create({
@@ -412,10 +355,7 @@ const createInvoice = async (data) => {
     return invoice;
 };
 
-const updateInvoiceStatus = async (
-    invoiceId,
-    status
-) => {
+const updateInvoiceStatus = async (invoiceId, status) => {
     const allowedStatuses = [
         "PENDING",
         "PAID",
@@ -446,11 +386,6 @@ const updateInvoiceStatus = async (
     return invoice;
 };
 
-
-/* =========================================================
-   MAINTENANCE
-========================================================= */
-
 const getMaintenanceTickets = async (filters = {}) => {
     const query = {};
 
@@ -475,39 +410,19 @@ const getMaintenanceTickets = async (filters = {}) => {
     }
 
     const tickets = await MaintenanceTicket.find(query)
-        .populate(
-            "residentId",
-            "name email phone unitId"
-        )
-        .populate(
-            "assignedTo",
-            "name email phone role rating totalReviews"
-        )
-        .populate(
-            "skippedBy",
-            "name email"
-        )
+        .populate("residentId", "name email phone unitId")
+        .populate("assignedTo", "name email phone role rating totalReviews")
+        .populate("skippedBy", "name email")
         .sort({ createdAt: -1 });
 
     return tickets;
 };
 
 const getMaintenanceTicketById = async (ticketId) => {
-    const ticket = await MaintenanceTicket.findById(
-        ticketId
-    )
-        .populate(
-            "residentId",
-            "name email phone unitId"
-        )
-        .populate(
-            "assignedTo",
-            "name email phone role rating totalReviews"
-        )
-        .populate(
-            "skippedBy",
-            "name email"
-        );
+    const ticket = await MaintenanceTicket.findById(ticketId)
+        .populate("residentId", "name email phone unitId")
+        .populate("assignedTo", "name email phone role rating totalReviews")
+        .populate("skippedBy", "name email");
 
     if (!ticket) {
         throw new Error("Maintenance ticket not found");
@@ -516,10 +431,7 @@ const getMaintenanceTicketById = async (ticketId) => {
     return ticket;
 };
 
-const updateMaintenanceTicketStatus = async (
-    ticketId,
-    status
-) => {
+const updateMaintenanceTicketStatus = async (ticketId, status) => {
     const allowedStatuses = [
         "OPEN",
         "ASSIGNED",
@@ -532,9 +444,7 @@ const updateMaintenanceTicketStatus = async (
         throw new Error("Invalid maintenance status");
     }
 
-    const ticket = await MaintenanceTicket.findById(
-        ticketId
-    );
+    const ticket = await MaintenanceTicket.findById(ticketId);
 
     if (!ticket) {
         throw new Error("Maintenance ticket not found");
@@ -546,11 +456,6 @@ const updateMaintenanceTicketStatus = async (
 
     return ticket;
 };
-
-
-/* =========================================================
-   VISITS
-========================================================= */
 
 const getVisits = async (filters = {}) => {
     const query = {};
@@ -576,26 +481,11 @@ const getVisits = async (filters = {}) => {
     }
 
     const visits = await Visit.find(query)
-        .populate(
-            "residentId",
-            "name email phone unitId"
-        )
-        .populate(
-            "buildingId",
-            "name buildingNumber"
-        )
-        .populate(
-            "unitId",
-            "unitNumber floor type status"
-        )
-        .populate(
-            "securityId",
-            "name email phone role"
-        )
-        .populate(
-            "qrScannedBy",
-            "name email phone role"
-        )
+        .populate("residentId", "name email phone unitId")
+        .populate("buildingId", "name buildingNumber")
+        .populate("unitId", "unitNumber floor type status")
+        .populate("securityId", "name email phone role")
+        .populate("qrScannedBy", "name email phone role")
         .sort({
             visitDate: -1,
             createdAt: -1,
@@ -606,26 +496,11 @@ const getVisits = async (filters = {}) => {
 
 const getVisitById = async (visitId) => {
     const visit = await Visit.findById(visitId)
-        .populate(
-            "residentId",
-            "name email phone unitId"
-        )
-        .populate(
-            "buildingId",
-            "name buildingNumber description"
-        )
-        .populate(
-            "unitId",
-            "unitNumber floor type status"
-        )
-        .populate(
-            "securityId",
-            "name email phone role"
-        )
-        .populate(
-            "qrScannedBy",
-            "name email phone role"
-        );
+        .populate("residentId", "name email phone unitId")
+        .populate("buildingId", "name buildingNumber description")
+        .populate("unitId", "unitNumber floor type status")
+        .populate("securityId", "name email phone role")
+        .populate("qrScannedBy", "name email phone role");
 
     if (!visit) {
         throw new Error("Visit not found");
@@ -633,11 +508,6 @@ const getVisitById = async (visitId) => {
 
     return visit;
 };
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
 
 const getDashboardOverview = async () => {
     const [
@@ -655,38 +525,29 @@ const getDashboardOverview = async () => {
         totalVisits,
     ] = await Promise.all([
         User.countDocuments(),
-
         User.countDocuments({
             status: "PENDING",
         }),
-
         User.countDocuments({
             role: "RESIDENT",
             status: "ACTIVE",
         }),
-
         User.countDocuments({
             role: "TECHNICIAN",
             status: "ACTIVE",
         }),
-
         User.countDocuments({
             role: "SECURITY",
             status: "ACTIVE",
         }),
-
         Building.countDocuments(),
-
         Unit.countDocuments(),
-
         Unit.countDocuments({
             status: "OCCUPIED",
         }),
-
         Unit.countDocuments({
             status: "VACANT",
         }),
-
         MaintenanceTicket.countDocuments({
             status: {
                 $in: [
@@ -696,11 +557,9 @@ const getDashboardOverview = async () => {
                 ],
             },
         }),
-
         Invoice.countDocuments({
             status: "OVERDUE",
         }),
-
         Visit.countDocuments(),
     ]);
 
@@ -712,35 +571,25 @@ const getDashboardOverview = async () => {
             activeTechnicians,
             activeSecurity,
         },
-
         buildings: {
             total: totalBuildings,
         },
-
         units: {
             total: totalUnits,
             occupied: occupiedUnits,
             vacant: vacantUnits,
         },
-
         maintenance: {
             open: openMaintenance,
         },
-
         invoices: {
             overdue: overdueInvoices,
         },
-
         visits: {
             total: totalVisits,
         },
     };
 };
-
-
-/* =========================================================
-   REPORTS
-========================================================= */
 
 const getReportsAndAnalytics = async () => {
     const [
@@ -760,7 +609,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         User.aggregate([
             {
                 $group: {
@@ -769,7 +617,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         MaintenanceTicket.aggregate([
             {
                 $group: {
@@ -778,7 +625,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         MaintenanceTicket.aggregate([
             {
                 $group: {
@@ -787,7 +633,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         Invoice.aggregate([
             {
                 $group: {
@@ -799,7 +644,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         Visit.aggregate([
             {
                 $group: {
@@ -808,7 +652,6 @@ const getReportsAndAnalytics = async () => {
                 },
             },
         ]),
-
         Unit.aggregate([
             {
                 $group: {
@@ -824,52 +667,41 @@ const getReportsAndAnalytics = async () => {
             byRole: usersByRole,
             byStatus: usersByStatus,
         },
-
         maintenance: {
             byStatus: maintenanceByStatus,
             byPriority: maintenanceByPriority,
         },
-
         invoices: {
             byStatus: invoicesByStatus,
         },
-
         visits: {
             byStatus: visitsByStatus,
         },
-
         units: {
             byStatus: unitsByStatus,
         },
     };
 };
 
-
 module.exports = {
     getAllUsers,
     getUserById,
     approveUser,
     rejectUser,
-
     getBuildings,
     createBuilding,
     updateBuilding,
-
     getUnits,
     createUnit,
     updateUnit,
-
     getInvoices,
     createInvoice,
     updateInvoiceStatus,
-
     getMaintenanceTickets,
     getMaintenanceTicketById,
     updateMaintenanceTicketStatus,
-
     getVisits,
     getVisitById,
-
     getDashboardOverview,
     getReportsAndAnalytics,
 };

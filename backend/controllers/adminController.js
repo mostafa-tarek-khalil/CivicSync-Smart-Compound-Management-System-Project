@@ -1,10 +1,5 @@
 const adminService = require("../services/adminService");
 
-
-/* =========================================================
-   USERS
-========================================================= */
-
 const getUsers = async (req, res) => {
     try {
         const users = await adminService.getAllUsers(
@@ -92,11 +87,6 @@ const rejectUser = async (req, res) => {
     }
 };
 
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
-
 const getBuildings = async (req, res) => {
     try {
         const buildings =
@@ -153,11 +143,6 @@ const updateBuilding = async (req, res) => {
         });
     }
 };
-
-
-/* =========================================================
-   UNITS
-========================================================= */
 
 const getUnits = async (req, res) => {
     try {
@@ -217,11 +202,6 @@ const updateUnit = async (req, res) => {
     }
 };
 
-
-/* =========================================================
-   INVOICES
-========================================================= */
-
 const getInvoices = async (req, res) => {
     try {
         const invoices =
@@ -278,11 +258,6 @@ const updateInvoiceStatus = async (req, res) => {
         });
     }
 };
-
-
-/* =========================================================
-   MAINTENANCE
-========================================================= */
 
 const getMaintenanceTickets = async (req, res) => {
     try {
@@ -348,11 +323,6 @@ const updateMaintenanceTicketStatus = async (
     }
 };
 
-
-/* =========================================================
-   VISITS
-========================================================= */
-
 const getVisits = async (req, res) => {
     try {
         const visits =
@@ -390,11 +360,6 @@ const getVisitById = async (req, res) => {
     }
 };
 
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
 const getDashboard = async (req, res) => {
     try {
         const dashboard =
@@ -411,11 +376,6 @@ const getDashboard = async (req, res) => {
         });
     }
 };
-
-
-/* =========================================================
-   REPORTS
-========================================================= */
 
 const getReports = async (req, res) => {
     try {
@@ -440,26 +400,20 @@ module.exports = {
     getUserById,
     approveUser,
     rejectUser,
-
     getBuildings,
     createBuilding,
     updateBuilding,
-
     getUnits,
     createUnit,
     updateUnit,
-
     getInvoices,
     createInvoice,
     updateInvoiceStatus,
-
     getMaintenanceTickets,
     getMaintenanceTicketById,
     updateMaintenanceTicketStatus,
-
     getVisits,
     getVisitById,
-
     getDashboard,
     getReports,
 };
