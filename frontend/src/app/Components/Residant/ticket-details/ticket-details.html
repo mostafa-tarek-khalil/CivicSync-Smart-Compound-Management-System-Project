@@ -1,0 +1,521 @@
+<div class="page-body d-flex min-vh-100">
+
+  <app-navbar></app-navbar>
+
+  <main class="details-content flex-grow-1">
+
+    <!-- Loading -->
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="spinner-border" role="status"></div>
+        <p>Loading request details...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (!isLoading && errorMessage) {
+      <div class="error-state">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <h4>Something went wrong</h4>
+        <p>{{ errorMessage }}</p>
+
+        <button
+          class="btn btn-primary"
+          (click)="goBack()">
+          Back to Requests
+        </button>
+      </div>
+    }
+
+    @if (!isLoading && !errorMessage && ticket) {
+
+      <!-- ================= HEADER ================= -->
+
+      <div class="details-header">
+
+        <div>
+          <button
+            class="back-btn"
+            type="button"
+            (click)="goBack()">
+
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Requests
+          </button>
+
+          <div class="page-label">
+            MAINTENANCE REQUEST
+          </div>
+
+          <h1>{{ ticket.title }}</h1>
+
+          <div class="ticket-meta">
+            <span>
+              Request ID: #{{ ticket._id }}
+            </span>
+
+            <span class="dot"></span>
+
+            <span>
+              Created {{ ticket.createdAt | date:'MMM d, y' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+
+          <span
+            class="status-badge"
+            [ngClass]="getStatusClass(ticket.status)">
+            {{ ticket.status }}
+          </span>
+
+          <span
+            class="priority-badge"
+            [ngClass]="getPriorityClass(ticket.priority)">
+            {{ ticket.priority }}
+          </span>
+
+          <button
+            class="refresh-btn"
+            type="button"
+            (click)="loadTicket(ticket._id)">
+
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= STATUS BAR ================= -->
+
+      <section class="status-card">
+
+        <div class="section-title">
+          <div>
+            <span class="section-label">REQUEST STATUS</span>
+            <h3>Maintenance Progress</h3>
+          </div>
+
+          <span class="current-status">
+            {{ getStatusLabel(ticket.status) }}
+          </span>
+        </div>
+
+
+        <div class="progress-container">
+
+          <div class="progress-line-bg"></div>
+
+          <div
+            class="progress-line"
+            [style.width.%]="getProgressWidth()">
+          </div>
+
+
+          <div class="status-steps">
+
+            @for (status of statuses; track status) {
+
+              <div
+                class="status-step"
+                [class.completed]="isStatusCompleted(status)"
+                [class.current]="ticket.status === status">
+
+                <div class="step-circle">
+
+                  @if (isStatusCompleted(status)) {
+                    <i class="fa-solid fa-check"></i>
+                  }
+
+                </div>
+
+                <span>
+                  {{ getStatusLabel(status) }}
+                </span>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================= MAIN CONTENT ================= -->
+
+      <div class="details-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
+
+
+          <!-- Request Details -->
+
+          <section class="info-card">
+
+            <div class="card-header">
+
+              <div class="card-icon">
+                <i class="fa-solid fa-file-lines"></i>
+              </div>
+
+              <div>
+                <h3>Request Details</h3>
+                <p>Information about your maintenance request</p>
+              </div>
+
+            </div>
+
+
+            <div class="description-box">
+
+              <span>Description</span>
+
+              <p>
+                {{ ticket.description }}
+              </p>
+
+            </div>
+
+
+            <div class="info-grid">
+
+              <div class="info-item">
+
+                <span class="info-label">
+                  Category
+                </span>
+
+                <strong>
+                  {{ ticket.category }}
+                </strong>
+
+              </div>
+
+
+              <div class="info-item">
+
+                <span class="info-label">
+                  Priority
+                </span>
+
+                <span
+                  class="priority-badge small"
+                  [ngClass]="getPriorityClass(ticket.priority)">
+                  {{ ticket.priority }}
+                </span>
+
+              </div>
+
+
+              <div class="info-item">
+
+                <span class="info-label">
+                  Created
+                </span>
+
+                <strong>
+                  {{ ticket.createdAt | date:'MMM d, y - h:mm a' }}
+                </strong>
+
+              </div>
+
+
+              <div class="info-item">
+
+                <span class="info-label">
+                  Last Updated
+                </span>
+
+                <strong>
+                  {{ ticket.updatedAt | date:'MMM d, y - h:mm a' }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- Attachment -->
+
+          <section class="info-card">
+
+            <div class="card-header">
+
+              <div class="card-icon">
+                <i class="fa-solid fa-paperclip"></i>
+              </div>
+
+              <div>
+                <h3>Attachment</h3>
+                <p>Files attached to this request</p>
+              </div>
+
+            </div>
+
+
+            @if (ticket.attachmentUrl) {
+
+              <div class="attachment-box">
+
+                <div class="attachment-icon">
+                  <i class="fa-solid fa-file"></i>
+                </div>
+
+                <div class="attachment-info">
+                  <strong>Attached File</strong>
+                  <span>Maintenance request attachment</span>
+                </div>
+
+                <a
+                  [href]="ticket.attachmentUrl"
+                  target="_blank"
+                  class="view-file-btn">
+
+                  View
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </a>
+
+              </div>
+
+            } @else {
+
+              <div class="empty-attachment">
+
+                <i class="fa-regular fa-folder-open"></i>
+
+                <span>No attachment added</span>
+
+              </div>
+
+            }
+
+          </section>
+
+
+          <!-- Actions -->
+
+          <section class="info-card">
+
+            <div class="card-header">
+
+              <div class="card-icon">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+
+              <div>
+                <h3>Request Actions</h3>
+                <p>Available actions for this request</p>
+              </div>
+
+            </div>
+
+
+            <div class="actions-area">
+
+              @if (ticket.status === 'OPEN') {
+
+                <button
+                  class="action-btn primary"
+                  type="button"
+                  (click)="goToOffers()">
+
+                  <i class="fa-solid fa-handshake"></i>
+
+                  <div>
+                    <strong>View Offers</strong>
+                    <span>View offers from technicians</span>
+                  </div>
+
+                  <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </button>
+
+              }
+
+
+              @if (
+                ticket.status === 'ASSIGNED' ||
+                ticket.status === 'IN_PROGRESS'
+              ) {
+
+                <div class="info-action">
+
+                  <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                  <div>
+                    <strong>Maintenance in Progress</strong>
+                    <span>
+                      A technician is currently working on your request.
+                    </span>
+                  </div>
+
+                </div>
+
+              }
+
+
+              @if (ticket.status === 'RESOLVED') {
+
+                <button
+                  class="action-btn success"
+                  type="button"
+                  [disabled]="isClosing"
+                  (click)="closeTicket()">
+
+                  <i class="fa-solid fa-circle-check"></i>
+
+                  <div>
+                    <strong>
+                      {{ isClosing ? 'Closing Request...' : 'Close Request' }}
+                    </strong>
+
+                    <span>
+                      Confirm that the maintenance has been completed.
+                    </span>
+                  </div>
+
+                  <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </button>
+
+              }
+
+
+              @if (ticket.status === 'CLOSED') {
+
+                <div class="closed-message">
+
+                  <i class="fa-solid fa-circle-check"></i>
+
+                  <div>
+                    <strong>Request Closed</strong>
+
+                    <span>
+                      This maintenance request has been completed and closed.
+                    </span>
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- RIGHT COLUMN -->
+
+        <div class="right-column">
+
+
+          <!-- Assignment -->
+
+          <section class="info-card">
+
+            <div class="card-header">
+
+              <div class="card-icon">
+                <i class="fa-solid fa-user-gear"></i>
+              </div>
+
+              <div>
+                <h3>Assignment</h3>
+                <p>People associated with this request</p>
+              </div>
+
+            </div>
+
+
+            <div class="person-row">
+
+              <div class="person-avatar resident">
+                <i class="fa-solid fa-user"></i>
+              </div>
+
+              <div class="person-info">
+
+                <span>Resident</span>
+
+                <strong>
+                  {{ getResidentName() }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="person-row">
+
+              <div class="person-avatar technician">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+              </div>
+
+              <div class="person-info">
+
+                <span>Assigned Technician</span>
+
+                <strong>
+                  {{ getAssignedTechnicianName() }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- Priority -->
+
+          <section class="priority-card">
+
+            <div class="priority-card-top">
+
+              <div>
+                <span>Current Priority</span>
+
+                <h3>
+                  {{ ticket.priority }}
+                </h3>
+              </div>
+
+              <div
+                class="priority-icon"
+                [ngClass]="getPriorityClass(ticket.priority)">
+
+                <i class="fa-solid fa-flag"></i>
+
+              </div>
+
+            </div>
+
+            <p>
+              This priority level determines how quickly the request
+              should be handled.
+            </p>
+
+          </section>
+
+        </div>
+
+      </div>
+
+    }
+
+  </main>
+
+</div>

@@ -1,0 +1,522 @@
+:host {
+  display: block;
+
+  --primary: #315b8f;
+  --primary-dark: #1d3f68;
+  --primary-soft: rgba(49, 91, 143, 0.10);
+
+  --page-bg: #f8f9ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fc;
+  --surface-hover: #f1f5f9;
+
+  --text-main: #142b46;
+  --text-primary: #17253d;
+  --text-secondary: #64748b;
+  --text-muted: #718096;
+  --text-light: #8290a5;
+
+  --border: #dce4f0;
+  --border-soft: #e5e7eb;
+
+  --success: #16a34a;
+  --success-soft: rgba(22, 163, 74, 0.08);
+
+  --info: #315b8f;
+  --info-soft: rgba(49, 91, 143, 0.10);
+
+  --shadow-sm: 0 2px 8px rgba(20, 43, 70, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 43, 70, 0.10);
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+:host-context(.dark-mode) {
+
+  --primary: #6f9fd3;
+  --primary-dark: #8ab4e3;
+  --primary-soft: rgba(111, 159, 211, 0.14);
+
+  --page-bg: #0d1420;
+  --surface: #151f2d;
+  --surface-soft: #1b2736;
+  --surface-hover: #202f41;
+
+  --text-main: #f1f5f9;
+  --text-primary: #e8eef6;
+  --text-secondary: #a9b7c9;
+  --text-muted: #98a8bb;
+  --text-light: #7f90a5;
+
+  --border: #2a3a4e;
+  --border-soft: #304156;
+
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, 0.10);
+
+  --info: #6f9fd3;
+  --info-soft: rgba(111, 159, 211, 0.14);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page-body {
+  min-height: 100vh;
+
+  background: var(--page-bg);
+  color: var(--text-primary);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.desk-subtitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--primary);
+}
+
+.main-heading {
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  font-size: 24px;
+}
+
+.page-body p {
+  color: var(--text-muted);
+}
+
+
+/* =========================================================
+   CREATE BUTTON
+========================================================= */
+
+.btn-dark-brand {
+  background: var(--primary);
+  color: #ffffff;
+
+  border: none;
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-dark-brand:hover {
+  background: var(--primary-dark);
+  color: #ffffff;
+
+  transform: translateY(-1px);
+
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================================
+   KPI CARDS
+========================================================= */
+
+.kpi-panel {
+  height: 100%;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.kpi-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.kpi-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  color: var(--text-light);
+}
+
+.kpi-num {
+  font-size: 26px;
+  font-weight: 700;
+
+  color: var(--text-main);
+}
+
+.kpi-meta {
+  font-size: 12px;
+  font-weight: 600;
+
+  color: var(--primary) !important;
+}
+
+.kpi-panel:nth-child(3) .kpi-meta {
+  color: var(--success) !important;
+}
+
+.kpi-foot {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kpi-btn-box {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 9px;
+
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--primary);
+
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   TABLE CARD
+========================================================= */
+
+.table-card {
+  background: var(--surface) !important;
+
+  border: 1px solid var(--border) !important;
+
+  border-radius: 12px !important;
+
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================================
+   STATUS TABS
+========================================================= */
+
+.status-tab-group {
+  background: var(--surface-soft);
+
+  padding: 4px;
+
+  border-radius: 9px;
+}
+
+.status-tab {
+  border: none;
+
+  background: transparent;
+
+  padding: 6px 14px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  border-radius: 6px;
+
+  color: var(--text-secondary);
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.status-tab:hover:not(.active) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.status-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.tab-badge {
+  font-size: 10px;
+
+  padding: 2px 6px;
+
+  border-radius: 10px;
+
+  background: var(--border);
+  color: var(--text-secondary);
+}
+
+.status-tab.active .tab-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-input-box {
+  position: relative;
+  min-width: 260px;
+}
+
+.search-ico {
+  position: absolute;
+
+  left: 11px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: var(--icon);
+
+  font-size: 12px;
+
+  z-index: 2;
+}
+
+.input-clean {
+  height: 36px;
+
+  padding-left: 32px;
+
+  border-radius: 9px;
+
+  border: 1px solid var(--input-border, var(--border));
+
+  background: var(--surface-soft);
+
+  color: var(--text-primary);
+
+  font-size: 12px;
+}
+
+.input-clean::placeholder {
+  color: var(--placeholder, var(--text-light));
+}
+
+.input-clean:focus {
+  border-color: var(--primary);
+
+  background: var(--surface);
+
+  box-shadow:
+    0 0 0 3px var(--primary-soft);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.custom-req-table {
+  color: var(--text-primary);
+}
+
+.custom-req-table thead th {
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.6px;
+
+  color: var(--text-light);
+
+  border-bottom: 1px solid var(--border);
+
+  padding: 12px 14px;
+}
+
+.custom-req-table tbody td {
+  padding: 14px;
+}
+
+.ticket-row {
+  border-bottom: 1px solid var(--border-soft);
+
+  transition:
+    background 0.15s ease;
+}
+
+.ticket-row:hover {
+  background: var(--surface-soft);
+}
+
+
+/* =========================================================
+   REQUEST ID
+========================================================= */
+
+.code-id {
+  font-size: 12px;
+
+  font-family: monospace;
+
+  font-weight: 600;
+
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title-lead {
+  font-size: 14px;
+
+  color: var(--text-main) !important;
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.cat-pill {
+  display: inline-block;
+
+  background: var(--info-soft);
+
+  color: var(--primary);
+
+  border: 1px solid rgba(49, 91, 143, 0.16);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  padding: 4px 10px;
+
+  border-radius: 6px;
+}
+
+:host-context(.dark-mode) .cat-pill {
+  border-color: rgba(111, 159, 211, 0.22);
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.custom-req-table .fw-semibold,
+.custom-req-table .text-dark {
+  color: var(--text-primary) !important;
+}
+
+.custom-req-table .text-muted {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================================================
+   VIEW DETAILS
+========================================================= */
+
+.btn-view-details {
+  background: var(--surface);
+
+  color: var(--primary);
+
+  border: 1px solid var(--primary);
+
+  border-radius: 7px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  padding: 5px 12px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-view-details:hover {
+  background: var(--primary);
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.custom-req-table td.text-center {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .page-body main {
+    padding: 16px !important;
+  }
+
+  .main-heading {
+    font-size: 21px;
+  }
+
+  .search-input-box {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .status-tab-group {
+    width: 100%;
+
+    overflow-x: auto;
+  }
+
+  .status-tab {
+    white-space: nowrap;
+  }
+
+  .btn-dark-brand {
+    font-size: 12px;
+  }
+}

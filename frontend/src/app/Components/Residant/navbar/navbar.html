@@ -1,0 +1,131 @@
+
+<aside class="sidebar bg-white border-end d-flex flex-column">
+
+  <!-- Brand -->
+  <div class="p-3 border-bottom d-flex align-items-center gap-2">
+
+    <div class="brand-badge">
+      C
+    </div>
+
+    <div>
+      <div class="brand-title">
+        CivicSync
+      </div>
+
+      <div class="brand-sub">
+        COMPOUND OS
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- Navigation -->
+  <div class="p-3 flex-grow-1">
+
+    <div class="menu-label">
+      RESIDENT PORTAL
+    </div>
+
+    <nav class="nav flex-column gap-1">
+
+      <!-- Dashboard -->
+      <a
+        class="nav-link-custom"
+        routerLink="/resident/dashboard"
+        routerLinkActive="active">
+
+        <i class="fa-solid fa-table-cells-large nav-icon"></i>
+
+        <span>
+          Dashboard
+        </span>
+
+      </a>
+
+
+      <!-- Maintenance -->
+      <a
+        class="nav-link-custom"
+        routerLink="/resident/maintenance-view"
+        routerLinkActive="active">
+
+        <i class="fa-solid fa-screwdriver-wrench nav-icon"></i>
+
+        <span>
+          Maintenance Requests
+        </span>
+
+      </a>
+
+
+      <!-- Create Ticket -->
+      <a
+        class="nav-link-custom"
+        routerLink="/resident/create-ticket"
+        routerLinkActive="active">
+
+        <i class="fa-regular fa-square-plus nav-icon"></i>
+
+        <span>
+          Create Request
+        </span>
+
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- Dark / Light Mode -->
+  <div class="mode-container">
+
+    <button
+      type="button"
+      class="dark-mode-btn"
+      (click)="toggleDarkMode()">
+
+      <div class="mode-info">
+
+        <i
+          class="fa-solid mode-icon"
+          [class.fa-moon]="!isDarkMode"
+          [class.fa-sun]="isDarkMode">
+        </i>
+
+        <span>
+          {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
+        </span>
+
+      </div>
+
+      <div
+        class="toggle-switch"
+        [class.active]="isDarkMode">
+
+        <div class="toggle-circle"></div>
+
+      </div>
+
+    </button>
+
+  </div>
+
+
+  <!-- Bottom -->
+  <div class="p-3 border-top d-flex justify-content-between align-items-center text-muted small">
+
+    <span style="font-size: 11px;">
+      Enclave Sector Alpha
+    </span>
+
+    <span class="badge-guard">
+      Active Guard
+    </span>
+
+  </div>
+
+</aside>
+

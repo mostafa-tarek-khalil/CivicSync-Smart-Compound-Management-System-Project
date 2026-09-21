@@ -1,0 +1,685 @@
+<div class="dashboard-page d-flex min-vh-100">
+
+  <app-navbar></app-navbar>
+
+  <main class="dashboard-content flex-grow-1 p-4 overflow-auto">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+
+      <div class="welcome-section">
+
+        <span class="welcome-label">
+          WELCOME BACK
+        </span>
+
+        <h1>
+          Hello, <strong>{{ userName }}</strong>
+        </h1>
+
+        <p>
+          Here's what's happening in your compound today.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="refresh-btn"
+        (click)="loadDashboard()">
+
+        <i class="fa-solid fa-rotate-right"></i>
+
+        Refresh
+
+      </button>
+
+    </div>
+
+
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+
+      <!-- Visitors -->
+      <div class="col-xl-3 col-md-6">
+
+        <div class="stat-card">
+
+          <div class="stat-icon visitors">
+            <i class="fa-solid fa-users"></i>
+          </div>
+
+          <div class="stat-info">
+
+            <span class="stat-label">
+              Visitors
+            </span>
+
+            <h4>
+              {{ dashboard.visitorsCount }}
+            </h4>
+
+            <small>
+              This month
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Maintenance -->
+      <div class="col-xl-3 col-md-6">
+
+        <div class="stat-card">
+
+          <div class="stat-icon maintenance">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+
+          <div class="stat-info">
+
+            <span class="stat-label">
+              Maintenance
+            </span>
+
+            <h4>
+              {{ dashboard.maintenanceCount }}
+            </h4>
+
+            <small>
+              Total requests
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Completed -->
+      <div class="col-xl-3 col-md-6">
+
+        <div class="stat-card">
+
+          <div class="stat-icon completed">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div class="stat-info">
+
+            <span class="stat-label">
+              Completed
+            </span>
+
+            <h4>
+              {{ dashboard.completedCount }}
+            </h4>
+
+            <small>
+              Resolved requests
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Outstanding -->
+      <div class="col-xl-3 col-md-6">
+
+        <div class="stat-card">
+
+          <div class="stat-icon balance">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+
+          <div class="stat-info">
+
+            <span class="stat-label">
+              Outstanding
+            </span>
+
+            <h4>
+
+              {{ dashboard.outstandingBalance | number:'1.0-2' }}
+
+              <small class="currency">
+                EGP
+              </small>
+
+            </h4>
+
+            <small>
+              Amount due
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Maintenance + Invoice -->
+    <div class="row g-3 mb-4">
+
+      <!-- Maintenance Overview -->
+      <div class="col-lg-7">
+
+        <div class="panel h-100">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h5>
+                Maintenance Overview
+              </h5>
+
+              <span>
+                Current status of your requests
+              </span>
+
+            </div>
+
+            <i class="fa-solid fa-chart-simple panel-icon"></i>
+
+          </div>
+
+
+          <div class="status-list">
+
+            <div class="status-row">
+
+              <div class="status-name">
+
+                <span class="status-dot open"></span>
+
+                Open
+
+              </div>
+
+              <strong>
+                {{ dashboard.openTickets }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-row">
+
+              <div class="status-name">
+
+                <span class="status-dot assigned"></span>
+
+                Assigned
+
+              </div>
+
+              <strong>
+                {{ dashboard.assignedTickets }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-row">
+
+              <div class="status-name">
+
+                <span class="status-dot progress"></span>
+
+                In Progress
+
+              </div>
+
+              <strong>
+                {{ dashboard.inProgressTickets }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-row">
+
+              <div class="status-name">
+
+                <span class="status-dot resolved"></span>
+
+                Resolved
+
+              </div>
+
+              <strong>
+                {{ dashboard.resolvedTickets }}
+              </strong>
+
+            </div>
+
+
+            <div class="status-row">
+
+              <div class="status-name">
+
+                <span class="status-dot closed"></span>
+
+                Closed
+
+              </div>
+
+              <strong>
+                {{ dashboard.closedTickets }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Latest Invoice -->
+      <div class="col-lg-5">
+
+        <div class="panel h-100">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h5>
+                Latest Invoice
+              </h5>
+
+              <span>
+                Most recent billing statement
+              </span>
+
+            </div>
+
+            <i class="fa-solid fa-file-invoice-dollar panel-icon"></i>
+
+          </div>
+
+
+          @if (dashboard.latestInvoice) {
+
+            <div class="invoice-box">
+
+              <div class="invoice-top">
+
+                <div>
+
+                  <span class="invoice-label">
+                    Invoice
+                  </span>
+
+                  <strong>
+                    {{ dashboard.latestInvoice.invoiceNumber }}
+                  </strong>
+
+                </div>
+
+
+                <span
+                  class="invoice-status"
+                  [class.paid]="dashboard.latestInvoice.status === 'PAID'">
+
+                  {{ dashboard.latestInvoice.status }}
+
+                </span>
+
+              </div>
+
+
+              <div class="invoice-period">
+
+                <span>
+                  Billing Period
+                </span>
+
+                <strong>
+                  {{ dashboard.latestInvoice.period }}
+                </strong>
+
+              </div>
+
+
+              <div class="invoice-total">
+
+                <span>
+                  Total Amount
+                </span>
+
+                <strong>
+
+                  {{ dashboard.latestInvoice.amount | number:'1.0-2' }}
+
+                  EGP
+
+                </strong>
+
+              </div>
+
+
+              <div class="invoice-dates">
+
+                <div>
+
+                  <span>
+                    Issued
+                  </span>
+
+                  <strong>
+                    {{ dashboard.latestInvoice.issueDate }}
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <span>
+                    Due Date
+                  </span>
+
+                  <strong>
+                    {{ dashboard.latestInvoice.dueDate }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          } @else {
+
+            <div class="empty-state">
+
+              <i class="fa-solid fa-file-circle-xmark"></i>
+
+              <span>
+                No invoice available
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Recent Maintenance -->
+    <div class="panel mb-4">
+
+      <div class="panel-header">
+
+        <div>
+
+          <h5>
+            Recent Maintenance Requests
+          </h5>
+
+          <span>
+            Your latest four maintenance requests
+          </span>
+
+        </div>
+
+
+        <button
+          class="view-all-btn"
+          type="button"
+          (click)="goToMaintenance()">
+
+          View All
+
+          <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+      </div>
+
+
+      <div class="table-responsive">
+
+        <table class="dashboard-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Request
+              </th>
+
+              <th>
+                Category
+              </th>
+
+              <th>
+                Status
+              </th>
+
+              <th>
+                Priority
+              </th>
+
+              <th>
+                Date
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              ticket of dashboard.recentTickets;
+              track ticket._id
+            ) {
+
+              <tr>
+
+                <td>
+
+                  <div class="request-cell">
+
+                    <div class="request-icon">
+
+                      <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                    </div>
+
+
+                    <div>
+
+                      <strong>
+                        {{ ticket.title }}
+                      </strong>
+
+                      <span>
+                        #{{ ticket._id }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+                  {{ ticket.category }}
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="status-badge"
+                    [ngClass]="getStatusClass(ticket.status)">
+
+                    {{ ticket.status }}
+
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="priority-badge"
+                    [ngClass]="getPriorityClass(ticket.priority)">
+
+                    {{ ticket.priority }}
+
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  {{ ticket.createdAt | date:'MMM d, y' }}
+
+                </td>
+
+              </tr>
+
+            }
+
+
+            @empty {
+
+              <tr>
+
+                <td colspan="5">
+
+                  <div class="table-empty">
+
+                    No maintenance requests found.
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <!-- Recent Visitors -->
+    <div class="panel">
+
+      <div class="panel-header">
+
+        <div>
+
+          <h5>
+            Recent Visitors
+          </h5>
+
+          <span>
+            Visitors registered to your unit
+          </span>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="view-all-btn">
+
+          Manage Visitors
+
+          <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+      </div>
+
+
+      <div class="visitors-list">
+
+        @for (
+          visitor of dashboard.recentVisitors;
+          track visitor._id
+        ) {
+
+          <div class="visitor-row">
+
+            <div class="visitor-avatar">
+
+              {{ visitor.name.charAt(0) }}
+
+            </div>
+
+
+            <div class="visitor-info">
+
+              <strong>
+                {{ visitor.name }}
+              </strong>
+
+              <span>
+                {{ visitor.date }} · {{ visitor.time }}
+              </span>
+
+            </div>
+
+
+            <span class="visitor-status">
+
+              {{ visitor.status }}
+
+            </span>
+
+          </div>
+
+        }
+
+
+        @empty {
+
+          <div class="table-empty">
+
+            No recent visitors.
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>

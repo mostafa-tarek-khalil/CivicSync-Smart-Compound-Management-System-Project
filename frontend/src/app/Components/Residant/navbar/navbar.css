@@ -1,0 +1,382 @@
+
+:host {
+  display: block;
+
+  --primary: #315b8f;
+  --primary-dark: #1d3f68;
+  --primary-soft: rgba(49, 91, 143, 0.10);
+
+  --surface: #ffffff;
+  --surface-soft: #f4f7fc;
+  --surface-hover: #f1f5f9;
+
+  --text-main: #142b46;
+  --text-primary: #17253d;
+  --text-secondary: #64748b;
+  --text-muted: #718096;
+  --text-light: #8290a5;
+
+  --border: #dce4f0;
+  --border-soft: #e5e7eb;
+
+  --icon: #8796aa;
+
+  --shadow-sm: 0 2px 8px rgba(20, 43, 70, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 43, 70, 0.10);
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+
+  background-color: var(--surface);
+
+  border-color: var(--border) !important;
+
+  box-shadow: var(--shadow-sm);
+
+  z-index: 100;
+}
+
+
+/* =========================
+   BRAND
+========================= */
+
+.brand-badge {
+  width: 30px;
+  height: 30px;
+
+  background-color: var(--primary);
+  color: #ffffff;
+
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.brand-title {
+  font-size: 14px;
+  font-weight: 700;
+
+  color: var(--text-primary);
+
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.8px;
+
+  color: var(--text-light);
+}
+
+
+/* =========================
+   MENU LABEL
+========================= */
+
+.menu-label {
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.8px;
+
+  color: var(--text-light);
+
+  margin-bottom: 10px;
+
+  padding-left: 6px;
+}
+
+
+/* =========================
+   NAV LINKS
+========================= */
+
+.nav-link-custom {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px 12px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: var(--text-secondary);
+
+  text-decoration: none !important;
+
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+}
+
+.nav-link-custom:hover {
+  background-color: var(--surface-hover);
+  color: var(--primary-dark);
+}
+
+.nav-link-custom.active {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.nav-link-custom.active .nav-icon {
+  color: #ffffff;
+}
+
+.nav-icon {
+  font-size: 14px;
+
+  color: var(--icon);
+
+  width: 18px;
+
+  text-align: center;
+
+  transition: color 0.15s ease;
+}
+
+
+/* =========================
+   DARK MODE BUTTON
+========================= */
+
+.mode-container {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.dark-mode-btn {
+  width: 100%;
+
+  border: 1px solid var(--border);
+
+  background-color: var(--surface-soft);
+
+  color: var(--text-secondary);
+
+  border-radius: 10px;
+
+  padding: 9px 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.dark-mode-btn:hover {
+  border-color: var(--primary);
+  background-color: var(--surface-hover);
+}
+
+.mode-info {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.mode-icon {
+  width: 18px;
+  text-align: center;
+
+  color: var(--primary);
+}
+
+
+/* =========================
+   TOGGLE SWITCH
+========================= */
+
+.toggle-switch {
+  width: 36px;
+  height: 20px;
+
+  border-radius: 20px;
+
+  background-color: #cbd5e1;
+
+  padding: 2px;
+
+  transition: all 0.2s ease;
+}
+
+.toggle-circle {
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+
+  background-color: #ffffff;
+
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch.active {
+  background-color: var(--primary);
+}
+
+.toggle-switch.active .toggle-circle {
+  transform: translateX(16px);
+}
+
+
+/* =========================
+   ROLE BADGE
+========================= */
+
+.badge-guard {
+  font-size: 10px;
+  font-weight: 600;
+
+  color: var(--primary-dark);
+
+  background-color: var(--primary-soft);
+
+  border: 1px solid rgba(49, 91, 143, 0.15);
+
+  padding: 3px 8px;
+
+  border-radius: 6px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-footer small {
+  color: var(--text-muted);
+}
+
+
+/* =========================
+   DARK MODE
+========================= */
+
+:host-context(.dark-mode) {
+
+  --primary: #6f9fd3;
+  --primary-dark: #8ab4e3;
+  --primary-soft: rgba(111, 159, 211, 0.14);
+
+  --surface: #151f2d;
+  --surface-soft: #1b2736;
+  --surface-hover: #202f41;
+
+  --text-main: #f1f5f9;
+  --text-primary: #e8eef6;
+  --text-secondary: #a9b7c9;
+  --text-muted: #98a8bb;
+  --text-light: #7f90a5;
+
+  --border: #2a3a4e;
+  --border-soft: #304156;
+
+  --icon: #8091a6;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+
+/* Dark Sidebar */
+
+:host-context(.dark-mode) .sidebar {
+  background-color: var(--surface);
+  border-color: var(--border) !important;
+}
+
+
+/* Dark Brand */
+
+:host-context(.dark-mode) .brand-badge {
+  background-color: var(--primary);
+  color: #0d1420;
+}
+
+:host-context(.dark-mode) .brand-title {
+  color: var(--text-primary);
+}
+
+
+/* Dark Navigation */
+
+:host-context(.dark-mode) .nav-link-custom {
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-mode) .nav-link-custom:hover {
+  background-color: var(--surface-hover);
+  color: var(--primary-dark);
+}
+
+:host-context(.dark-mode) .nav-link-custom.active {
+  background-color: var(--primary);
+  color: #0d1420;
+}
+
+:host-context(.dark-mode) .nav-link-custom.active .nav-icon {
+  color: #0d1420;
+}
+
+
+/* Dark Mode Button */
+
+:host-context(.dark-mode) .dark-mode-btn {
+  background-color: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-mode) .dark-mode-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary);
+}
+
+
+/* Dark Badge */
+
+:host-context(.dark-mode) .badge-guard {
+  color: var(--primary-dark);
+
+  background-color: var(--primary-soft);
+
+  border-color: rgba(111, 159, 211, 0.20);
+}
+

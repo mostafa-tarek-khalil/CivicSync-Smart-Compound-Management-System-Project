@@ -1,0 +1,349 @@
+<div class="page-body d-flex min-vh-100">
+
+  <!-- Sidebar -->
+  <app-navbar></app-navbar>
+
+  <!-- Main Content -->
+  <main class="flex-grow-1 p-4 overflow-auto">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+      <div>
+        <div class="desk-subtitle mb-1">
+          MAINTENANCE DESK
+        </div>
+
+        <h2 class="main-heading fw-bold mb-1">
+          My Maintenance Requests
+        </h2>
+
+        <p class="text-muted small mb-0">
+          Track your maintenance tickets, technician responses, and execution status.
+        </p>
+      </div>
+
+      <button
+        class="btn btn-dark-brand px-3 py-2 d-flex align-items-center gap-2"
+        (click)="goToCreate()">
+
+        <i class="fa-solid fa-plus"></i>
+        <span>Create Maintenance Request</span>
+
+      </button>
+
+    </div>
+
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+
+      <!-- Active -->
+      <div class="col-12 col-md-4">
+        <div class="kpi-panel p-3 d-flex justify-content-between align-items-center h-100">
+
+          <div>
+            <div class="kpi-tag">
+              ACTIVE REQUESTS
+            </div>
+
+            <div class="d-flex align-items-baseline gap-2 my-1">
+              <span class="kpi-num">
+                {{ openCount + inProgressCount }}
+              </span>
+
+              <span class="kpi-meta text-primary">
+                Pending / Active
+              </span>
+            </div>
+
+            <div class="kpi-foot">
+              Requests waiting for action
+            </div>
+          </div>
+
+          <div class="kpi-btn-box">
+            <i class="fa-solid fa-inbox"></i>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- In Progress -->
+      <div class="col-12 col-md-4">
+        <div class="kpi-panel p-3 d-flex justify-content-between align-items-center h-100">
+
+          <div>
+            <div class="kpi-tag">
+              IN PROGRESS
+            </div>
+
+            <div class="d-flex align-items-baseline gap-2 my-1">
+              <span class="kpi-num">
+                {{ inProgressCount }}
+              </span>
+
+              <span class="kpi-meta text-muted">
+                Executing
+              </span>
+            </div>
+
+            <div class="kpi-foot">
+              Under maintenance work
+            </div>
+          </div>
+
+          <div class="kpi-btn-box">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- Closed -->
+      <div class="col-12 col-md-4">
+        <div class="kpi-panel p-3 d-flex justify-content-between align-items-center h-100">
+
+          <div>
+            <div class="kpi-tag">
+              RESOLVED & CLOSED
+            </div>
+
+            <div class="d-flex align-items-baseline gap-2 my-1">
+              <span class="kpi-num">
+                {{ closedCount }}
+              </span>
+
+              <span class="kpi-meta text-success">
+                Completed
+              </span>
+            </div>
+
+            <div class="kpi-foot">
+              Finished tickets
+            </div>
+          </div>
+
+          <div class="kpi-btn-box">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- Table Card -->
+    <div class="table-card bg-white border rounded-3 p-3">
+
+      <!-- Controls -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+
+        <!-- Status Tabs -->
+        <div class="status-tab-group d-flex align-items-center">
+
+          <button
+            class="status-tab"
+            [class.active]="activeFilter === 'ALL'"
+            (click)="setFilter('ALL')">
+
+            All
+            <span class="tab-badge ms-1">
+              {{ tickets.length }}
+            </span>
+
+          </button>
+
+
+          <button
+            class="status-tab"
+            [class.active]="activeFilter === 'OPEN'"
+            (click)="setFilter('OPEN')">
+
+            Open
+            <span class="tab-badge ms-1">
+              {{ openCount }}
+            </span>
+
+          </button>
+
+
+          <button
+            class="status-tab"
+            [class.active]="activeFilter === 'IN_PROGRESS'"
+            (click)="setFilter('IN_PROGRESS')">
+
+            In Progress
+            <span class="tab-badge ms-1">
+              {{ inProgressCount }}
+            </span>
+
+          </button>
+
+
+          <button
+            class="status-tab"
+            [class.active]="activeFilter === 'CLOSED'"
+            (click)="setFilter('CLOSED')">
+
+            Closed
+            <span class="tab-badge ms-1">
+              {{ closedCount }}
+            </span>
+
+          </button>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="search-input-box">
+
+          <i class="fa-solid fa-magnifying-glass search-ico"></i>
+
+          <input
+            type="text"
+            class="form-control form-control-sm input-clean"
+            placeholder="Search ticket # or keyword..."
+            [(ngModel)]="searchQuery"
+            (input)="applyFilter()"
+          />
+
+        </div>
+
+      </div>
+
+
+      <!-- Table -->
+      <div class="table-responsive">
+
+        <table class="table custom-req-table align-middle mb-0">
+
+          <thead>
+            <tr>
+              <th style="width: 15%;">REQUEST ID</th>
+              <th style="width: 38%;">ISSUE TITLE</th>
+              <th style="width: 15%;">CATEGORY</th>
+              <th style="width: 14%;">DATE CREATED</th>
+              <th style="width: 18%;">ACTION</th>
+            </tr>
+          </thead>
+
+
+          <tbody>
+
+            @for (t of filteredTickets; track t._id) {
+
+              <tr class="ticket-row">
+
+                <!-- Request ID -->
+                <td>
+                  <span class="code-id">
+                    REQ-{{ t._id.slice(-6).toUpperCase() }}
+                  </span>
+                </td>
+
+
+                <!-- Title -->
+                <td>
+
+                  <div class="title-lead fw-bold text-dark mb-1">
+                    {{ t.title }}
+                  </div>
+
+                  <div
+                    class="text-muted small text-truncate"
+                    style="max-width: 400px;">
+
+                    {{ t.description }}
+
+                  </div>
+
+                </td>
+
+
+                <!-- Category -->
+                <td>
+
+                  <span class="cat-pill">
+                    {{ t.category }}
+                  </span>
+
+                </td>
+
+
+                <!-- Date -->
+                <td>
+
+                  <div class="fw-semibold text-dark small">
+                    {{ t.createdAt | date: 'mediumDate' }}
+                  </div>
+
+                  <div class="text-muted small">
+                    {{ t.createdAt | date: 'shortTime' }}
+                  </div>
+
+                </td>
+
+
+                <!-- Action -->
+                <td>
+
+                  <button
+                    class="btn-view-details d-inline-flex align-items-center gap-1"
+                    (click)="onViewDetails(t._id)">
+
+                    <span>View Details</span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+            }
+
+            @empty {
+
+              <tr>
+
+                <td
+                  colspan="5"
+                  class="text-center py-5 text-muted small">
+
+                  @if (isLoading) {
+
+                    <span>
+                      Loading requests from server...
+                    </span>
+
+                  } @else {
+
+                    <span>
+                      No maintenance requests match your selection.
+                    </span>
+
+                  }
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
