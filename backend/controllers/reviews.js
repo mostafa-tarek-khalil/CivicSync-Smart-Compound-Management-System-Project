@@ -49,6 +49,20 @@ const deleteReview = async (req, res) => {
   }
 };
 
+const getTicketReview = async (req, res) => {
+  try {
+    const review = await reviewService.getTicketReview(
+      req.params.ticketId,
+      req.user.userId
+    );
+    res.status(200).json({ review });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get review",
+    });
+  }
+};
+
 const getTechnicianReviews = async (req, res) => {
   try {
     const technicianId = req.params.technicianId || req.user.userId;
@@ -66,6 +80,7 @@ const getTechnicianReviews = async (req, res) => {
 
 module.exports = {
   createReview,
+  getTicketReview,
   getTechnicianReviews,
   updateReview,
   deleteReview,

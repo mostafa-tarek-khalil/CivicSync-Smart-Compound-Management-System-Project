@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { MaintenanceTicketService } from '../../../Services/maintenance-ticket';
 import { IMaintenanceTicket } from '../../../Models/imaintenance-ticket';
@@ -17,7 +18,7 @@ import { NavbarComponent } from '../navbar/navbar';
   templateUrl: './ticket-details.html',
   styleUrl: './ticket-details.css'
 })
-export class ResidentTicketDetailsComponent implements OnInit {
+export class ResidentTicketDetailsComponent implements OnInit, OnDestroy {
 
   ticket: IMaintenanceTicket | null = null;
 
@@ -34,6 +35,8 @@ export class ResidentTicketDetailsComponent implements OnInit {
     'CLOSED'
   ];
 
+  private routeSubscription: Subscription | null = null;
+
   constructor(
     private ticketService: MaintenanceTicketService,
     private route: ActivatedRoute,
@@ -41,39 +44,19 @@ export class ResidentTicketDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // الاشتراك في تغييرات الـ params يدعم إعادة تحميل نفس الصفحة لمعرف تذكرة مختلف
+    this.routeSubscription = this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
 
-  this.ticket = {
-    _id: '68c123456789abcdef123456',
+      if (id) {
+        this.loadTicket(id);
+      }
+    });
+  }
 
-    residentId: {
-      name: 'Ahmed Mohamed'
-    } as any,
-
-    title: 'Water Leakage in Bathroom',
-
-    category: 'PLUMBING',
-
-    description:
-      'There is a water leakage under the bathroom sink. The water has been leaking since yesterday and needs to be checked by a technician.',
-
-    attachmentUrl: null,
-
-    priority: 'HIGH',
-
-    status: 'OPEN',
-
-    assignedTo: {
-      name: 'Mohamed Hassan'
-    } as any,
-
-    skippedBy: [],
-
-    createdAt: '2026-09-20T10:30:00',
-
-    updatedAt: '2026-09-21T14:15:00'
-  };
-
-}
+  ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
+  }
 
   loadTicket(id: string): void {
     this.isLoading = true;
@@ -86,7 +69,8 @@ export class ResidentTicketDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching ticket details:', err);
-        this.errorMessage = 'Unable to load ticket details.';
+        this.errorMessage =
+          err.error?.message || 'Unable to load ticket details.';
         this.isLoading = false;
       }
     });
@@ -124,6 +108,8 @@ export class ResidentTicketDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error closing ticket:', err);
+        this.errorMessage =
+          err.error?.message || 'Unable to close this ticket.';
         this.isClosing = false;
       }
     });

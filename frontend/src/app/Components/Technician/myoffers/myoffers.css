@@ -1,0 +1,305 @@
+.offers-page {
+  background: #f8f9ff;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.page-title {
+  color: #142b46;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+.offers-count {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #315b8f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.offer-card {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 20px;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+  transition: 0.2s ease;
+}
+
+.offer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(20, 43, 70, 0.10);
+}
+
+.offer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.offer-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status.pending {
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+}
+
+.status.accepted {
+  background: #315b8f;
+  color: #ffffff;
+}
+
+.status.rejected {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+}
+
+.status.withdrawn {
+  background: #f1f5f9;
+  color: #718096;
+}
+
+.offer-title {
+  color: #142b46;
+  font-weight: 700;
+  margin: 18px 0;
+}
+
+.offer-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #f8f9ff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 11px;
+}
+
+.info-item > i {
+  color: #315b8f;
+}
+
+.info-item span {
+  display: block;
+  color: #718096;
+  font-size: 10px;
+}
+
+.info-item strong {
+  display: block;
+  color: #142b46;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.offer-note {
+  margin-top: 15px;
+  padding: 12px;
+  background: #f8f9ff;
+  border-radius: 9px;
+}
+
+.offer-note span {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.offer-note p {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 5px 0 0;
+}
+
+.offer-date {
+  color: #718096;
+  font-size: 11px;
+  margin-top: 15px;
+}
+
+.offer-date i {
+  margin-right: 5px;
+}
+
+.offer-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.details-btn,
+.withdraw-btn {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.details-btn {
+  background: #315b8f;
+  color: #ffffff;
+}
+
+.details-btn:hover {
+  background: #1d3f68;
+}
+
+.withdraw-btn {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+}
+
+.withdraw-btn:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.loading-box,
+.empty-state {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.loading-box .spinner-border {
+  color: #315b8f !important;
+}
+
+.loading-box p {
+  color: #64748b;
+  margin-top: 15px;
+}
+
+.error-box {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #dc2626;
+}
+
+.retry-btn {
+  margin-left: auto;
+  border: none;
+  background: #315b8f;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+.empty-state h4 {
+  color: #142b46;
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: #64748b;
+}
+
+.browse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #315b8f;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 9px;
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.browse-btn:hover {
+  background: #1d3f68;
+}
+
+@media (max-width: 767px) {
+
+  .offers-page {
+    padding: 20px !important;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .offers-page {
+    padding: 15px !important;
+  }
+
+  .offer-info {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-actions {
+    flex-direction: column;
+  }
+
+}

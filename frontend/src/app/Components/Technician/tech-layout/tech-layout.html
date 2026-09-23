@@ -1,0 +1,35 @@
+<div class="technician-layout">
+
+  <button
+    class="hamburger-btn d-md-none"
+    type="button"
+    (click)="openSidebar()">
+
+    <i class="fa-solid fa-bars"></i>
+
+  </button>
+
+
+  @if (sidebarOpen) {
+
+    <div
+      class="sidebar-overlay d-md-none"
+      (click)="closeSidebar()">
+    </div>
+
+  }
+
+
+  <app-technician-sidebar
+    [class.mobile-open]="sidebarOpen"
+    (closeSidebar)="closeSidebar()">
+  </app-technician-sidebar>
+
+
+  <main class="main-content">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+</div>

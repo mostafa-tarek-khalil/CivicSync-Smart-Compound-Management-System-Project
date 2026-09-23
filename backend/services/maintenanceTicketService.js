@@ -9,6 +9,12 @@ const createTicket = async (residentId, ticketData) => {
     throw error;
   }
 
+  if (description.trim().length < 10) {
+    const error = new Error("Description must be at least 10 characters");
+    error.statusCode = 400;
+    throw error;
+  }
+
   return await MaintenanceTicket.create({
     residentId,
     title,

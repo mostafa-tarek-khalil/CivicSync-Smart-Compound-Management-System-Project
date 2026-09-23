@@ -1,0 +1,315 @@
+<div class="ticket-details-page container-fluid p-3 p-md-4 p-lg-5">
+
+  @if (ticket) {
+
+    <div class="page-header mb-4">
+
+      <div>
+        <a
+          (click)="goBack()"
+          class="back-link"
+          style="cursor: pointer;">
+
+          <i class="fa-solid fa-arrow-left"></i>
+
+          @if (mode === 'available') {
+            Back to Available Requests
+          } @else {
+            Back to Assigned Jobs
+          }
+
+        </a>
+
+        <h2 class="page-title">
+          @if (mode === 'available') {
+            Ticket Details
+          } @else {
+            Job Details
+          }
+        </h2>
+
+        @if (mode === 'available') {
+          <p class="page-subtitle">
+            Review the maintenance request before making an offer.
+          </p>
+        } @else {
+          <p class="page-subtitle">
+            Manage your assigned job: start, track, and resolve it.
+          </p>
+        }
+      </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+      <div class="col-12 col-xl-8">
+
+        <div class="details-card">
+
+          <div class="ticket-top">
+
+            <div class="category-icon">
+
+              <i
+                class="fa-solid"
+                [class]="getCategoryIcon(ticket.category)">
+              </i>
+
+            </div>
+
+            <div class="ticket-heading">
+
+              <h4>
+                {{ ticket.title }}
+              </h4>
+
+              <span>
+                {{ ticket.category }}
+              </span>
+
+            </div>
+
+            <span
+              class="priority"
+              [class]="getPriorityClass(ticket.priority)">
+
+              {{ ticket.priority }}
+
+            </span>
+
+          </div>
+
+
+          <div class="section">
+
+            <h5>
+              Description
+            </h5>
+
+            <p class="description">
+              {{ ticket.description }}
+            </p>
+
+          </div>
+
+
+          <div class="info-grid">
+
+            <div class="info-box">
+
+              <i class="fa-regular fa-calendar"></i>
+
+              <div>
+                <span>
+                  Created
+                </span>
+
+                <strong>
+                  {{ ticket.createdAt | date:'MMM d, y, h:mm a' }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-circle-info"></i>
+
+              <div>
+                <span>
+                  Status
+                </span>
+
+                <strong>
+                  {{ ticket.status }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-flag"></i>
+
+              <div>
+                <span>
+                  Priority
+                </span>
+
+                <strong>
+                  {{ ticket.priority }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-layer-group"></i>
+
+              <div>
+                <span>
+                  Category
+                </span>
+
+                <strong>
+                  {{ ticket.category }}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          @if (ticket.attachmentUrl) {
+
+            <div class="section">
+
+              <h5>
+                Attachment
+              </h5>
+
+              <a
+                [href]="ticket.attachmentUrl"
+                target="_blank"
+                class="attachment-btn">
+
+                <i class="fa-solid fa-paperclip"></i>
+
+                View Attachment
+
+              </a>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <div class="col-12 col-xl-4">
+
+        @if (mode === 'available') {
+
+          <div class="offer-card">
+
+            <div class="offer-icon">
+
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+
+            </div>
+
+            <h4>
+              Interested in this request?
+            </h4>
+
+            <p>
+              Submit your price and estimated duration to offer your services.
+            </p>
+
+            <a
+              [routerLink]="[
+                '/technician/job',
+                ticket._id,
+                'create-offer'
+              ]"
+              class="create-offer-btn">
+
+              <i class="fa-solid fa-plus"></i>
+
+              Create Offer
+
+            </a>
+
+            <button
+              type="button"
+              class="skip-btn btn btn-outline-secondary w-100 mt-2"
+              [disabled]="isProcessing"
+              (click)="skipTicket()">
+
+              <i class="fa-solid fa-forward"></i>
+
+              Skip This Request
+
+            </button>
+
+          </div>
+
+        } @else {
+
+          <div class="offer-card">
+
+            <div class="offer-icon">
+
+              <i class="fa-solid fa-briefcase"></i>
+
+            </div>
+
+            <h4>
+              Manage this job
+            </h4>
+
+            <p>
+              Update the job status as you progress with the work.
+            </p>
+
+            @if (ticket.status === 'ASSIGNED') {
+
+              <button
+                type="button"
+                class="btn btn-primary w-100"
+                [disabled]="isProcessing"
+                (click)="startTicket()">
+
+                <i class="fa-solid fa-play"></i>
+
+                Start Job
+
+              </button>
+
+            }
+
+            @if (ticket.status === 'IN_PROGRESS') {
+
+              <button
+                type="button"
+                class="btn btn-success w-100"
+                [disabled]="isProcessing"
+                (click)="resolveTicket()">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                Mark as Resolved
+
+              </button>
+
+            }
+
+            @if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+
+              <div class="alert alert-success text-center mb-0">
+                <i class="fa-solid fa-circle-check"></i>
+                This job is completed.
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

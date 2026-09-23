@@ -116,9 +116,10 @@ export class CreateTicket {
         this.router.navigate(['/maintenance']);
       },
       error: (err) => {
+        console.error('Error submitting ticket:', err);
         this.isSubmitting = false;
-        this.errorMessage = 'Something went wrong while submitting the request.';
-        console.error(err);
+        this.errorMessage =
+          err.error?.message || 'Something went wrong while submitting the request.';
       }
     });
   }

@@ -1,0 +1,132 @@
+<aside class="sidebar">
+
+  <div class="brand-section">
+
+    <div class="brand-badge">
+      C
+    </div>
+
+    <div>
+      <div class="brand-title">
+        CivicSync
+      </div>
+
+      <div class="brand-sub">
+        COMPOUND OS
+      </div>
+    </div>
+
+  </div>
+
+
+  <button
+    class="close-mobile d-md-none"
+    type="button"
+    (click)="close()">
+
+    <i class="fa-solid fa-xmark"></i>
+
+  </button>
+
+
+  <div class="sidebar-content">
+
+    <div class="menu-label">
+      TECHNICIAN PORTAL
+    </div>
+
+    <nav class="nav flex-column gap-1">
+
+      <a
+        class="nav-link-custom"
+        routerLink="/technician/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="close()">
+
+        <i class="fa-solid fa-table-cells-large nav-icon"></i>
+
+        <span>
+          Dashboard
+        </span>
+
+      </a>
+
+
+      <a
+        class="nav-link-custom"
+        routerLink="/technician/available-requests"
+        routerLinkActive="active"
+        (click)="close()">
+
+        <i class="fa-solid fa-screwdriver-wrench nav-icon"></i>
+
+        <span>
+          Available Requests
+        </span>
+
+      </a>
+
+
+      <a
+        class="nav-link-custom"
+        routerLink="/technician/assigned-jobs"
+        routerLinkActive="active"
+        (click)="close()">
+
+        <i class="fa-solid fa-briefcase nav-icon"></i>
+
+        <span>
+          Assigned Jobs
+        </span>
+
+      </a>
+
+
+      <a
+        class="nav-link-custom"
+        routerLink="/technician/my-offers"
+        routerLinkActive="active"
+        (click)="close()">
+
+        <i class="fa-solid fa-file-invoice-dollar nav-icon"></i>
+
+        <span>
+          My Offers
+        </span>
+
+      </a>
+
+
+      <a
+        class="nav-link-custom"
+        routerLink="/technician/reviews"
+        routerLinkActive="active"
+        (click)="close()">
+
+        <i class="fa-regular fa-star nav-icon"></i>
+
+        <span>
+          Reviews
+        </span>
+
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <div class="sidebar-footer">
+
+    <span>
+      Enclave Sector Alpha
+    </span>
+
+    <span class="badge-guard">
+      Active Guard
+    </span>
+
+  </div>
+
+</aside>

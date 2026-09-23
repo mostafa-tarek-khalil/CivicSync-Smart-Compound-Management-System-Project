@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
@@ -9,12 +8,22 @@ const {
     closeTicket,
 } = require("../controllers/maintenanceTicketController");
 
-const { createReview, updateReview, deleteReview } = require("../controllers/reviews");
+const {
+    acceptOffer,
+    getTicketOffers,
+} = require("../controllers/offerController");
 
 const {
-    getTicketOffers,
-    acceptOffer
-} = require("../controllers/offerController");
+    getNegotiations,
+    createNegotiation,
+} = require("../controllers/negotiationController");
+
+const {
+    createReview,
+    updateReview,
+    deleteReview,
+    getTicketReview,
+} = require("../controllers/reviews");
 
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -28,7 +37,11 @@ router.patch("/tickets/:id/close", closeTicket);
 
 router.patch("/offer/:offerId/accept", acceptOffer);
 router.get("/offer/ticket/:ticketId", getTicketOffers);
+router.get("/tickets/:ticketId/offers", getTicketOffers);
+router.get("/offer/:offerId/negotiations", getNegotiations);
+router.post("/offer/:offerId/negotiations", createNegotiation);
 
+router.get("/tickets/:ticketId/review", getTicketReview);
 router.post("/tickets/:ticketId/review", createReview);
 router.patch("/review/:id", updateReview);
 router.delete("/review/:id", deleteReview);

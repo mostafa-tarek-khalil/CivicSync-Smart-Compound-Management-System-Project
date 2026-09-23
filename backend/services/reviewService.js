@@ -124,6 +124,13 @@ const updateReview = async (reviewId, residentId, { rating, comment }) => {
 };
 
 
+const getTicketReview = async (ticketId, residentId) => {
+    return await ReviewModel.findOne({
+        ticketId,
+        residentId
+    });
+};
+
 const getTechnicianReviews = async (technicianId) => {
 
     return await ReviewModel.find({
@@ -169,6 +176,7 @@ module.exports = {
     CreateReview,
     DeleteReview,
     updateReview,
+    getTicketReview,
     getTechnicianReviews,
     recalculateTechnicianRating
 };

@@ -84,8 +84,23 @@ const getAssignedTicketDetails = async (req, res) => {
   }
 };
 
+const getAvailableTicketDetails = async (req, res) => {
+  try {
+    const ticket = await technicianService.getAvailableTicketDetails(
+      req.params.id,
+      req.user.userId
+    );
+    res.status(200).json({ ticket });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get ticket details",
+    });
+  }
+};
+
 module.exports = {
   getAvailableTickets,
+  getAvailableTicketDetails,
   startTicket,
   resolveTicket,
   skipTicket,

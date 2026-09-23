@@ -103,6 +103,28 @@
 
     @if (!isLoading && !errorMessage) {
 
+      <!-- ACCEPT ERROR -->
+
+      @if (acceptErrorMessage) {
+
+        <div class="alert alert-danger d-flex align-items-center justify-content-between gap-2">
+
+          <span class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ acceptErrorMessage }}
+          </span>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="acceptErrorMessage = ''">
+          </button>
+
+        </div>
+
+      }
+
       <!-- SUMMARY -->
 
       <div class="offers-summary">
@@ -260,7 +282,7 @@
 
               <!-- MESSAGE -->
 
-              @if (offer.message) {
+              @if (offer.note) {
 
                 <div class="offer-message">
 
@@ -269,7 +291,7 @@
                   </span>
 
                   <p>
-                    "{{ offer.message }}"
+                    "{{ offer.note }}"
                   </p>
 
                 </div>

@@ -1,9 +1,33 @@
+<!-- Hamburger Button (يظهر في الموبايل ويثبت أعلى الشاشة لفتح القائمة) -->
+<button
+  class="hamburger-btn d-md-none"
+  type="button"
+  (click)="open()">
+  <i class="fa-solid fa-bars"></i>
+</button>
 
-<aside class="sidebar bg-white border-end d-flex flex-column">
+<!-- Overlay معتم لخلفية الموبايل عند فتح القائمة -->
+@if (isOpen) {
+  <div
+    class="sidebar-overlay d-md-none"
+    (click)="close()">
+  </div>
+}
+
+<aside
+  class="sidebar border-end d-flex flex-column"
+  [class.mobile-open]="isOpen">
+
+  <!-- Mobile Close Button -->
+  <button
+    class="close-mobile d-md-none"
+    type="button"
+    (click)="close()">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
 
   <!-- Brand -->
   <div class="p-3 border-bottom d-flex align-items-center gap-2">
-
     <div class="brand-badge">
       C
     </div>
@@ -17,115 +41,75 @@
         COMPOUND OS
       </div>
     </div>
-
   </div>
 
-
   <!-- Navigation -->
-  <div class="p-3 flex-grow-1">
-
+  <div class="p-3 flex-grow-1 overflow-y-auto">
     <div class="menu-label">
       RESIDENT PORTAL
     </div>
 
     <nav class="nav flex-column gap-1">
-
       <!-- Dashboard -->
       <a
         class="nav-link-custom"
         routerLink="/resident/dashboard"
-        routerLinkActive="active">
-
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="close()">
         <i class="fa-solid fa-table-cells-large nav-icon"></i>
-
-        <span>
-          Dashboard
-        </span>
-
+        <span>Dashboard</span>
       </a>
-
 
       <!-- Maintenance -->
       <a
         class="nav-link-custom"
         routerLink="/resident/maintenance-view"
-        routerLinkActive="active">
-
+        routerLinkActive="active"
+        (click)="close()">
         <i class="fa-solid fa-screwdriver-wrench nav-icon"></i>
-
-        <span>
-          Maintenance Requests
-        </span>
-
+        <span>Maintenance Requests</span>
       </a>
-
 
       <!-- Create Ticket -->
       <a
         class="nav-link-custom"
         routerLink="/resident/create-ticket"
-        routerLinkActive="active">
-
+        routerLinkActive="active"
+        (click)="close()">
         <i class="fa-regular fa-square-plus nav-icon"></i>
-
-        <span>
-          Create Request
-        </span>
-
+        <span>Create Request</span>
       </a>
-
     </nav>
-
   </div>
-
 
   <!-- Dark / Light Mode -->
   <div class="mode-container">
-
     <button
       type="button"
       class="dark-mode-btn"
       (click)="toggleDarkMode()">
-
       <div class="mode-info">
-
         <i
           class="fa-solid mode-icon"
           [class.fa-moon]="!isDarkMode"
           [class.fa-sun]="isDarkMode">
         </i>
-
-        <span>
-          {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
-        </span>
-
+        <span>{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
       </div>
 
       <div
         class="toggle-switch"
         [class.active]="isDarkMode">
-
         <div class="toggle-circle"></div>
-
       </div>
-
     </button>
-
   </div>
-
 
   <!-- Bottom -->
   <div class="p-3 border-top d-flex justify-content-between align-items-center text-muted small">
-
-    <span style="font-size: 11px;">
-      Enclave Sector Alpha
-    </span>
-
-    <span class="badge-guard">
-      Active Guard
-    </span>
-
+    <span style="font-size: 11px;">Enclave Sector Alpha</span>
+    <span class="badge-guard">Active Guard</span>
   </div>
 
 </aside>
-

@@ -1,0 +1,44 @@
+.technician-layout {
+  min-height: 100vh;
+  background: #f8f9ff;
+}
+
+.main-content {
+  margin-left: 260px;
+  min-height: 100vh;
+}
+
+.hamburger-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 8px;
+  background: #315b8f;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.hamburger-btn:hover {
+  background: #1d3f68;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 43, 70, 0.35);
+  z-index: 999;
+}
+
+@media (max-width: 767px) {
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 70px;
+  }
+
+}

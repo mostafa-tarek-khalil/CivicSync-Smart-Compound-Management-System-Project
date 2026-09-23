@@ -1,0 +1,179 @@
+<div class="create-offer-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <div class="page-header mb-4">
+
+    <a
+      [routerLink]="['/technician/available-request', ticketId]"
+      class="back-link">
+
+      <i class="fa-solid fa-arrow-left"></i>
+
+      Back to Ticket
+
+    </a>
+
+    <h2 class="page-title">
+      Create Offer
+    </h2>
+
+    <p class="page-subtitle">
+      Submit your price and estimated duration for this request.
+    </p>
+
+  </div>
+
+
+  <div class="row justify-content-center">
+
+    <div class="col-12 col-lg-7 col-xl-6">
+
+      <div class="offer-form-card">
+
+        <div class="offer-icon">
+
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+
+        </div>
+
+        <h4>
+          Your Offer
+        </h4>
+
+        <p class="form-description">
+          Enter the details of your offer below.
+        </p>
+
+
+        @if (errorMessage) {
+
+          <div class="error-box">
+
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            <span>
+              {{ errorMessage }}
+            </span>
+
+          </div>
+
+        }
+
+
+        <form (ngSubmit)="createOffer()">
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              Price
+            </label>
+
+            <div class="input-group">
+
+              <span class="input-group-text">
+                EGP
+              </span>
+
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="price"
+                name="price"
+                min="1"
+                placeholder="Enter your price"
+                required>
+
+            </div>
+
+          </div>
+
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              Estimated Duration
+            </label>
+
+            <div class="input-group">
+
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="estimatedDuration"
+                name="estimatedDuration"
+                min="1"
+                placeholder="Duration in hours"
+                required>
+
+              <span class="input-group-text">
+                Hours
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="mb-4">
+
+            <label class="form-label">
+              Note
+            </label>
+
+            <textarea
+              class="form-control"
+              [(ngModel)]="note"
+              name="note"
+              rows="4"
+              maxlength="500"
+              placeholder="Add a note for the resident...">
+            </textarea>
+
+          </div>
+
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="cancel-btn"
+              (click)="cancel()">
+
+              Cancel
+
+            </button>
+
+            <button
+              type="submit"
+              class="submit-btn"
+              [disabled]="loading">
+
+              @if (loading) {
+
+                <span
+                  class="spinner-border spinner-border-sm">
+                </span>
+
+                Creating...
+
+              }
+              @else {
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+                Create Offer
+
+              }
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

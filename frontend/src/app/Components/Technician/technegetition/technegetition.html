@@ -1,0 +1,240 @@
+<div class="negotiation-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <div class="page-header mb-4">
+
+    <div>
+
+      <button
+        type="button"
+        class="back-btn"
+        (click)="goBack()">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back to My Offers
+
+      </button>
+
+      <h2 class="page-title">
+        Negotiation
+      </h2>
+
+      <p class="page-subtitle">
+        Communicate with the resident and negotiate the offer price.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  @if (errorMessage) {
+
+    <div class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div
+        class="spinner-border"
+        role="status">
+      </div>
+
+      <span>
+        Loading negotiations...
+      </span>
+
+    </div>
+
+  }
+
+
+  @if (!loading) {
+
+    <div class="negotiation-card">
+
+      <div class="conversation-header">
+
+        <div class="conversation-icon">
+
+          <i class="fa-solid fa-comments"></i>
+
+        </div>
+
+        <div>
+
+          <h5>
+            Offer Negotiation
+          </h5>
+
+          <span>
+            Discuss the price with the resident
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="conversation">
+
+        @if (negotiations.length === 0) {
+
+          <div class="empty-state">
+
+            <i class="fa-regular fa-comments"></i>
+
+            <h5>
+              No negotiations yet
+            </h5>
+
+            <p>
+              Start the conversation by sending a price.
+            </p>
+
+          </div>
+
+        }
+
+
+        @for (
+          negotiation of negotiations;
+          track negotiation._id
+        ) {
+
+          <div
+            class="message-row"
+            [class.my-message]="
+              negotiation.senderRole === 'TECHNICIAN'
+            "
+            [class.resident-message]="
+              negotiation.senderRole === 'RESIDENT'
+            ">
+
+            <div class="message-box">
+
+              <div class="message-top">
+
+                <strong>
+                  {{ getSenderName(negotiation) }}
+                </strong>
+
+                <span>
+                  {{ negotiation.createdAt | date:'MMM d, y, h:mm a' }}
+                </span>
+
+              </div>
+
+              <div class="message-price">
+
+                <i class="fa-solid fa-money-bill"></i>
+
+                {{ negotiation.price | number:'1.0-2' }}
+                EGP
+
+              </div>
+
+              @if (negotiation.message) {
+
+                <p class="message-text">
+                  {{ negotiation.message }}
+                </p>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <div class="send-section">
+
+        <h6>
+          Send New Negotiation
+        </h6>
+
+        <div class="row g-3">
+
+          <div class="col-12 col-md-4">
+
+            <label class="form-label">
+              Proposed Price
+            </label>
+
+            <div class="input-group">
+
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="price"
+                min="1"
+                placeholder="Enter price">
+
+              <span class="input-group-text">
+                EGP
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-8">
+
+            <label class="form-label">
+              Message
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="message"
+              maxlength="500"
+              placeholder="Write your message...">
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="send-btn mt-3"
+          (click)="sendNegotiation()"
+          [disabled]="sending">
+
+          @if (sending) {
+
+            <span
+              class="spinner-border spinner-border-sm me-2">
+            </span>
+
+            Sending...
+
+          } @else {
+
+            <i class="fa-solid fa-paper-plane"></i>
+
+            Send Negotiation
+
+          }
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

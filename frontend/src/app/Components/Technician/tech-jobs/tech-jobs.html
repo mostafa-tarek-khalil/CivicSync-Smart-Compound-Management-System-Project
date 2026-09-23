@@ -1,0 +1,270 @@
+<div class="assigned-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <!-- Header -->
+
+  <div class="page-header mb-4">
+
+    <div>
+      <h2 class="page-title">
+        Assigned Jobs
+      </h2>
+
+      <p class="page-subtitle">
+        Manage the maintenance jobs assigned to you.
+      </p>
+    </div>
+
+    <div class="jobs-count">
+
+      <i class="fa-solid fa-briefcase"></i>
+
+      <span>
+        {{ assignedTickets.length }} Jobs
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- Loading -->
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div class="spinner-border"></div>
+
+      <p>
+        Loading assigned jobs...
+      </p>
+
+    </div>
+
+  }
+
+
+  <!-- Error -->
+
+  @else if (errorMessage) {
+
+    <div class="error-box">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="loadAssignedJobs()">
+
+        Try Again
+
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- Jobs -->
+
+  @else {
+
+    @if (assignedTickets.length > 0) {
+
+      <div class="row g-4">
+
+        @for (
+          ticket of assignedTickets;
+          track ticket._id
+        ) {
+
+          <div class="col-12 col-lg-6 col-xl-4">
+
+            <div class="job-card">
+
+
+              <!-- Card Header -->
+
+              <div class="job-header">
+
+                <div class="job-icon">
+
+                  <i class="fa-solid fa-wrench"></i>
+
+                </div>
+
+                <span
+                  class="status"
+                  [class]="getStatusClass(ticket.status)">
+
+                  {{ ticket.status.replace('_', ' ') }}
+
+                </span>
+
+              </div>
+
+
+              <!-- Title -->
+
+              <h5 class="job-title">
+                {{ ticket.title }}
+              </h5>
+
+
+              <!-- Category -->
+
+              <div class="job-category">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+                <span>
+                  {{ ticket.category }}
+                </span>
+
+              </div>
+
+
+              <!-- Description -->
+
+              <p class="job-description">
+
+                {{ ticket.description }}
+
+              </p>
+
+
+              <!-- Info -->
+
+              <div class="job-info">
+
+                <div class="info-item">
+
+                  <i class="fa-solid fa-flag"></i>
+
+                  <span>Priority</span>
+
+                  <strong
+                    class="priority"
+                    [class]="getPriorityClass(ticket.priority)">
+
+                    {{ ticket.priority }}
+
+                  </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <i class="fa-regular fa-calendar"></i>
+
+                  <span>Created</span>
+
+                  <strong>
+                    {{ ticket.createdAt | date:'MMM d, y' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Actions -->
+
+              <div class="job-actions">
+
+                <a
+                  [routerLink]="['/technician/job', ticket._id]"
+                  class="details-btn">
+
+                  <i class="fa-solid fa-eye"></i>
+
+                  Details
+
+                </a>
+
+
+                @if (ticket.status === 'ASSIGNED') {
+
+                  <button
+                    type="button"
+                    class="action-btn"
+                    (click)="startTicket(ticket._id)">
+
+                    <i class="fa-solid fa-play"></i>
+
+                    Start Job
+
+                  </button>
+
+                }
+
+
+                @if (ticket.status === 'IN_PROGRESS') {
+
+                  <button
+                    type="button"
+                    class="action-btn resolve-btn"
+                    (click)="resolveTicket(ticket._id)">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Resolve
+
+                  </button>
+
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+
+    @else {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+
+          <i class="fa-solid fa-briefcase"></i>
+
+        </div>
+
+        <h4>
+          No Assigned Jobs
+        </h4>
+
+        <p>
+          You currently don't have any maintenance jobs assigned to you.
+        </p>
+
+        <a
+          routerLink="/technician/available-requests"
+          class="browse-btn">
+
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+
+          Browse Available Requests
+
+        </a>
+
+      </div>
+
+    }
+
+  }
+
+</div>

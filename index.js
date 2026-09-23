@@ -10,7 +10,11 @@ const authRoutes = require("./backend/routes/authRoutes");
 const adminRoutes = require("./backend/routes/adminRoutes");
 const visitRoutes = require("./backend/routes/visitRoutes");
 const residentRoutes = require("./backend/routes/ResidentRoutes");
-const technicianRoutes = require("./backend/routes/technicianRoutes")
+const technicianRoutes = require("./backend/routes/technicianRoutes");
+const unitRoutes = require("./backend/routes/unitRoutes");
+const chatRoutes = require("./backend/routes/chatRoutes");
+const initializeChatSocket = require("./backend/socket/chatSocket");
+
 const app = express();
 const server = http.createServer(app);
 

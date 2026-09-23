@@ -20,6 +20,7 @@ export class MaintenancePageComponent implements OnInit {
   activeFilter: 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' = 'ALL';
   searchQuery: string = '';
   isLoading: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private ticketService: MaintenanceTicketService,
@@ -32,6 +33,7 @@ export class MaintenancePageComponent implements OnInit {
 
   loadTickets(): void {
     this.isLoading = true;
+    this.errorMessage = '';
     this.ticketService.getResidentTickets().subscribe({
       next: (res) => {
         this.tickets = res.tickets || [];
@@ -40,6 +42,8 @@ export class MaintenancePageComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching resident tickets:', err);
+        this.errorMessage =
+          err.error?.message || 'Unable to load your maintenance requests.';
         this.isLoading = false;
       }
     });

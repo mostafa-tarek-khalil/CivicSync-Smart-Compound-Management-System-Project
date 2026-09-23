@@ -1,0 +1,236 @@
+<div class="available-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <!-- Header -->
+
+  <div class="page-header mb-4">
+
+    <div>
+      <h2 class="page-title">
+        Available Requests
+      </h2>
+
+      <p class="page-subtitle">
+        Browse maintenance requests that match your specialization.
+      </p>
+    </div>
+
+    <div class="requests-count">
+
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+
+      <span>
+        {{ availableTickets.length }} Requests
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- Loading -->
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div class="spinner-border"></div>
+
+      <p>
+        Loading available requests...
+      </p>
+
+    </div>
+
+  }
+
+
+  <!-- Error -->
+
+  @else if (errorMessage) {
+
+    <div class="error-box">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="loadAvailableTickets()">
+
+        Try Again
+
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- Requests -->
+
+  @else {
+
+    @if (availableTickets.length > 0) {
+
+      <div class="row g-4">
+
+        @for (
+          ticket of availableTickets;
+          track ticket._id
+        ) {
+
+          <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="request-card">
+
+
+              <!-- Header -->
+
+              <div class="request-header">
+
+                <div class="category-icon">
+
+                  <i
+                    class="fa-solid"
+                    [class]="getCategoryIcon(ticket.category)">
+                  </i>
+
+                </div>
+
+                <span
+                  class="priority"
+                  [class]="getPriorityClass(ticket.priority)">
+
+                  {{ ticket.priority }}
+
+                </span>
+
+              </div>
+
+
+              <!-- Title -->
+
+              <h5 class="request-title">
+                {{ ticket.title }}
+              </h5>
+
+
+              <!-- Category -->
+
+              <div class="request-category">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+                <span>
+                  {{ ticket.category }}
+                </span>
+
+              </div>
+
+
+              <!-- Description -->
+
+              <p class="request-description">
+                {{ ticket.description }}
+              </p>
+
+
+              <!-- Info -->
+
+              <div class="request-info">
+
+                <div class="info-item">
+
+                  <i class="fa-regular fa-calendar"></i>
+
+                  <span>
+                    Created
+                  </span>
+
+                  <strong>
+                    {{ ticket.createdAt | date:'MMM d, y' }}
+                  </strong>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <i class="fa-solid fa-circle-info"></i>
+
+                  <span>
+                    Status
+                  </span>
+
+                  <strong>
+                    {{ ticket.status }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Action -->
+
+              <a
+                [routerLink]="['/technician/available-request', ticket._id]"
+                class="details-btn">
+
+                <i class="fa-solid fa-eye"></i>
+
+                View Request
+
+              </a>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+
+    @else {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+
+        </div>
+
+        <h4>
+          No Available Requests
+        </h4>
+
+        <p>
+          There are no maintenance requests available for you right now.
+        </p>
+
+        <button
+          type="button"
+          class="refresh-btn"
+          (click)="loadAvailableTickets()">
+
+          <i class="fa-solid fa-rotate-right"></i>
+
+          Refresh
+
+        </button>
+
+      </div>
+
+    }
+
+  }
+
+</div>

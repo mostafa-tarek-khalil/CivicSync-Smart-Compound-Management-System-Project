@@ -1,0 +1,275 @@
+.ticket-details-page {
+  background: #f8f9ff;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #315b8f;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.back-link:hover {
+  color: #1d3f68;
+}
+
+.page-title {
+  color: #142b46;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+.details-card {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+}
+
+.ticket-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.category-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 12px;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+
+.ticket-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.ticket-heading h4 {
+  color: #142b46;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ticket-heading span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.priority {
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.priority.medium {
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+}
+
+.priority.high {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+}
+
+.priority.urgent {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.section {
+  padding-top: 22px;
+}
+
+.section h5 {
+  color: #142b46;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #64748b;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9ff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.info-box > i {
+  color: #315b8f;
+  font-size: 17px;
+  width: 20px;
+  text-align: center;
+}
+
+.info-box span {
+  display: block;
+  color: #718096;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.info-box strong {
+  display: block;
+  color: #142b46;
+  font-size: 13px;
+}
+
+.attachment-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #315b8f;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attachment-btn:hover {
+  color: #1d3f68;
+}
+
+.offer-card {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+}
+
+.offer-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
+  border-radius: 14px;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+}
+
+.offer-card h4 {
+  color: #142b46;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.offer-card p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.create-offer-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 15px;
+  border-radius: 9px;
+  background: #315b8f;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.create-offer-btn:hover {
+  background: #1d3f68;
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+
+  .ticket-details-page {
+    padding: 20px !important;
+  }
+
+  .details-card,
+  .offer-card {
+    padding: 18px;
+  }
+
+  .ticket-top {
+    align-items: flex-start;
+  }
+
+  .ticket-heading h4 {
+    font-size: 18px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .ticket-details-page {
+    padding: 15px !important;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .ticket-top {
+    flex-wrap: wrap;
+  }
+
+  .priority {
+    margin-left: 67px;
+  }
+
+}

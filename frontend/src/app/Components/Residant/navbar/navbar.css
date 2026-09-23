@@ -1,4 +1,3 @@
-
 :host {
   display: block;
 
@@ -27,26 +26,57 @@
 
 
 /* =========================
+   HAMBURGER & OVERLAY
+========================= */
+
+.hamburger-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1050;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  
+}
+
+.hamburger-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 43, 70, 0.35);
+  z-index: 1090;
+}
+
+
+/* =========================
    SIDEBAR
 ========================= */
 
 .sidebar {
-  width: 240px;
-  min-width: 240px;
-  max-width: 240px;
-
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
   height: 100vh;
-
   position: sticky;
   top: 0;
-
   background-color: var(--surface);
-
   border-color: var(--border) !important;
-
   box-shadow: var(--shadow-sm);
-
-  z-index: 100;
+  z-index: 1000;
+  transition: transform 0.25s ease;
 }
 
 
@@ -55,37 +85,29 @@
 ========================= */
 
 .brand-badge {
-  width: 30px;
-  height: 30px;
-
+  width: 32px;
+  height: 32px;
   background-color: var(--primary);
   color: #ffffff;
-
   border-radius: 6px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-weight: 700;
   font-size: 14px;
 }
 
 .brand-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-
   color: var(--text-primary);
-
   line-height: 1.1;
 }
 
 .brand-sub {
   font-size: 9px;
   font-weight: 600;
-
   letter-spacing: 0.8px;
-
   color: var(--text-light);
 }
 
@@ -97,13 +119,9 @@
 .menu-label {
   font-size: 10px;
   font-weight: 700;
-
   letter-spacing: 0.8px;
-
   color: var(--text-light);
-
   margin-bottom: 10px;
-
   padding-left: 6px;
 }
 
@@ -115,22 +133,14 @@
 .nav-link-custom {
   display: flex;
   align-items: center;
-
   gap: 10px;
-
-  padding: 9px 12px;
-
+  padding: 10px 12px;
   border-radius: 8px;
-
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
-
   color: var(--text-secondary);
-
   text-decoration: none !important;
-
   cursor: pointer;
-
   transition: all 0.15s ease;
 }
 
@@ -150,13 +160,9 @@
 
 .nav-icon {
   font-size: 14px;
-
   color: var(--icon);
-
   width: 18px;
-
   text-align: center;
-
   transition: color 0.15s ease;
 }
 
@@ -172,23 +178,15 @@
 
 .dark-mode-btn {
   width: 100%;
-
   border: 1px solid var(--border);
-
   background-color: var(--surface-soft);
-
   color: var(--text-secondary);
-
   border-radius: 10px;
-
   padding: 9px 11px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   cursor: pointer;
-
   transition: all 0.2s ease;
 }
 
@@ -200,9 +198,7 @@
 .mode-info {
   display: flex;
   align-items: center;
-
   gap: 10px;
-
   font-size: 12.5px;
   font-weight: 600;
 }
@@ -210,7 +206,6 @@
 .mode-icon {
   width: 18px;
   text-align: center;
-
   color: var(--primary);
 }
 
@@ -222,24 +217,17 @@
 .toggle-switch {
   width: 36px;
   height: 20px;
-
   border-radius: 20px;
-
   background-color: #cbd5e1;
-
   padding: 2px;
-
   transition: all 0.2s ease;
 }
 
 .toggle-circle {
   width: 16px;
   height: 16px;
-
   border-radius: 50%;
-
   background-color: #ffffff;
-
   transition: transform 0.2s ease;
 }
 
@@ -259,29 +247,61 @@
 .badge-guard {
   font-size: 10px;
   font-weight: 600;
-
   color: var(--primary-dark);
-
   background-color: var(--primary-soft);
-
   border: 1px solid rgba(49, 91, 143, 0.15);
-
   padding: 3px 8px;
-
   border-radius: 6px;
 }
 
 
 /* =========================
-   FOOTER
+   MOBILE CLOSE BUTTON
 ========================= */
 
-.sidebar-footer {
-  border-top: 1px solid var(--border);
+.close-mobile {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.sidebar-footer small {
-  color: var(--text-muted);
+.close-mobile:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 270px;
+    min-width: 270px;
+    max-width: 270px;
+    z-index: 1100;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
 }
 
 
@@ -290,7 +310,6 @@
 ========================= */
 
 :host-context(.dark-mode) {
-
   --primary: #6f9fd3;
   --primary-dark: #8ab4e3;
   --primary-soft: rgba(111, 159, 211, 0.14);
@@ -314,16 +333,10 @@
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
-
-/* Dark Sidebar */
-
 :host-context(.dark-mode) .sidebar {
   background-color: var(--surface);
   border-color: var(--border) !important;
 }
-
-
-/* Dark Brand */
 
 :host-context(.dark-mode) .brand-badge {
   background-color: var(--primary);
@@ -333,9 +346,6 @@
 :host-context(.dark-mode) .brand-title {
   color: var(--text-primary);
 }
-
-
-/* Dark Navigation */
 
 :host-context(.dark-mode) .nav-link-custom {
   color: var(--text-secondary);
@@ -355,9 +365,6 @@
   color: #0d1420;
 }
 
-
-/* Dark Mode Button */
-
 :host-context(.dark-mode) .dark-mode-btn {
   background-color: var(--surface-soft);
   border-color: var(--border);
@@ -369,14 +376,115 @@
   border-color: var(--primary);
 }
 
-
-/* Dark Badge */
-
 :host-context(.dark-mode) .badge-guard {
   color: var(--primary-dark);
-
   background-color: var(--primary-soft);
-
   border-color: rgba(111, 159, 211, 0.20);
 }
 
+:host-context(.dark-mode) .close-mobile {
+  background-color: var(--surface-soft);
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-mode) .close-mobile:hover {
+  background-color: var(--primary);
+  color: #0d1420;
+}
+/* =========================
+   DARK MODE OVERRIDES
+========================= */
+
+:host-context(body.dark-mode),
+:host-context(.dark-mode) {
+  --primary: #6f9fd3;
+  --primary-dark: #8ab4e3;
+  --primary-soft: rgba(111, 159, 211, 0.14);
+
+  --surface: #151f2d;
+  --surface-soft: #1b2736;
+  --surface-hover: #202f41;
+
+  --text-main: #f1f5f9;
+  --text-primary: #e8eef6;
+  --text-secondary: #a9b7c9;
+  --text-muted: #98a8bb;
+  --text-light: #7f90a5;
+
+  --border: #2a3a4e;
+  --border-soft: #304156;
+
+  --icon: #8091a6;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+:host-context(body.dark-mode) .sidebar,
+:host-context(.dark-mode) .sidebar {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+:host-context(body.dark-mode) .brand-badge,
+:host-context(.dark-mode) .brand-badge {
+  background-color: var(--primary);
+  color: #0d1420;
+}
+
+:host-context(body.dark-mode) .brand-title,
+:host-context(.dark-mode) .brand-title {
+  color: var(--text-primary);
+}
+
+:host-context(body.dark-mode) .brand-sub,
+:host-context(.dark-mode) .brand-sub {
+  color: var(--text-light);
+}
+
+:host-context(body.dark-mode) .menu-label,
+:host-context(.dark-mode) .menu-label {
+  color: var(--text-light);
+}
+
+:host-context(body.dark-mode) .nav-link-custom,
+:host-context(.dark-mode) .nav-link-custom {
+  color: var(--text-secondary);
+}
+
+:host-context(body.dark-mode) .nav-link-custom:hover,
+:host-context(.dark-mode) .nav-link-custom:hover {
+  background-color: var(--surface-hover);
+  color: var(--primary-dark);
+}
+
+:host-context(body.dark-mode) .nav-link-custom.active,
+:host-context(.dark-mode) .nav-link-custom.active {
+  background-color: var(--primary) !important;
+  color: #0d1420 !important;
+}
+
+:host-context(body.dark-mode) .nav-link-custom.active .nav-icon,
+:host-context(.dark-mode) .nav-link-custom.active .nav-icon {
+  color: #0d1420 !important;
+}
+
+:host-context(body.dark-mode) .dark-mode-btn,
+:host-context(.dark-mode) .dark-mode-btn {
+  background-color: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+:host-context(body.dark-mode) .dark-mode-btn:hover,
+:host-context(.dark-mode) .dark-mode-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary);
+}
+
+:host-context(body.dark-mode) .badge-guard,
+:host-context(.dark-mode) .badge-guard {
+  color: var(--primary-dark);
+  background-color: var(--primary-soft);
+  border-color: rgba(111, 159, 211, 0.20);
+}

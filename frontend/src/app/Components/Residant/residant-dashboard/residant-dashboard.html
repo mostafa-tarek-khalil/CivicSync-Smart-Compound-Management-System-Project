@@ -23,6 +23,13 @@
 
       </div>
 
+      @if (errorMessage) {
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          {{ errorMessage }}
+        </div>
+      }
+
       <button
         type="button"
         class="refresh-btn"
