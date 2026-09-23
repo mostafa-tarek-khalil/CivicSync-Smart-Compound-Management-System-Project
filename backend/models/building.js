@@ -22,6 +22,18 @@ const buildingSchema = new mongoose.Schema(
             maxlength: 500,
             default: null,
         },
+
+        imageUrl: {
+            type: String,
+            trim: true,
+            default: null,
+        },
+
+        floorsCount: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
     },
     {
         timestamps: true,
@@ -33,6 +45,10 @@ buildingSchema.index(
     { unique: true }
 );
 
-const Building = mongoose.model("Building", buildingSchema);
+const Building =
+    mongoose.model(
+        "Building",
+        buildingSchema
+    );
 
 module.exports = Building;

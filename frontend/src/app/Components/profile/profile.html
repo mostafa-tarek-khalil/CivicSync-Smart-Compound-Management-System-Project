@@ -1,0 +1,131 @@
+<div class="profile-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <button class="back-btn" type="button" (click)="goHome()">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back
+    </button>
+
+    <div class="header-copy">
+      <span class="eyebrow">ACCOUNT</span>
+      <h1>My Profile</h1>
+      <p>Manage your personal information and account details.</p>
+    </div>
+  </header>
+
+  <!-- LOADING -->
+  <div class="state-box" *ngIf="loading">
+    <span class="material-symbols-outlined spinning">hourglass_top</span>
+    <p>Loading your profile…</p>
+  </div>
+
+  <!-- ERROR (initial load) -->
+  <div class="state-box error" *ngIf="!loading && !profile && errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    <p>{{ errorMessage }}</p>
+    <button class="retry-btn" type="button" (click)="loadProfile()">Retry</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="profile-grid" *ngIf="!loading && profile">
+
+    <!-- IDENTITY CARD -->
+    <section class="card identity-card">
+      <div class="avatar">{{ initials }}</div>
+
+      <h2>{{ profile.name }}</h2>
+      <span class="role-badge">{{ roleLabel }}</span>
+
+      <div class="identity-status">
+        <span class="status-dot" [class.active]="profile.status === 'ACTIVE'"
+          [class.pending]="profile.status === 'PENDING'" [class.rejected]="profile.status === 'REJECTED'"></span>
+        {{ profile.status }}
+      </div>
+
+      <div class="identity-meta">
+        <div class="meta-row">
+          <span class="material-symbols-outlined">mail</span>
+          <span>{{ profile.email }}</span>
+        </div>
+
+        <div class="meta-row" *ngIf="profile.lastLoginAt">
+          <span class="material-symbols-outlined">schedule</span>
+          <span>Last login {{ profile.lastLoginAt | date: 'MMM d, y, h:mm a' }}</span>
+        </div>
+
+        <div class="meta-row" *ngIf="profile.role === 'TECHNICIAN'">
+          <span class="material-symbols-outlined">star</span>
+          <span>{{ profile.rating }} ★ ({{ profile.totalReviews }} reviews)</span>
+        </div>
+      </div>
+
+      <div class="specializations" *ngIf="profile.specializations.length > 0">
+        <span class="spec-title">SPECIALIZATIONS</span>
+        <div class="spec-list">
+          <span class="spec-chip" *ngFor="let spec of profile.specializations">{{ spec }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- EDIT CARD -->
+    <section class="card edit-card">
+      <div class="card-heading">
+        <span class="material-symbols-outlined">edit</span>
+        <div>
+          <h3>Edit details</h3>
+          <p>Update your name, phone and avatar.</p>
+        </div>
+      </div>
+
+      <div class="alert success" *ngIf="successMessage">
+        <span class="material-symbols-outlined">check_circle</span>
+        {{ successMessage }}
+      </div>
+
+      <div class="alert error" *ngIf="errorMessage">
+        <span class="material-symbols-outlined">error</span>
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-group">
+        <label for="name">Full name</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">person</span>
+          <input id="name" type="text" [(ngModel)]="name" placeholder="Your full name" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone number</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">call</span>
+          <input id="phone" type="tel" [(ngModel)]="phone" placeholder="Your phone number" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <div class="input-wrapper locked">
+          <span class="material-symbols-outlined">mail</span>
+          <input id="email" type="email" [value]="profile.email" disabled />
+          <span class="material-symbols-outlined lock">lock</span>
+        </div>
+        <p class="field-hint">Your email is used for sign-in and cannot be changed here.</p>
+      </div>
+
+      <div class="form-actions">
+        <button class="secondary-btn" type="button" (click)="reset()" [disabled]="!isDirty || saving">
+          Reset
+        </button>
+
+        <button class="primary-btn" type="button" (click)="save()" [disabled]="!isDirty || saving">
+          <span class="material-symbols-outlined">save</span>
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+</div>

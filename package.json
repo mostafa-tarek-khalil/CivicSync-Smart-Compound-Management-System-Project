@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed:admin": "node backend/seed/adminSeed.js",
+    "seed:demo": "node backend/seed/demoSeed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

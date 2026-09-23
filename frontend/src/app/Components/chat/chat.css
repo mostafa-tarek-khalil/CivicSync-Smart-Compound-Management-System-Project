@@ -35,7 +35,7 @@
    DARK MODE
 ========================================================= */
 
-:host-context(.dark-mode) {
+:host-context(html.dark-mode) {
   --primary: #6f9fd3;
   --primary-dark: #8ab4e3;
   --primary-soft: rgba(111, 159, 211, 0.14);
@@ -1594,7 +1594,7 @@
   backdrop-filter: blur(3px);
 }
 
-:host-context(.dark-mode) .delete-modal-backdrop {
+:host-context(html.dark-mode) .delete-modal-backdrop {
   background: rgba(0, 0, 0, 0.70);
 }
 

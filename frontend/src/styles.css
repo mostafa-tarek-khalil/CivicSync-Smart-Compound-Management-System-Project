@@ -1,1 +1,67 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Material Symbols icon font base style.
+   Without this, the ligature text (e.g. "verified") shows instead of the icon. */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================================================
+   GLOBAL DARK MODE BASELINE
+   Applied when ThemeService adds `dark-mode` to <html>.
+   Pages that define their own variables override these.
+   ========================================================= */
+
+html, body {
+  background: #f7f8fc;
+  color: #202238;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html.dark-mode,
+html.dark-mode body {
+  background: #0d1420;
+  color: #e8eef6;
+}
+
+/* Smooth the transition for the whole app. */
+html.dark-mode * {
+  scrollbar-color: #35475d #151f2d;
+}
+
+html.dark-mode ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html.dark-mode ::-webkit-scrollbar-track {
+  background: #151f2d;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb {
+  background: #35475d;
+  border-radius: 8px;
+}
+
+html.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #435a75;
+}

@@ -1,0 +1,113 @@
+<div class="requests-page">
+
+  <header class="page-header">
+    <div class="header-content">
+      <span class="eyebrow">RESIDENT • VISITOR ACCESS</span>
+      <h1>Visitor Requests</h1>
+      <p>Approve or reject visitors who requested access to your unit.</p>
+    </div>
+
+    <div class="pending-badge">
+      <span class="material-symbols-outlined">pending_actions</span>
+      <div>
+        <span>PENDING</span>
+        <strong>{{ pendingCount }}</strong>
+      </div>
+    </div>
+  </header>
+
+  <div class="alert success" *ngIf="successMessage">
+    <span class="material-symbols-outlined">check_circle</span>
+    {{ successMessage }}
+  </div>
+
+  <div class="alert error" *ngIf="errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+
+  <section class="request-list">
+
+    <div class="empty-state" *ngIf="loading">
+      <span class="material-symbols-outlined">hourglass_top</span>
+      <h3>Loading requests…</h3>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !errorMessage && requests.length === 0">
+      <span class="material-symbols-outlined">inbox</span>
+      <h3>No visitor requests</h3>
+      <p>When a visitor requests access to your unit, it will appear here.</p>
+    </div>
+
+    <article class="request-card" *ngFor="let request of requests">
+
+      <div class="request-avatar">
+        {{ request.visitorName.charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="request-main">
+
+        <div class="name-row">
+          <h3>{{ request.visitorName }}</h3>
+          <span
+            class="status-badge"
+            [class.pending]="request.status === 'PENDING'"
+            [class.approved]="request.status === 'APPROVED' || request.status === 'QR_GENERATED'"
+            [class.rejected]="request.status === 'REJECTED' || request.status === 'EXPIRED'"
+            [class.checked-in]="request.status === 'CHECKED_IN'"
+            [class.checked-out]="request.status === 'CHECKED_OUT'"
+          >
+            {{ request.statusLabel }}
+          </span>
+        </div>
+
+        <div class="request-meta">
+          <span>
+            <span class="material-symbols-outlined">mail</span>
+            {{ request.visitorEmail }}
+          </span>
+          <span>
+            <span class="material-symbols-outlined">call</span>
+            {{ request.visitorPhone }}
+          </span>
+          <span>
+            <span class="material-symbols-outlined">apartment</span>
+            {{ request.building }} · Unit {{ request.unit }}
+          </span>
+          <span>
+            <span class="material-symbols-outlined">event</span>
+            {{ request.visitDate }} · {{ request.startTime }}
+          </span>
+          <span>
+            <span class="material-symbols-outlined">category</span>
+            {{ request.purpose }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="request-actions" *ngIf="request.status === 'PENDING'">
+        <button
+          class="approve-btn"
+          type="button"
+          [disabled]="isActioning(request)"
+          (click)="approve(request)">
+          <span class="material-symbols-outlined">check</span>
+          Approve
+        </button>
+
+        <button
+          class="reject-btn"
+          type="button"
+          [disabled]="isActioning(request)"
+          (click)="reject(request)">
+          <span class="material-symbols-outlined">close</span>
+          Reject
+        </button>
+      </div>
+
+    </article>
+
+  </section>
+
+</div>

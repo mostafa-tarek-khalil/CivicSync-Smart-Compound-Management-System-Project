@@ -17,6 +17,7 @@
     </nav>
 
     <div class="nav-actions">
+      <a routerLink="/visitor-entry" class="visitor-nav-link" style="text-decoration: none;">Visitor access</a>
       <a routerLink="/login" class="login-btn" style="text-decoration: none;">Log in</a>
       <a routerLink="/register" class="primary-nav-btn">Get started <span>→</span></a>
     </div>
@@ -48,7 +49,7 @@
 
           <div class="hero-buttons">
             <a routerLink="/register" class="hero-primary-btn">Get started <span>→</span></a>
-            <a href="#platform" class="hero-secondary-btn">Explore platform <span>↓</span></a>
+            <a routerLink="/visitor-entry" class="hero-secondary-btn">Visitor access <span>→</span></a>
           </div>
 
           <div class="hero-trust">
@@ -426,6 +427,11 @@
             </div>
           </div>
         </div>
+
+        <a routerLink="/visitor-entry" class="visitor-cta">
+          Request a visit
+          <span>→</span>
+        </a>
       </div>
 
       <div class="visitor-visual">
@@ -730,8 +736,9 @@
       <div class="footer-column">
         <span>ACCESS</span>
         <a routerLink="/login">Login</a>
-        <a href="#home">Register</a>
-        <a href="#about">About CivicSync</a>
+        <a routerLink="/register">Register</a>
+        <a routerLink="/visitor-entry">Visitor access</a>
+        <a routerLink="/visitor-lookup">Track a visit</a>
       </div>
 
       <div class="footer-status">

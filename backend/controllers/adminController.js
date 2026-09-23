@@ -1,4 +1,5 @@
 const adminService = require("../services/adminService");
+const visitService = require("../services/visitService");
 
 const getUsers = async (req, res) => {
     try {
@@ -394,6 +395,25 @@ const getReports = async (req, res) => {
     }
 };
 
+const expireStaleVisits = async (req, res) => {
+    try {
+        const result =
+            await visitService.expireStaleVisits();
+
+        res.status(200).json({
+            success: true,
+            message:
+                "Stale visits expired successfully",
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 
 module.exports = {
     getUsers,
@@ -416,4 +436,5 @@ module.exports = {
     getVisitById,
     getDashboard,
     getReports,
+    expireStaleVisits,
 };

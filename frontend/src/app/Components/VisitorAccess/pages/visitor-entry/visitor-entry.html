@@ -1,0 +1,131 @@
+<div class="entry-page">
+
+  <div class="background-shape shape-one"></div>
+  <div class="background-shape shape-two"></div>
+
+  <div class="entry-container">
+
+    <!-- BRAND -->
+    <header class="entry-brand">
+      <a class="brand" routerLink="/">
+        <span class="brand-icon">
+          <span></span><span></span><span></span>
+        </span>
+        CivicSync
+      </a>
+
+      <a class="login-link" routerLink="/login">
+        Sign in
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
+    </header>
+
+    <!-- HERO -->
+    <section class="entry-hero">
+      <span class="eyebrow">VISITOR ACCESS</span>
+      <h1>Welcome to CivicSync</h1>
+      <p>
+        Request a visit to the compound or track a visit you have already
+        arranged. No account required.
+      </p>
+    </section>
+
+    <!-- RESUME BANNER -->
+    <div class="resume-banner" *ngIf="hasSavedVisit">
+      <div class="resume-icon">
+        <span class="material-symbols-outlined">history</span>
+      </div>
+
+      <div class="resume-content">
+        <strong>Continue where you left off</strong>
+        <span>
+          We found an in-progress visit{{ savedVisitorName ? ' for ' + savedVisitorName : '' }}.
+        </span>
+      </div>
+
+      <button class="resume-btn" type="button" (click)="resumeSaved()">
+        Continue
+      </button>
+    </div>
+
+    <!-- ACTIONS -->
+    <section class="entry-actions">
+
+      <button class="entry-card primary" type="button" (click)="startRequest()">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">event_available</span>
+        </div>
+
+        <div class="card-body">
+          <h3>Request a Visit</h3>
+          <p>
+            Choose a building and unit, pick a time, and verify your email to
+            receive a visitor QR pass.
+          </p>
+        </div>
+
+        <span class="material-symbols-outlined card-arrow">arrow_forward</span>
+      </button>
+
+      <button class="entry-card" type="button" (click)="trackRequest()">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">travel_explore</span>
+        </div>
+
+        <div class="card-body">
+          <h3>Track a Request</h3>
+          <p>
+            Already requested a visit? Look it up with your email to check its
+            status or show your QR pass.
+          </p>
+        </div>
+
+        <span class="material-symbols-outlined card-arrow">arrow_forward</span>
+      </button>
+
+    </section>
+
+    <!-- STEPS -->
+    <section class="entry-steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div>
+          <strong>Submit</strong>
+          <span>Send your visit details</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-num">2</span>
+        <div>
+          <strong>Verify</strong>
+          <span>Confirm your email with an OTP</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-num">3</span>
+        <div>
+          <strong>Approve</strong>
+          <span>The resident reviews your request</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-num">4</span>
+        <div>
+          <strong>Visit</strong>
+          <span>Show your QR pass at the gate</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="entry-footer">
+      <span>© 2026 CivicSync</span>
+      <span>Smart Compound Management</span>
+    </footer>
+
+  </div>
+
+</div>

@@ -1,8 +1,24 @@
 const Negotiation = require("../models/negotiation");
 const Offer = require("../models/offer");
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const { createNotification } = require("./notificationService");
 
-const getOfferForUser = async (offerId, userId, role) => {
+const getOfferForUser = async (
+    offerId,
+    userId,
+    role
+) => {
+    if (
+        role !== "RESIDENT" &&
+        role !== "TECHNICIAN"
+    ) {
+        const error = new Error(
+            "Only residents and technicians can access negotiations"
+        );
+        error.statusCode = 403;
+        throw error;
+    }
+
     const offer = await Offer.findById(offerId);
 
     if (!offer) {
@@ -47,7 +63,10 @@ const getOfferForUser = async (offerId, userId, role) => {
         }
     }
 
-    return offer;
+    return {
+        offer,
+        ticket,
+    };
 };
 
 const getNegotiations = async (
@@ -55,9 +74,15 @@ const getNegotiations = async (
     userId,
     role
 ) => {
-    await getOfferForUser(offerId, userId, role);
+    const { offer } = await getOfferForUser(
+        offerId,
+        userId,
+        role
+    );
 
-    return await Negotiation.find({ offerId })
+    return await Negotiation.find({
+        offerId: offer._id,
+    })
         .populate(
             "senderId",
             "name email phone role"
@@ -71,6 +96,17 @@ const createNegotiation = async (
     role,
     { price, message }
 ) => {
+    if (
+        role !== "RESIDENT" &&
+        role !== "TECHNICIAN"
+    ) {
+        const error = new Error(
+            "Only residents and technicians can negotiate"
+        );
+        error.statusCode = 403;
+        throw error;
+    }
+
     if (price === undefined) {
         const error = new Error("price is required");
         error.statusCode = 400;
@@ -90,11 +126,12 @@ const createNegotiation = async (
         throw error;
     }
 
-    const offer = await getOfferForUser(
-        offerId,
-        userId,
-        role
-    );
+    const { offer, ticket } =
+        await getOfferForUser(
+            offerId,
+            userId,
+            role
+        );
 
     if (offer.status !== "PENDING") {
         const error = new Error(
@@ -104,12 +141,41 @@ const createNegotiation = async (
         throw error;
     }
 
-    const negotiation = await Negotiation.create({
-        offerId,
-        senderId: userId,
-        senderRole: role,
-        price: numericPrice,
-        message,
+    if (ticket.status !== "OPEN") {
+        const error = new Error(
+            "Negotiation is only available while the ticket is OPEN"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const negotiation =
+        await Negotiation.create({
+            offerId: offer._id,
+            senderId: userId,
+            senderRole: role,
+            price: numericPrice,
+            message,
+        });
+
+    await Offer.findOneAndUpdate(
+        {
+            _id: offer._id,
+            status: "PENDING",
+        },
+        {
+            $set: {
+                price: numericPrice,
+            },
+        }
+    );
+
+    await createNotification({
+        userId: role === "RESIDENT" ? offer.technicianId : ticket.residentId,
+        type: "NEW_NEGOTIATION",
+        title: "New negotiation message",
+        message: `A new price proposal was made for “${ticket.title}”.`,
+        relatedId: offer._id,
     });
 
     return await negotiation.populate(

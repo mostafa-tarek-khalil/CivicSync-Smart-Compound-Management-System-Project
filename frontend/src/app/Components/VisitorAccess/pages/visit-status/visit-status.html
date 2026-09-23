@@ -1,0 +1,300 @@
+
+<div class="status-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+
+    <div class="header-left">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToRequest()"
+        aria-label="Back to request status">
+        ←
+      </button>
+
+      <div>
+        <p class="eyebrow">VISITOR ACCESS</p>
+
+        <h1>Visit Status</h1>
+
+        <p class="subtitle">
+          Track the progress of your visitor access request.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="request-badge">
+      <span>REQUEST ID</span>
+      <strong>#{{ requestId }}</strong>
+    </div>
+
+  </header>
+
+
+  <!-- CURRENT STATUS -->
+  <section class="status-hero">
+
+    <div class="hero-icon">
+      ✓
+    </div>
+
+    <div class="hero-content">
+
+      <span class="status-label">
+        CURRENT STATUS
+      </span>
+
+      <h2>{{ currentStatus }}</h2>
+
+      <p>
+        Your QR pass has been generated and is ready for visitor access.
+      </p>
+
+    </div>
+
+    <button
+      type="button"
+      class="qr-button"
+      (click)="viewQrPass()">
+
+      <span class="button-icon">▦</span>
+
+      <span>View QR Pass</span>
+
+      <span class="arrow">→</span>
+
+    </button>
+
+  </section>
+
+
+  <!-- MAIN CONTENT -->
+  <div class="content-layout">
+
+
+    <!-- TIMELINE -->
+    <section class="timeline-card">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">REQUEST PROGRESS</p>
+
+          <h2>Visit Timeline</h2>
+        </div>
+
+        <span class="timeline-status">
+          {{ currentStatus }}
+        </span>
+
+      </div>
+
+
+      <div class="timeline">
+
+        <div
+          class="timeline-item"
+          *ngFor="let step of steps; let last = last"
+          [class.completed]="step.state === 'completed'"
+          [class.active]="step.state === 'active'"
+          [class.upcoming]="step.state === 'upcoming'">
+
+          <div class="timeline-marker">
+            {{ step.symbol }}
+          </div>
+
+          <div
+            class="timeline-line"
+            *ngIf="!last">
+          </div>
+
+          <div class="timeline-content">
+
+            <div class="timeline-top">
+
+              <h3>
+                {{ step.title }}
+              </h3>
+
+              <span
+                *ngIf="step.state === 'completed'"
+                class="step-badge completed-badge">
+                Completed
+              </span>
+
+              <span
+                *ngIf="step.state === 'active'"
+                class="step-badge active-badge">
+                Current
+              </span>
+
+              <span
+                *ngIf="step.state === 'upcoming'"
+                class="step-badge upcoming-badge">
+                Upcoming
+              </span>
+
+            </div>
+
+            <p>
+              {{ step.description }}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- RIGHT COLUMN -->
+    <aside class="details-column">
+
+
+      <!-- VISITOR -->
+      <section class="info-card">
+
+        <div class="card-title">
+
+          <div class="title-icon">
+            P
+          </div>
+
+          <div>
+            <span>VISITOR</span>
+            <h3>Visitor Details</h3>
+          </div>
+
+        </div>
+
+
+        <div class="visitor-profile">
+
+          <div class="avatar">
+            AM
+          </div>
+
+          <div>
+
+            <strong>
+              {{ visitorName }}
+            </strong>
+
+            <p>
+              {{ visitorEmail }}
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- VISIT DETAILS -->
+      <section class="info-card">
+
+        <div class="card-title">
+
+          <div class="title-icon">
+            V
+          </div>
+
+          <div>
+            <span>VISIT</span>
+            <h3>Visit Details</h3>
+          </div>
+
+        </div>
+
+
+        <div class="details-list">
+
+          <div class="detail-row">
+            <span>Host</span>
+            <strong>{{ residentName }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Location</span>
+            <strong>{{ building }} · {{ unit }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Date</span>
+            <strong>{{ visitDate }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Start Time</span>
+            <strong>{{ startTime }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Purpose</span>
+            <strong>{{ purpose }}</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- NOTICE -->
+      <section class="notice-card">
+
+        <div class="notice-icon">
+          i
+        </div>
+
+        <div>
+
+          <h3>Before You Arrive</h3>
+
+          <p>
+            Keep your QR pass available when you arrive at the compound
+            entrance. Security will scan the pass before checking you in.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- ACTIONS -->
+      <div class="actions">
+
+        <button
+          type="button"
+          class="primary-action"
+          (click)="viewQrPass()">
+
+          <span>View QR Pass</span>
+          <span>→</span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="secondary-action"
+          (click)="backToRequest()">
+
+          <span>←</span>
+          <span>Back to Request</span>
+
+        </button>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>
+

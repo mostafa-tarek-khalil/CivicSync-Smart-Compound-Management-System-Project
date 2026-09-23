@@ -1,0 +1,173 @@
+
+<div class="page">
+
+  <div class="page-header">
+
+    <div>
+      <button class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Dashboard
+      </button>
+
+      <p class="eyebrow">SECURITY • ACCESS RECORDS</p>
+      <h1>Access History</h1>
+      <p class="subtitle">
+        Review visitor entry and departure records.
+      </p>
+    </div>
+
+    <button class="secondary-btn" (click)="openVisitors()">
+      <span class="material-symbols-outlined">groups</span>
+      Today's Visitors
+    </button>
+
+  </div>
+
+  <section class="summary">
+
+    <div class="summary-card">
+      <span class="material-symbols-outlined">history</span>
+      <div>
+        <span>Total Records</span>
+        <strong>{{ records.length }}</strong>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span class="material-symbols-outlined">login</span>
+      <div>
+        <span>Checked In</span>
+        <strong>
+          {{ records.filter(r => r.status === 'Checked In').length }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span class="material-symbols-outlined">logout</span>
+      <div>
+        <span>Checked Out</span>
+        <strong>
+          {{ records.filter(r => r.status === 'Checked Out').length }}
+        </strong>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="table-card">
+
+    <div class="toolbar">
+
+      <div class="filters">
+        <button
+          *ngFor="let status of statuses"
+          [class.active]="selectedStatus === status"
+          (click)="selectedStatus = status">
+
+          {{ status }}
+        </button>
+      </div>
+
+      <div class="search">
+        <span class="material-symbols-outlined">search</span>
+
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search visitor, resident, or staff">
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Visitor</th>
+            <th>Resident</th>
+            <th>Date</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Security Staff</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let record of filteredRecords">
+            <td>
+              <strong>{{ record.visitor }}</strong>
+            </td>
+
+            <td>{{ record.resident }}</td>
+
+            <td>{{ record.date }}</td>
+
+            <td>{{ record.checkIn }}</td>
+
+            <td>{{ record.checkOut }}</td>
+
+            <td>{{ record.securityStaff }}</td>
+
+            <td>
+              <span
+                class="status"
+                [class.checked-in]="record.status === 'Checked In'"
+                [class.checked-out]="record.status === 'Checked Out'"
+                [class.expired]="record.status === 'Expired'">
+
+                {{ record.status }}
+              </span>
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div
+        class="empty-state"
+        *ngIf="loading">
+
+        <span class="material-symbols-outlined">hourglass_top</span>
+
+        <h3>Loading access records…</h3>
+
+      </div>
+
+      <div
+        class="empty-state"
+        *ngIf="!loading && errorMessage">
+
+        <span class="material-symbols-outlined">error</span>
+
+        <h3>Could not load access records</h3>
+
+        <p>{{ errorMessage }}</p>
+
+      </div>
+
+      <div
+        class="empty-state"
+        *ngIf="!loading && !errorMessage && filteredRecords.length === 0">
+
+        <span class="material-symbols-outlined">search_off</span>
+
+        <h3>No access records found</h3>
+
+        <p>
+          Try changing the filter or search term.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

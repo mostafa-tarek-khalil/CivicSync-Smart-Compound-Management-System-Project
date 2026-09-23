@@ -1,0 +1,257 @@
+<div class="visits-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+
+    <div class="header-content">
+      <span class="eyebrow">SECURITY MANAGEMENT</span>
+
+      <h1>Today's Visitors</h1>
+
+      <p>
+        Monitor scheduled visitors and manage today's gate access.
+      </p>
+    </div>
+
+    <div class="header-date">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <div>
+        <span>TODAY</span>
+        <strong>{{ todayLabel }}</strong>
+      </div>
+    </div>
+
+  </header>
+
+
+  <!-- STATS -->
+  <section class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <span class="material-symbols-outlined">groups</span>
+      </div>
+
+      <div>
+        <span class="stat-label">TODAY'S VISITORS</span>
+        <strong>{{ visitors.length }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <span class="material-symbols-outlined">pending_actions</span>
+      </div>
+
+      <div>
+        <span class="stat-label">PENDING</span>
+        <strong>{{ pendingCount }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <span class="material-symbols-outlined">login</span>
+      </div>
+
+      <div>
+        <span class="stat-label">CHECKED IN</span>
+        <strong>{{ checkedInCount }}</strong>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <span class="material-symbols-outlined">verified</span>
+      </div>
+
+      <div>
+        <span class="stat-label">APPROVED</span>
+        <strong>{{ approvedCount }}</strong>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- CONTROLS -->
+  <section class="controls-card">
+
+    <div class="search-box">
+      <span class="material-symbols-outlined">search</span>
+
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Search visitor, resident or unit..."
+      />
+    </div>
+
+    <div class="filter-group">
+
+      <button
+        type="button"
+        [class.active]="selectedStatus === 'All'"
+        (click)="selectedStatus = 'All'"
+      >
+        All
+      </button>
+
+      <button
+        type="button"
+        [class.active]="selectedStatus === 'Approved'"
+        (click)="selectedStatus = 'Approved'"
+      >
+        Approved
+      </button>
+
+      <button
+        type="button"
+        [class.active]="selectedStatus === 'Checked In'"
+        (click)="selectedStatus = 'Checked In'"
+      >
+        Checked In
+      </button>
+
+      <button
+        type="button"
+        [class.active]="selectedStatus === 'Pending'"
+        (click)="selectedStatus = 'Pending'"
+      >
+        Pending
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- SECTION TITLE -->
+  <div class="section-heading">
+
+    <div>
+      <span class="mini-label">VISITOR SCHEDULE</span>
+      <h2>Today's Schedule</h2>
+    </div>
+
+    <span class="visitor-count">
+      {{ filteredVisitors.length }} visitors
+    </span>
+
+  </div>
+
+
+  <!-- VISITOR LIST -->
+  <section class="visitor-list">
+
+    <div class="empty-state" *ngIf="loading">
+      <span class="material-symbols-outlined">hourglass_top</span>
+      <h3>Loading visitors…</h3>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <h3>Could not load visitors</h3>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <article
+      class="visitor-card"
+      *ngFor="let visitor of filteredVisitors"
+    >
+
+      <!-- TIME -->
+      <div class="visitor-time">
+        <strong>{{ visitor.time }}</strong>
+        <span>{{ visitor.period }}</span>
+      </div>
+
+
+      <!-- VISITOR INFO -->
+      <div class="visitor-main">
+
+        <div class="visitor-avatar">
+          {{ getInitials(visitor.name) }}
+        </div>
+
+        <div class="visitor-info">
+
+          <div class="name-row">
+            <h3>{{ visitor.name }}</h3>
+
+            <span
+              class="status-badge"
+              [class.approved]="visitor.status === 'Approved'"
+              [class.pending]="visitor.status === 'Pending'"
+              [class.checked-in]="visitor.status === 'Checked In'"
+              [class.checked-out]="visitor.status === 'Checked Out'"
+            >
+              {{ visitor.status }}
+            </span>
+          </div>
+
+          <p class="host">
+            <span class="material-symbols-outlined">person</span>
+            {{ visitor.resident }}
+          </p>
+
+          <div class="visit-meta">
+
+            <span>
+              <span class="material-symbols-outlined">apartment</span>
+              {{ visitor.building }} · {{ visitor.unit }}
+            </span>
+
+            <span>
+              <span class="material-symbols-outlined">category</span>
+              {{ visitor.purpose }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ACTION -->
+      <button
+        class="details-btn"
+        type="button"
+        (click)="viewDetails(visitor)"
+      >
+        View Details
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+
+    </article>
+
+
+    <!-- EMPTY STATE -->
+    <div
+      class="empty-state"
+      *ngIf="!loading && !errorMessage && filteredVisitors.length === 0"
+    >
+      <span class="material-symbols-outlined">search_off</span>
+
+      <h3>No visitors found</h3>
+
+      <p>
+        Try changing your search or status filter.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- BACK -->
+  <button
+    class="back-btn"
+    type="button"
+    (click)="goBack()"
+  >
+    <span class="material-symbols-outlined">arrow_back</span>
+    Back to Dashboard
+  </button>
+
+</div>

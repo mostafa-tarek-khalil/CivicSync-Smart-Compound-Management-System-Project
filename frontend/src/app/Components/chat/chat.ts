@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../Services/chat-service';
 import { ChatSocket } from '../../Services/chat-socket';
 import { AuthService } from '../../Services/auth-service';
+import { ThemeService } from '../VisitorAccess/services/theme';
 
 interface Conversation {
   _id: string;
@@ -74,12 +75,6 @@ export class Chat implements OnInit, OnDestroy {
   showGroupMembers = false;
 
   // =========================================================
-  // DARK MODE
-  // =========================================================
-
-  isDarkMode = false;
-
-  // =========================================================
   // NEW CHAT
   // =========================================================
 
@@ -114,10 +109,19 @@ export class Chat implements OnInit, OnDestroy {
   @ViewChild('messagesEnd')
   messagesEnd?: ElementRef<HTMLElement>;
 
+  // =========================================================
+  // DARK MODE
+  // =========================================================
+
+  get isDarkMode(): boolean {
+    return this.themeService.isDark;
+  }
+
   constructor(
     private chatService: ChatService,
     private chatSocket: ChatSocket,
     private authService: AuthService,
+    private themeService: ThemeService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -137,8 +141,6 @@ export class Chat implements OnInit, OnDestroy {
       );
     }
 
-    this.loadDarkMode();
-
     this.setupSocket();
     this.loadConversations();
   }
@@ -147,32 +149,8 @@ export class Chat implements OnInit, OnDestroy {
   // DARK MODE
   // =========================================================
 
-  private loadDarkMode(): void {
-
-    const savedTheme =
-      localStorage.getItem('civicsync-dark-mode');
-
-    this.isDarkMode = savedTheme === 'true';
-
-    document.body.classList.toggle(
-      'dark-mode',
-      this.isDarkMode
-    );
-  }
-
   toggleDarkMode(): void {
-
-    this.isDarkMode = !this.isDarkMode;
-
-    document.body.classList.toggle(
-      'dark-mode',
-      this.isDarkMode
-    );
-
-    localStorage.setItem(
-      'civicsync-dark-mode',
-      String(this.isDarkMode)
-    );
+    this.themeService.toggleTheme();
   }
 
   // =========================================================

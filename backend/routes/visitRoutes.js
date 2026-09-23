@@ -7,6 +7,10 @@ const {
     generateVisitOtp,
     verifyVisitOtp,
     createVisitorRequest,
+    getVisitorUnits,
+    getVisitorRequestStatus,
+    lookupVisitorRequests,
+    generateVisitorRequestQr,
     generateVisitorRequestOtp,
     verifyVisitorRequestOtp,
     getResidentVisitorRequests,
@@ -26,8 +30,12 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 router.post("/visitor-requests", createVisitorRequest);
+router.get("/visitor-units", getVisitorUnits);
 router.post("/visitor-requests/:id/otp", generateVisitorRequestOtp);
 router.post("/visitor-requests/:id/otp/verify", verifyVisitorRequestOtp);
+router.get("/visitor-requests/lookup", lookupVisitorRequests);
+router.get("/visitor-requests/:id/status", getVisitorRequestStatus);
+router.post("/visitor-requests/:id/qr", generateVisitorRequestQr);
 router.get("/visitor-requests", authMiddleware, roleMiddleware("RESIDENT"), getResidentVisitorRequests);
 router.patch("/visitor-requests/:id/approve", authMiddleware, roleMiddleware("RESIDENT"), approveVisitorRequest);
 router.patch("/visitor-requests/:id/reject", authMiddleware, roleMiddleware("RESIDENT"), rejectVisitorRequest);

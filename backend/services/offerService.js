@@ -1,5 +1,7 @@
 const Offer = require("../models/offer");
+const Negotiation = require("../models/negotiation");
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const { createNotification } = require("./notificationService");
 
 const getTicketOffers = async (ticketId, residentId) => {
     const ticket = await MaintenanceTicket.findById(ticketId);
@@ -11,7 +13,8 @@ const getTicketOffers = async (ticketId, residentId) => {
     }
 
     if (
-        ticket.residentId.toString() !== residentId.toString()
+        ticket.residentId.toString() !==
+        residentId.toString()
     ) {
         const error = new Error(
             "You can only view offers for your own ticket"
@@ -89,13 +92,33 @@ const createOffer = async (
         throw error;
     }
 
-    return await Offer.create({
-        ticketId,
-        technicianId,
-        price: numericPrice,
-        estimatedDuration: numericDuration,
-        note,
-    });
+    try {
+        const offer = await Offer.create({
+            ticketId,
+            technicianId,
+            price: numericPrice,
+            estimatedDuration: numericDuration,
+            note,
+        });
+        await createNotification({
+            userId: ticket.residentId,
+            type: "NEW_OFFER",
+            title: "New technician offer",
+            message: `A technician submitted an offer for “${ticket.title}”.`,
+            relatedId: offer._id,
+        });
+        return offer;
+    } catch (error) {
+        if (error.code === 11000) {
+            const duplicateError = new Error(
+                "You already made an offer for this ticket"
+            );
+            duplicateError.statusCode = 400;
+            throw duplicateError;
+        }
+
+        throw error;
+    }
 };
 
 const updateOffer = async (
@@ -125,6 +148,24 @@ const updateOffer = async (
     if (offer.status !== "PENDING") {
         const error = new Error(
             "Only pending offers can be updated"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const ticket = await MaintenanceTicket.findById(
+        offer.ticketId
+    );
+
+    if (!ticket) {
+        const error = new Error("Ticket not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (ticket.status !== "OPEN") {
+        const error = new Error(
+            "Offers can only be updated while the ticket is OPEN"
         );
         error.statusCode = 400;
         throw error;
@@ -201,11 +242,50 @@ const withdrawOffer = async (offerId, technicianId) => {
         throw error;
     }
 
-    offer.status = "WITHDRAWN";
+    const ticket = await MaintenanceTicket.findById(
+        offer.ticketId
+    );
 
-    await offer.save();
+    if (!ticket) {
+        const error = new Error("Ticket not found");
+        error.statusCode = 404;
+        throw error;
+    }
 
-    return offer;
+    if (ticket.status !== "OPEN") {
+        const error = new Error(
+            "Offers can only be withdrawn while the ticket is OPEN"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const updatedOffer =
+        await Offer.findOneAndUpdate(
+            {
+                _id: offerId,
+                technicianId,
+                status: "PENDING",
+            },
+            {
+                $set: {
+                    status: "WITHDRAWN",
+                },
+            },
+            {
+                new: true,
+            }
+        );
+
+    if (!updatedOffer) {
+        const error = new Error(
+            "Offer is no longer pending"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    return updatedOffer;
 };
 
 const getMyOffers = async (technicianId) => {
@@ -236,20 +316,23 @@ const acceptOffer = async (offerId, residentId) => {
         throw error;
     }
 
-    const ticket = await MaintenanceTicket.findById(
-        offer.ticketId
-    );
+    const ticket = await MaintenanceTicket.findOne({
+        _id: offer.ticketId,
+        residentId,
+    });
 
     if (!ticket) {
-        const error = new Error("Ticket not found");
-        error.statusCode = 404;
-        throw error;
-    }
+        const existingTicket =
+            await MaintenanceTicket.findById(
+                offer.ticketId
+            );
 
-    if (
-        ticket.residentId.toString() !==
-        residentId.toString()
-    ) {
+        if (!existingTicket) {
+            const error = new Error("Ticket not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
         const error = new Error(
             "You can only accept offers for your own ticket"
         );
@@ -265,19 +348,88 @@ const acceptOffer = async (offerId, residentId) => {
         throw error;
     }
 
-    offer.status = "ACCEPTED";
-    await offer.save();
+    const latestNegotiation =
+        await Negotiation.findOne({
+            offerId: offer._id,
+        }).sort({ createdAt: -1 });
 
-    ticket.status = "ASSIGNED";
-    ticket.assignedTo = offer.technicianId;
-    await ticket.save();
+    const finalPrice = latestNegotiation
+        ? latestNegotiation.price
+        : offer.price;
+
+    const assignedTicket =
+        await MaintenanceTicket.findOneAndUpdate(
+            {
+                _id: ticket._id,
+                residentId,
+                status: "OPEN",
+            },
+            {
+                $set: {
+                    status: "ASSIGNED",
+                    assignedTo: offer.technicianId,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+
+    if (!assignedTicket) {
+        const error = new Error(
+            "This ticket has already been assigned or changed"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const acceptedOffer =
+        await Offer.findOneAndUpdate(
+            {
+                _id: offer._id,
+                status: "PENDING",
+            },
+            {
+                $set: {
+                    status: "ACCEPTED",
+                    price: finalPrice,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+
+    if (!acceptedOffer) {
+        await MaintenanceTicket.findOneAndUpdate(
+            {
+                _id: ticket._id,
+                assignedTo: offer.technicianId,
+                status: "ASSIGNED",
+            },
+            {
+                $set: {
+                    status: "OPEN",
+                    assignedTo: null,
+                },
+            }
+        );
+
+        const error = new Error(
+            "Offer is no longer pending"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const otherPendingOffers = await Offer.find({
+        ticketId: offer.ticketId,
+        _id: { $ne: offer._id },
+        status: "PENDING",
+    }).select("_id technicianId");
 
     await Offer.updateMany(
-        {
-            ticketId: offer.ticketId,
-            _id: { $ne: offerId },
-            status: "PENDING",
-        },
+        { _id: { $in: otherPendingOffers.map((item) => item._id) } },
         {
             $set: {
                 status: "REJECTED",
@@ -285,7 +437,23 @@ const acceptOffer = async (offerId, residentId) => {
         }
     );
 
-    return offer;
+    await createNotification({
+        userId: acceptedOffer.technicianId,
+        type: "OFFER_ACCEPTED",
+        title: "Offer accepted",
+        message: `Your offer for “${ticket.title}” was accepted.`,
+        relatedId: acceptedOffer._id,
+    });
+
+    await Promise.all(otherPendingOffers.map((rejectedOffer) => createNotification({
+        userId: rejectedOffer.technicianId,
+        type: "OFFER_REJECTED",
+        title: "Offer not selected",
+        message: `Your offer for maintenance request "${ticket.title}" was not selected.`,
+        relatedId: rejectedOffer._id,
+    })));
+
+    return acceptedOffer;
 };
 
 module.exports = {

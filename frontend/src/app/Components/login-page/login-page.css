@@ -626,3 +626,92 @@ form {
     flex-wrap: wrap;
   }
 }
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+:host-context(html.dark-mode) .login-page {
+  background: #0d1420;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .shape-one {
+  background: rgba(111, 159, 211, 0.10);
+}
+
+:host-context(html.dark-mode) .shape-two {
+  background: rgba(111, 159, 211, 0.06);
+}
+
+:host-context(html.dark-mode) .login-container {
+  background: rgba(21, 31, 45, 0.92);
+  border-color: #29394c;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+:host-context(html.dark-mode) .login-showcase {
+  background: linear-gradient(145deg, #16243a 0%, #182a44 52%, #131f31 100%);
+}
+
+:host-context(html.dark-mode) .showcase-text h1,
+:host-context(html.dark-mode) .login-heading h2,
+:host-context(html.dark-mode) .brand {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .showcase-text p,
+:host-context(html.dark-mode) .login-heading p,
+:host-context(html.dark-mode) .feature span,
+:host-context(html.dark-mode) .register-link,
+:host-context(html.dark-mode) .remember-me,
+:host-context(html.dark-mode) .security-note {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .feature strong,
+:host-context(html.dark-mode) .form-group label {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-mode) .eyebrow,
+:host-context(html.dark-mode) .form-eyebrow,
+:host-context(html.dark-mode) .showcase-text h1 span,
+:host-context(html.dark-mode) .mobile-brand,
+:host-context(html.dark-mode) .forgot-link,
+:host-context(html.dark-mode) .register-link a {
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .login-form-section {
+  background: rgba(17, 26, 39, 0.92);
+}
+
+:host-context(html.dark-mode) .input-wrapper input {
+  background: #16233a;
+  border-color: #2a3a4e;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .input-wrapper input::placeholder {
+  color: #66778d;
+}
+
+:host-context(html.dark-mode) .input-wrapper input:focus {
+  background: #16233a;
+  border-color: #8eb2e8;
+  box-shadow: 0 0 0 4px rgba(142, 178, 232, 0.12);
+}
+
+:host-context(html.dark-mode) .input-icon,
+:host-context(html.dark-mode) .password-toggle {
+  color: #8091a6;
+}
+
+:host-context(html.dark-mode) .custom-checkbox {
+  background: #16233a;
+  border-color: #35475d;
+}
+
+:host-context(html.dark-mode) .showcase-footer {
+  color: #7f8ea3;
+}

@@ -14,6 +14,8 @@ const chatRoutes = require("./backend/routes/chatRoutes");
 const residentRoutes = require("./backend/routes/residentRoutes");
 const technicianRoutes = require("./backend/routes/technicianRoutes");
 const initializeChatSocket = require("./backend/socket/chatSocket");
+const visitService = require("./backend/services/visitService");
+const notificationRoutes = require("./backend/routes/notificationRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +37,7 @@ app.use("/api/units", unitRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/resident", residentRoutes);
 app.use("/api/technician", technicianRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 
 const io = new Server(server, {
@@ -64,6 +67,21 @@ const startServer = async () => {
                 `Server is running successfully on port ${PORT}`
             );
         });
+
+        // Periodically expire stale pending visits (OTP / QR windows).
+        // Runs independently so the main request flow is never blocked.
+        const EXPIRE_SWEEP_INTERVAL = 60 * 1000;
+
+        setInterval(async () => {
+            try {
+                await visitService.expireStaleVisits();
+            } catch (error) {
+                console.error(
+                    "Visit expiry sweep error:",
+                    error.message
+                );
+            }
+        }, EXPIRE_SWEEP_INTERVAL);
     } catch (error) {
         console.error("Error:", error.message);
         process.exit(1);

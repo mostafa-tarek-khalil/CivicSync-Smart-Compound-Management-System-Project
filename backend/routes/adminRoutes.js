@@ -24,6 +24,7 @@ const {
     getVisitById,
     getDashboard,
     getReports,
+    expireStaleVisits,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -48,6 +49,7 @@ router.get("/maintenance/:ticketId", getMaintenanceTicketById);
 router.patch("/maintenance/:ticketId/status", updateMaintenanceTicketStatus);
 router.get("/visits", getVisits);
 router.get("/visits/:visitId", getVisitById);
+router.post("/visits/expire-stale", expireStaleVisits);
 router.get("/reports", getReports);
 
 module.exports = router;

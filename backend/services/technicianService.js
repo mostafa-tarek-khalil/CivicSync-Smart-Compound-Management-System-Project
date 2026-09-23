@@ -1,16 +1,26 @@
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const { createNotification } = require("./notificationService");
 
 const getAvailableTickets = async (technicianId) => {
     return await MaintenanceTicket.find({
         status: "OPEN",
         skippedBy: { $ne: technicianId },
     })
-        .populate("residentId", "name email phone")
+        .populate(
+            "residentId",
+            "name email phone"
+        )
         .sort({ createdAt: -1 });
 };
 
-const startTicket = async (ticketId, technicianId) => {
-    const ticket = await MaintenanceTicket.findById(ticketId);
+const startTicket = async (
+    ticketId,
+    technicianId
+) => {
+    const ticket =
+        await MaintenanceTicket.findById(
+            ticketId
+        );
 
     if (!ticket) {
         const error = new Error("Ticket not found");
@@ -28,7 +38,8 @@ const startTicket = async (ticketId, technicianId) => {
 
     if (
         !ticket.assignedTo ||
-        ticket.assignedTo.toString() !== technicianId.toString()
+        ticket.assignedTo.toString() !==
+            technicianId.toString()
     ) {
         const error = new Error(
             "This ticket is not assigned to you"
@@ -37,13 +48,50 @@ const startTicket = async (ticketId, technicianId) => {
         throw error;
     }
 
-    ticket.status = "IN_PROGRESS";
+    const updatedTicket =
+        await MaintenanceTicket.findOneAndUpdate(
+            {
+                _id: ticketId,
+                assignedTo: technicianId,
+                status: "ASSIGNED",
+            },
+            {
+                $set: {
+                    status: "IN_PROGRESS",
+                },
+            },
+            {
+                new: true,
+            }
+        );
 
-    return await ticket.save();
+    if (!updatedTicket) {
+        const error = new Error(
+            "Ticket status has already changed"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    await createNotification({
+        userId: updatedTicket.residentId,
+        type: "TICKET_STATUS_CHANGED",
+        title: "Maintenance request in progress",
+        message: `Work has started on maintenance request "${updatedTicket.title}".`,
+        relatedId: updatedTicket._id,
+    });
+
+    return updatedTicket;
 };
 
-const resolveTicket = async (ticketId, technicianId) => {
-    const ticket = await MaintenanceTicket.findById(ticketId);
+const resolveTicket = async (
+    ticketId,
+    technicianId
+) => {
+    const ticket =
+        await MaintenanceTicket.findById(
+            ticketId
+        );
 
     if (!ticket) {
         const error = new Error("Ticket not found");
@@ -61,7 +109,8 @@ const resolveTicket = async (ticketId, technicianId) => {
 
     if (
         !ticket.assignedTo ||
-        ticket.assignedTo.toString() !== technicianId.toString()
+        ticket.assignedTo.toString() !==
+            technicianId.toString()
     ) {
         const error = new Error(
             "This ticket is not assigned to you"
@@ -70,13 +119,73 @@ const resolveTicket = async (ticketId, technicianId) => {
         throw error;
     }
 
-    ticket.status = "RESOLVED";
+    const updatedTicket =
+        await MaintenanceTicket.findOneAndUpdate(
+            {
+                _id: ticketId,
+                assignedTo: technicianId,
+                status: "IN_PROGRESS",
+            },
+            {
+                $set: {
+                    status: "RESOLVED",
+                },
+            },
+            {
+                new: true,
+            }
+        );
 
-    return await ticket.save();
+    if (!updatedTicket) {
+        const error = new Error(
+            "Ticket status has already changed"
+        );
+        error.statusCode = 400;
+        throw error;
+    }
+
+    await createNotification({
+        userId: updatedTicket.residentId,
+        type: "TICKET_STATUS_CHANGED",
+        title: "Maintenance request resolved",
+        message: `Maintenance request "${updatedTicket.title}" has been marked as resolved.`,
+        relatedId: updatedTicket._id,
+    });
+
+    return updatedTicket;
 };
 
-const skipTicket = async (ticketId, technicianId) => {
-    const ticket = await MaintenanceTicket.findById(ticketId);
+const skipTicket = async (
+    ticketId,
+    technicianId
+) => {
+    const updatedTicket =
+        await MaintenanceTicket.findOneAndUpdate(
+            {
+                _id: ticketId,
+                status: "OPEN",
+                skippedBy: {
+                    $ne: technicianId,
+                },
+            },
+            {
+                $addToSet: {
+                    skippedBy: technicianId,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+
+    if (updatedTicket) {
+        return updatedTicket;
+    }
+
+    const ticket =
+        await MaintenanceTicket.findById(
+            ticketId
+        );
 
     if (!ticket) {
         const error = new Error("Ticket not found");
@@ -92,28 +201,23 @@ const skipTicket = async (ticketId, technicianId) => {
         throw error;
     }
 
-    if (
-        ticket.skippedBy.some(
-            (id) => id.toString() === technicianId.toString()
-        )
-    ) {
-        const error = new Error(
-            "You already skipped this ticket"
-        );
-        error.statusCode = 400;
-        throw error;
-    }
-
-    ticket.skippedBy.push(technicianId);
-
-    return await ticket.save();
+    const error = new Error(
+        "You already skipped this ticket"
+    );
+    error.statusCode = 400;
+    throw error;
 };
 
-const getAssignedTickets = async (technicianId) => {
+const getAssignedTickets = async (
+    technicianId
+) => {
     return await MaintenanceTicket.find({
         assignedTo: technicianId,
     })
-        .populate("residentId", "name email phone")
+        .populate(
+            "residentId",
+            "name email phone"
+        )
         .sort({ createdAt: -1 });
 };
 
@@ -121,10 +225,14 @@ const getAssignedTicketDetails = async (
     ticketId,
     technicianId
 ) => {
-    const ticket = await MaintenanceTicket.findOne({
-        _id: ticketId,
-        assignedTo: technicianId,
-    }).populate("residentId", "name email phone");
+    const ticket =
+        await MaintenanceTicket.findOne({
+            _id: ticketId,
+            assignedTo: technicianId,
+        }).populate(
+            "residentId",
+            "name email phone"
+        );
 
     if (!ticket) {
         const error = new Error(

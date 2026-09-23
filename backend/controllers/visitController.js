@@ -119,6 +119,42 @@ const createVisitorRequest = async (req, res) => {
     }
 };
 
+const getVisitorUnits = async (_req, res) => {
+    try {
+        const units = await visitService.getVisitorUnits();
+        return res.status(200).json({ success: true, data: units });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    }
+};
+
+const getVisitorRequestStatus = async (req, res) => {
+    try {
+        const visit = await visitService.getVisitorRequestStatus(req.params.id, req.query.email);
+        return res.status(200).json({ success: true, data: visit });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    }
+};
+
+const lookupVisitorRequests = async (req, res) => {
+    try {
+        const visits = await visitService.lookupVisitorRequests(req.query.email);
+        return res.status(200).json({ success: true, count: visits.length, data: visits });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    }
+};
+
+const generateVisitorRequestQr = async (req, res) => {
+    try {
+        const result = await visitService.generateVisitorRequestQr(req.params.id, req.body.email);
+        return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    }
+};
+
 const generateVisitorRequestOtp = async (req, res) => {
     try {
         const result =
@@ -345,6 +381,10 @@ module.exports = {
     generateVisitOtp,
     verifyVisitOtp,
     createVisitorRequest,
+    getVisitorUnits,
+    getVisitorRequestStatus,
+    lookupVisitorRequests,
+    generateVisitorRequestQr,
     generateVisitorRequestOtp,
     verifyVisitorRequestOtp,
     getResidentVisitorRequests,

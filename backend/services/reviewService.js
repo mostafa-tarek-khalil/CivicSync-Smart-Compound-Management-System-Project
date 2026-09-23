@@ -66,13 +66,27 @@ const createReview = async (
         throw error;
     }
 
-    const review = await Review.create({
-        ticketId: ticket._id,
-        residentId,
-        technicianId: ticket.assignedTo,
-        rating: numericRating,
-        comment,
-    });
+    let review;
+
+    try {
+        review = await Review.create({
+            ticketId: ticket._id,
+            residentId,
+            technicianId: ticket.assignedTo,
+            rating: numericRating,
+            comment,
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            const duplicateError = new Error(
+                "You already reviewed this ticket"
+            );
+            duplicateError.statusCode = 400;
+            throw duplicateError;
+        }
+
+        throw error;
+    }
 
     await recalculateTechnicianRating(
         ticket.assignedTo
@@ -81,7 +95,10 @@ const createReview = async (
     return review;
 };
 
-const deleteReview = async (reviewId, residentId) => {
+const deleteReview = async (
+    reviewId,
+    residentId
+) => {
     const review = await Review.findOne({
         _id: reviewId,
         residentId,
@@ -97,7 +114,13 @@ const deleteReview = async (reviewId, residentId) => {
 
     await Review.findByIdAndDelete(reviewId);
 
-    await recalculateTechnicianRating(technicianId);
+    await recalculateTechnicianRating(
+        technicianId
+    );
+
+    return {
+        message: "Review deleted successfully",
+    };
 };
 
 const updateReview = async (
@@ -151,11 +174,16 @@ const updateReview = async (
     return review;
 };
 
-const getTechnicianReviews = async (technicianId) => {
+const getTechnicianReviews = async (
+    technicianId
+) => {
     return await Review.find({
         technicianId,
     })
-        .populate("residentId", "name")
+        .populate(
+            "residentId",
+            "name"
+        )
         .sort({ createdAt: -1 });
 };
 
@@ -164,30 +192,38 @@ const recalculateTechnicianRating = async (
 ) => {
     const reviews = await Review.find({
         technicianId,
-    });
+    }).select("rating");
 
     const totalReviews = reviews.length;
 
     if (totalReviews === 0) {
-        await User.findByIdAndUpdate(technicianId, {
-            rating: 0,
-            totalReviews: 0,
-        });
+        await User.findByIdAndUpdate(
+            technicianId,
+            {
+                rating: 0,
+                totalReviews: 0,
+            }
+        );
 
         return;
     }
 
     const totalRating = reviews.reduce(
-        (sum, review) => sum + review.rating,
+        (sum, review) =>
+            sum + review.rating,
         0
     );
 
-    const rating = totalRating / totalReviews;
+    const rating =
+        totalRating / totalReviews;
 
-    await User.findByIdAndUpdate(technicianId, {
-        rating,
-        totalReviews,
-    });
+    await User.findByIdAndUpdate(
+        technicianId,
+        {
+            rating,
+            totalReviews,
+        }
+    );
 };
 
 module.exports = {

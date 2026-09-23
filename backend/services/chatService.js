@@ -8,9 +8,17 @@ const Unit = require("../models/unit");
 const Building = require("../models/building");
 const Visit = require("../models/visit");
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const { createNotification } = require("./notificationService");
 
 const isValidObjectId = (id) => {
     return mongoose.Types.ObjectId.isValid(id);
+};
+
+const escapeRegex = (value) => {
+    return value.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+    );
 };
 
 // =========================================================
@@ -58,9 +66,17 @@ const searchUsersByPhone = async (userId, phone) => {
 
     const searchPhone = phone.trim();
 
+    if (!searchPhone) {
+        const error = new Error("Phone number is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const escapedPhone = escapeRegex(searchPhone);
+
     const users = await User.find({
         phone: {
-            $regex: `^${searchPhone}`,
+            $regex: `^${escapedPhone}`,
         },
         status: "ACTIVE",
         _id: {
@@ -101,7 +117,6 @@ const canDirectChat = async (sender, receiver) => {
         return false;
     }
 
-    // Admin can chat with everyone.
     if (
         sender.role === "ADMIN" ||
         receiver.role === "ADMIN"
@@ -109,7 +124,6 @@ const canDirectChat = async (sender, receiver) => {
         return true;
     }
 
-    // Resident
     if (sender.role === "RESIDENT") {
         if (
             receiver.role === "RESIDENT" ||
@@ -128,12 +142,10 @@ const canDirectChat = async (sender, receiver) => {
         return false;
     }
 
-    // Security -> Resident
     if (sender.role === "SECURITY") {
         return receiver.role === "RESIDENT";
     }
 
-    // Technician -> Resident
     if (sender.role === "TECHNICIAN") {
         if (receiver.role !== "RESIDENT") {
             return false;
@@ -196,22 +208,43 @@ const getOrCreateDirectConversation = async (
         });
 
     if (!conversation) {
-        conversation = await Conversation.create({
-            type: "DIRECT",
-            participants,
-        });
-    } else {
-        // Only restore visibility for the user opening
-        // the conversation.
-        conversation.deletedFor =
-            conversation.deletedFor.filter(
-                (userId) =>
-                    userId.toString() !==
-                    sender._id.toString()
-            );
-
-        await conversation.save();
+        try {
+            conversation = await Conversation.create({
+                type: "DIRECT",
+                participants,
+            });
+        } catch (error) {
+            if (error.code === 11000) {
+                conversation =
+                    await Conversation.findOne({
+                        type: "DIRECT",
+                        participants: {
+                            $all: participants,
+                            $size: 2,
+                        },
+                    });
+            } else {
+                throw error;
+            }
+        }
     }
+
+    if (!conversation) {
+        const error = new Error(
+            "Failed to create conversation"
+        );
+        error.statusCode = 500;
+        throw error;
+    }
+
+    conversation.deletedFor =
+        conversation.deletedFor.filter(
+            (userId) =>
+                userId.toString() !==
+                sender._id.toString()
+        );
+
+    await conversation.save();
 
     return conversation;
 };
@@ -258,24 +291,44 @@ const getCompoundGroup = async (userId) => {
         });
 
     if (!conversation) {
-        conversation =
-            await Conversation.create({
-                type: "GROUP",
-                groupType: "COMPOUND",
-                participants: participantIds,
-            });
-    } else {
-        conversation.participants = participantIds;
-
-        conversation.deletedFor =
-            conversation.deletedFor.filter(
-                (id) =>
-                    id.toString() !==
-                    userId.toString()
-            );
-
-        await conversation.save();
+        try {
+            conversation =
+                await Conversation.create({
+                    type: "GROUP",
+                    groupType: "COMPOUND",
+                    participants: participantIds,
+                });
+        } catch (error) {
+            if (error.code === 11000) {
+                conversation =
+                    await Conversation.findOne({
+                        type: "GROUP",
+                        groupType: "COMPOUND",
+                    });
+            } else {
+                throw error;
+            }
+        }
     }
+
+    if (!conversation) {
+        const error = new Error(
+            "Failed to create compound group"
+        );
+        error.statusCode = 500;
+        throw error;
+    }
+
+    conversation.participants = participantIds;
+
+    conversation.deletedFor =
+        conversation.deletedFor.filter(
+            (id) =>
+                id.toString() !==
+                userId.toString()
+        );
+
+    await conversation.save();
 
     return conversation;
 };
@@ -406,26 +459,47 @@ const getBuildingGroup = async (
         });
 
     if (!conversation) {
-        conversation =
-            await Conversation.create({
-                type: "GROUP",
-                groupType: "BUILDING",
-                buildingId,
-                participants: participantIds,
-            });
-    } else {
-        conversation.participants =
-            participantIds;
-
-        conversation.deletedFor =
-            conversation.deletedFor.filter(
-                (id) =>
-                    id.toString() !==
-                    userId.toString()
-            );
-
-        await conversation.save();
+        try {
+            conversation =
+                await Conversation.create({
+                    type: "GROUP",
+                    groupType: "BUILDING",
+                    buildingId,
+                    participants: participantIds,
+                });
+        } catch (error) {
+            if (error.code === 11000) {
+                conversation =
+                    await Conversation.findOne({
+                        type: "GROUP",
+                        groupType: "BUILDING",
+                        buildingId,
+                    });
+            } else {
+                throw error;
+            }
+        }
     }
+
+    if (!conversation) {
+        const error = new Error(
+            "Failed to create building group"
+        );
+        error.statusCode = 500;
+        throw error;
+    }
+
+    conversation.participants =
+        participantIds;
+
+    conversation.deletedFor =
+        conversation.deletedFor.filter(
+            (id) =>
+                id.toString() !==
+                userId.toString()
+        );
+
+    await conversation.save();
 
     return conversation;
 };
@@ -579,6 +653,14 @@ const getOrCreateVisitorConversation =
             }
         }
 
+        if (!conversation) {
+            const error = new Error(
+                "Failed to create visitor conversation"
+            );
+            error.statusCode = 500;
+            throw error;
+        }
+
         return conversation;
     };
 
@@ -653,6 +735,28 @@ const getUnreadCount = async (
 };
 
 // =========================================================
+// GET LAST VISIBLE MESSAGE
+// =========================================================
+
+const getLastVisibleMessage = async (
+    conversationId,
+    userId
+) => {
+    return Message.findOne({
+        conversationId,
+        deletedFor: {
+            $ne: userId,
+        },
+    })
+        .sort({
+            createdAt: -1,
+        })
+        .select(
+            "_id senderId senderType message createdAt isDeleted deletedAt"
+        );
+};
+
+// =========================================================
 // GET MY CONVERSATIONS
 // =========================================================
 
@@ -703,8 +807,16 @@ const getMyConversations = async (
                     const object =
                         conversation.toObject();
 
-                    object.unreadCount =
-                        unreadCount;
+                    const lastMessage =
+                        await getLastVisibleMessage(
+                            conversation._id,
+                            userId
+                        );
+
+                    object.lastMessage =
+                        lastMessage
+                            ? lastMessage.toObject()
+                            : null;
 
                     if (
                         object.lastMessage
@@ -713,6 +825,9 @@ const getMyConversations = async (
                         object.lastMessage.message =
                             "This message was deleted";
                     }
+
+                    object.unreadCount =
+                        unreadCount;
 
                     return object;
                 }
@@ -784,6 +899,22 @@ const getConversationById = async (
         );
 
         error.statusCode = 403;
+        throw error;
+    }
+
+    const isDeletedForUser =
+        conversation.deletedFor.some(
+            (id) =>
+                id.toString() ===
+                userId.toString()
+        );
+
+    if (isDeletedForUser) {
+        const error = new Error(
+            "Conversation is hidden for this user"
+        );
+
+        error.statusCode = 404;
         throw error;
     }
 
@@ -860,6 +991,35 @@ const sendUserMessage = async (
         throw error;
     }
 
+    if (conversation.type === "VISITOR") {
+        const visit = await Visit.findById(conversation.relatedVisitId);
+        const chatAvailable = visit &&
+            ["APPROVED", "QR_GENERATED", "CHECKED_IN"].includes(visit.status) &&
+            visit.visitorChatTokenExpiresAt > new Date();
+
+        if (!chatAvailable) {
+            const error = new Error("Visitor chat is no longer available");
+            error.statusCode = 403;
+            throw error;
+        }
+    }
+
+    const isDeletedForUser =
+        conversation.deletedFor.some(
+            (id) =>
+                id.toString() ===
+                sender._id.toString()
+        );
+
+    if (isDeletedForUser) {
+        const error = new Error(
+            "Conversation is hidden for this user"
+        );
+
+        error.statusCode = 404;
+        throw error;
+    }
+
     const messageData = {
         conversationId:
             conversation._id,
@@ -893,16 +1053,25 @@ const sendUserMessage = async (
     conversation.lastMessageAt =
         message.createdAt;
 
-    // Sending a new message restores
-    // visibility only for the sender.
-    conversation.deletedFor =
-        conversation.deletedFor.filter(
-            (id) =>
-                id.toString() !==
-                sender._id.toString()
-        );
+    // New activity should restore a conversation that a participant hid.
+    conversation.deletedFor = [];
 
     await conversation.save();
+
+    const recipients = conversation.participants.filter(
+        (participantId) => participantId.toString() !== sender._id.toString()
+    );
+    const preview = message.message.length > 140
+        ? `${message.message.slice(0, 137)}...`
+        : message.message;
+
+    await Promise.all(recipients.map((recipientId) => createNotification({
+        userId: recipientId,
+        type: "NEW_MESSAGE",
+        title: `New message from ${sender.name}`,
+        message: preview,
+        relatedId: conversation._id,
+    })));
 
     return message;
 };
@@ -985,7 +1154,22 @@ const sendVisitorMessage = async (
     conversation.lastMessageAt =
         message.createdAt;
 
+    // A new visitor message restores the resident's hidden conversation.
+    conversation.deletedFor = [];
+
     await conversation.save();
+
+    const preview = message.message.length > 140
+        ? `${message.message.slice(0, 137)}...`
+        : message.message;
+
+    await createNotification({
+        userId: visit.residentId,
+        type: "NEW_MESSAGE",
+        title: `New message from ${visit.visitorName}`,
+        message: preview,
+        relatedId: conversation._id,
+    });
 
     return message;
 };
@@ -1032,6 +1216,19 @@ const getVisitorMessages = async (
     token,
     conversationId
 ) => {
+    if (
+        !isValidObjectId(
+            conversationId
+        )
+    ) {
+        const error = new Error(
+            "Invalid conversation ID"
+        );
+
+        error.statusCode = 400;
+        throw error;
+    }
+
     const visit =
         await verifyVisitorChatToken(
             visitId,
@@ -1223,6 +1420,19 @@ const markVisitorMessagesAsRead =
         token,
         conversationId
     ) => {
+        if (
+            !isValidObjectId(
+                conversationId
+            )
+        ) {
+            const error = new Error(
+                "Invalid conversation ID"
+            );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
         const visit =
             await verifyVisitorChatToken(
                 visitId,
@@ -1255,6 +1465,8 @@ const markVisitorMessagesAsRead =
                         "USER",
 
                     isRead: false,
+
+                    isDeleted: false,
                 },
                 {
                     $set: {
@@ -1308,8 +1520,6 @@ const deleteMessageForMe = async (
         throw error;
     }
 
-    // Visitor messages cannot be deleted
-    // using the user delete-for-me endpoint.
     if (
         message.senderType ===
         "VISITOR"

@@ -599,3 +599,84 @@
     font-size: 10px;
   }
 }
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+:host-context(html.dark-mode) .register-page {
+  background: #0d1420;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .shape-one {
+  background: rgba(111, 159, 211, 0.10);
+}
+
+:host-context(html.dark-mode) .shape-two {
+  background: rgba(111, 159, 211, 0.06);
+}
+
+:host-context(html.dark-mode) .register-container {
+  background: rgba(21, 31, 45, 0.92);
+  border-color: #29394c;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+:host-context(html.dark-mode) .register-showcase {
+  background: linear-gradient(145deg, #16243a 0%, #182a44 52%, #131f31 100%);
+}
+
+:host-context(html.dark-mode) .progress-section h1,
+:host-context(html.dark-mode) .register-heading h2,
+:host-context(html.dark-mode) .brand {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .progress-section > p,
+:host-context(html.dark-mode) .register-heading p,
+:host-context(html.dark-mode) .step-content span,
+:host-context(html.dark-mode) .showcase-footer {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .step-content strong {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-mode) .progress-eyebrow,
+:host-context(html.dark-mode) .form-eyebrow,
+:host-context(html.dark-mode) .progress-section h1 span,
+:host-context(html.dark-mode) .mobile-brand {
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .step-number {
+  background: rgba(142, 178, 232, 0.10);
+  border-color: rgba(142, 178, 232, 0.14);
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .register-form-section {
+  background: rgba(17, 26, 39, 0.92);
+}
+
+:host-context(html.dark-mode) .role-card {
+  background: #172235;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .role-card.active,
+:host-context(html.dark-mode) .role-card:hover {
+  border-color: #8eb2e8;
+  background: #1b2b41;
+}
+
+:host-context(html.dark-mode) .role-content h3,
+:host-context(html.dark-mode) .role-content strong {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .role-content p,
+:host-context(html.dark-mode) .role-content span {
+  color: #94a3b8;
+}

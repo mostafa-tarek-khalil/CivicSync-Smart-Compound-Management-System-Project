@@ -1,0 +1,313 @@
+
+<div
+  class="otp-page"
+  [class.is-processing]="isLoading"
+>
+
+  <div
+    class="card"
+    [class.submitting]="status === 'submitting'"
+    [class.processing]="status === 'processing'"
+    [class.success]="status === 'success'"
+    [class.error]="status === 'error'"
+    [class.error-shake]="status === 'error'"
+  >
+
+    <!-- HEADER -->
+
+    <h2>
+      Enter Security Code
+    </h2>
+
+    <p>
+      Please enter the 6-digit code sent to your email.
+    </p>
+
+
+    <!-- EMAIL -->
+
+    <div class="email-reference">
+
+      <span>
+        Verification code sent to
+      </span>
+
+      <strong>
+        {{ email }}
+      </strong>
+
+    </div>
+
+
+    <!-- OTP AREA -->
+
+    <div class="interaction-area">
+
+      <!-- LIQUID BLOBS -->
+
+      <div class="liquid-layer">
+
+        <div class="blob-wrapper">
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 0"
+            [class.has-value]="otp[0]"
+          ></div>
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 1"
+            [class.has-value]="otp[1]"
+          ></div>
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 2"
+            [class.has-value]="otp[2]"
+          ></div>
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 3"
+            [class.has-value]="otp[3]"
+          ></div>
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 4"
+            [class.has-value]="otp[4]"
+          ></div>
+
+          <div
+            class="blob"
+            [class.is-focused]="focusedIndex === 5"
+            [class.has-value]="otp[5]"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <!-- INPUTS -->
+
+      <div class="inputs-layer">
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[0]"
+          (focus)="onFocus(0)"
+          (blur)="onBlur(0)"
+          (input)="onInput($event, 0)"
+          (keydown)="onKeyDown($event, 0)"
+          [disabled]="isLoading"
+          autofocus
+        />
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[1]"
+          (focus)="onFocus(1)"
+          (blur)="onBlur(1)"
+          (input)="onInput($event, 1)"
+          (keydown)="onKeyDown($event, 1)"
+          [disabled]="isLoading"
+        />
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[2]"
+          (focus)="onFocus(2)"
+          (blur)="onBlur(2)"
+          (input)="onInput($event, 2)"
+          (keydown)="onKeyDown($event, 2)"
+          [disabled]="isLoading"
+        />
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[3]"
+          (focus)="onFocus(3)"
+          (blur)="onBlur(3)"
+          (input)="onInput($event, 3)"
+          (keydown)="onKeyDown($event, 3)"
+          [disabled]="isLoading"
+        />
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[4]"
+          (focus)="onFocus(4)"
+          (blur)="onBlur(4)"
+          (input)="onInput($event, 4)"
+          (keydown)="onKeyDown($event, 4)"
+          [disabled]="isLoading"
+        />
+
+        <input
+          type="text"
+          maxlength="1"
+          inputmode="numeric"
+          class="otp-input"
+          [(ngModel)]="otp[5]"
+          (focus)="onFocus(5)"
+          (blur)="onBlur(5)"
+          (input)="onInput($event, 5)"
+          (keydown)="onKeyDown($event, 5)"
+          [disabled]="isLoading"
+        />
+
+      </div>
+
+
+      <!-- SUCCESS ICON -->
+
+      <div class="icon-container check">
+
+        <svg viewBox="0 0 24 24">
+
+          <path
+            class="draw-path"
+            d="M4 12.6111L8.92308 17.5L20 6.5"
+          ></path>
+
+        </svg>
+
+      </div>
+
+
+      <!-- ERROR ICON -->
+
+      <div class="icon-container cross">
+
+        <svg viewBox="0 0 24 24">
+
+          <path
+            class="draw-path"
+            d="M18 6L6 18M6 6l12 12"
+          ></path>
+
+        </svg>
+
+      </div>
+
+    </div>
+
+
+    <!-- ERROR MESSAGE -->
+
+    <div class="error-msg" *ngIf="status === 'error' || errorMessage" role="alert">
+      {{ errorMessage || 'The code could not be verified. Please try again.' }}
+    </div>
+
+
+    <!-- BUTTON -->
+      
+<button
+  type="button"
+  class="submit-btn"
+  (click)="handleButtonClick()"
+  [disabled]="isLoading"
+>
+
+  <span *ngIf="status === 'default'">
+    Confirm Identity
+  </span>
+
+  <span
+    *ngIf="
+      status === 'submitting' ||
+      status === 'processing'
+    "
+  >
+    Processing...
+  </span>
+
+  <span *ngIf="status === 'success'">
+    Continue to Request Status
+  </span>
+
+  <span *ngIf="status === 'error'">
+    Verification Failed
+  </span>
+
+</button>
+
+
+
+
+
+
+
+    <!-- RESEND -->
+
+    <button
+      type="button"
+      class="resend-btn"
+      (click)="resendOtp()"
+      [disabled]="isLoading"
+    >
+      Resend OTP
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- SVG FILTER -->
+
+<svg
+  class="svg-filter-hidden"
+  aria-hidden="true"
+>
+
+  <defs>
+
+    <filter id="goo">
+
+      <feGaussianBlur
+        in="SourceGraphic"
+        stdDeviation="8"
+        result="blur"
+      />
+
+      <feColorMatrix
+        in="blur"
+        mode="matrix"
+        values="
+          1 0 0 0 0
+          0 1 0 0 0
+          0 0 1 0 0
+          0 0 0 22 -9
+        "
+        result="goo"
+      />
+
+      <feComposite
+        in="SourceGraphic"
+        in2="goo"
+        operator="atop"
+      />
+
+    </filter>
+
+  </defs>
+
+</svg>

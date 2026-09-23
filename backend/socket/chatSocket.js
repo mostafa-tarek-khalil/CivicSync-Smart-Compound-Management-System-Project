@@ -4,6 +4,7 @@ const User = require("../models/user");
 const Conversation = require("../models/conversation");
 
 const chatService = require("../services/chatService");
+const notificationService = require("../services/notificationService");
 
 // =========================================================
 // USER SOCKET AUTH
@@ -194,6 +195,8 @@ const authenticateSocket =
 const initializeChatSocket = (
     io
 ) => {
+    notificationService.setSocketServer(io);
+
     io.use(
         authenticateSocket
     );
@@ -205,6 +208,7 @@ const initializeChatSocket = (
                 socket.authType ===
                 "USER"
             ) {
+                socket.join(`user:${socket.user.userId}`);
                 console.log(
                     `Chat socket connected: ${socket.id} | User: ${socket.user.userId}`
                 );

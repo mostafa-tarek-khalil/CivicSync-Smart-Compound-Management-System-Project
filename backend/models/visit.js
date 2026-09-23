@@ -140,6 +140,12 @@ const visitSchema = new mongoose.Schema(
             default: null,
         },
 
+        checkOutSecurityId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+
         qrScannedAt: {
             type: Date,
             default: null,

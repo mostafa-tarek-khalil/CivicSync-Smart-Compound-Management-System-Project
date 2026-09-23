@@ -64,13 +64,16 @@ export class LoginPage {
               this.router.navigate(['/chat']);
               break;
             case 'TECHNICIAN':
-              this.router.navigate(['/technician']);
-              break;
-            case 'SECURITY':
+              // Dedicated technician dashboard is not built yet — land on chat,
+              // which every role can use, instead of a dead route.
               this.router.navigate(['/chat']);
               break;
+            case 'SECURITY':
+              this.router.navigate(['/security-dashboard']);
+              break;
             case 'ADMIN':
-              this.router.navigate(['/admin']);
+              // Dedicated admin dashboard is not built yet — land on chat.
+              this.router.navigate(['/chat']);
               break;
             default:
               this.errorMessage = 'Your account role is not supported.';

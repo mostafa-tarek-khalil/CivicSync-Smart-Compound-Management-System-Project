@@ -84,8 +84,42 @@ const getMe = async (req, res) => {
   }
 };
 
+const updateMe = async (req, res) => {
+  try {
+    const user = await authService.updateCurrentUser(
+      req.user.userId,
+      req.body
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        status: user.status,
+        profileImage: user.profileImage,
+        unitId: user.unitId,
+        specializations: user.specializations,
+        rating: user.rating,
+        totalReviews: user.totalReviews,
+        lastLoginAt: user.lastLoginAt,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
+  updateMe,
 };

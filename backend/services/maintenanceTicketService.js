@@ -1,4 +1,5 @@
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const { createNotification } = require("./notificationService");
 
 const createTicket = async (residentId, ticketData) => {
     const {
@@ -25,6 +26,14 @@ const createTicket = async (residentId, ticketData) => {
         priority,
         attachmentUrl: attachmentUrl || null,
         status: "OPEN",
+    });
+
+    await createNotification({
+        userId: residentId,
+        type: "MAINTENANCE_CREATED",
+        title: "Maintenance request created",
+        message: `Your request “${ticket.title}” has been submitted.`,
+        relatedId: ticket._id,
     });
 
     return ticket;

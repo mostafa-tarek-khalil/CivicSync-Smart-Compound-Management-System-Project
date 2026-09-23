@@ -1,0 +1,138 @@
+<div class="lookup-page">
+
+  <div class="background-shape shape-one"></div>
+
+  <div class="lookup-container">
+
+    <!-- BRAND -->
+    <header class="lookup-brand">
+      <a class="brand" routerLink="/visitor-entry">
+        <span class="brand-icon">
+          <span></span><span></span><span></span>
+        </span>
+        CivicSync
+      </a>
+    </header>
+
+    <!-- HERO -->
+    <section class="lookup-hero">
+      <span class="eyebrow">VISITOR ACCESS</span>
+      <h1>Track Your Request</h1>
+      <p>
+        Enter the email address you used when submitting your visit request.
+        We will show you every request linked to it.
+      </p>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="lookup-card">
+      <label for="lookupEmail">Email address</label>
+
+      <div class="search-row">
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">mail</span>
+          <input id="lookupEmail" type="email" [(ngModel)]="email" placeholder="you@example.com" autocomplete="email"
+            (keyup.enter)="search()" />
+        </div>
+
+        <button class="search-btn" type="button" (click)="search()" [disabled]="state === 'loading'">
+          <span class="material-symbols-outlined">search</span>
+          {{ state === 'loading' ? 'Searching…' : 'Find' }}
+        </button>
+      </div>
+
+      <p class="field-hint">
+        Tip: use the exact email you entered on the request form.
+      </p>
+    </section>
+
+    <!-- ERROR -->
+    <div class="state-box error" *ngIf="state === 'error'">
+      <span class="material-symbols-outlined">error</span>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- LOADING -->
+    <div class="state-box" *ngIf="state === 'loading'">
+      <span class="material-symbols-outlined spinning">hourglass_top</span>
+      <p>Looking up your requests…</p>
+    </div>
+
+    <!-- EMPTY -->
+    <div class="state-box" *ngIf="state === 'empty'">
+      <span class="material-symbols-outlined">search_off</span>
+      <h3>No requests found</h3>
+      <p>We could not find any visit requests for that email address.</p>
+      <a class="state-action" routerLink="/visitor-request">
+        Request a visit
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
+    </div>
+
+    <!-- RESULTS -->
+    <section class="results" *ngIf="state === 'results'">
+      <div class="results-heading">
+        <span class="mini-label">YOUR REQUESTS</span>
+        <h2>{{ rows.length }} {{ rows.length === 1 ? 'request' : 'requests' }}</h2>
+      </div>
+
+      <article class="result-card" *ngFor="let row of rows">
+        <div class="result-avatar">
+          {{ row.visitorName.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="result-main">
+          <div class="name-row">
+            <h3>{{ row.visitorName }}</h3>
+            <span class="status-badge" [class.pending]="row.statusCode === 'PENDING'"
+              [class.approved]="row.statusCode === 'APPROVED' || row.statusCode === 'QR_GENERATED'"
+              [class.rejected]="row.statusCode === 'REJECTED' || row.statusCode === 'EXPIRED'"
+              [class.checked-in]="row.statusCode === 'CHECKED_IN'"
+              [class.checked-out]="row.statusCode === 'CHECKED_OUT'">
+              {{ row.status }}
+            </span>
+          </div>
+
+          <div class="result-meta">
+            <span>
+              <span class="material-symbols-outlined">apartment</span>
+              {{ row.building }} · Unit {{ row.unit }}
+            </span>
+            <span>
+              <span class="material-symbols-outlined">event</span>
+              {{ row.date }} · {{ row.startTime }}
+            </span>
+            <span *ngIf="row.resident">
+              <span class="material-symbols-outlined">person</span>
+              {{ row.resident }}
+            </span>
+          </div>
+        </div>
+
+        <button class="open-btn" type="button" *ngIf="isOpennable(row)" (click)="open(row)">
+          <span class="material-symbols-outlined">
+            {{ row.statusCode === 'QR_GENERATED' ? 'qr_code_2' : 'visibility' }}
+          </span>
+          {{ row.statusCode === 'QR_GENERATED' ? 'Show QR' : 'View' }}
+        </button>
+
+        <span class="closed-note" *ngIf="!isOpennable(row)">
+          {{ row.status }}
+        </span>
+      </article>
+
+      <button class="reset-btn" type="button" (click)="reset()">
+        <span class="material-symbols-outlined">refresh</span>
+        Search another email
+      </button>
+    </section>
+
+    <!-- BACK -->
+    <a class="back-link" routerLink="/visitor-entry">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back
+    </a>
+
+  </div>
+
+</div>

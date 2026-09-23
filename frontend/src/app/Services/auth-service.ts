@@ -96,6 +96,33 @@ export class AuthService {
     );
   }
 
+  updateProfile(data: {
+    name?: string;
+    phone?: string;
+    profileImage?: string | null;
+  }): Observable<MeResponse> {
+    return this.http
+      .patch<MeResponse>(`${this.apiUrl}/me`, data)
+      .pipe(
+        tap(response => {
+          // Keep the cached user in localStorage in sync so the topbar and
+          // guards reflect the latest profile immediately.
+          const cached = this.getUser();
+          if (cached && response?.data) {
+            localStorage.setItem(
+              'user',
+              JSON.stringify({
+                ...cached,
+                name: response.data.name,
+                phone: response.data.phone,
+                profileImage: response.data.profileImage
+              })
+            );
+          }
+        })
+      );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

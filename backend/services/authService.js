@@ -15,11 +15,15 @@ const registerUser = async (userData) => {
     } = userData;
 
     if (!name || !email || !password || !role) {
-        throw new Error("Name, email, password and role are required");
+        throw new Error(
+            "Name, email, password and role are required"
+        );
     }
 
     if (password.length < 8) {
-        throw new Error("Password must be at least 8 characters");
+        throw new Error(
+            "Password must be at least 8 characters"
+        );
     }
 
     const allowedRoles = [
@@ -32,7 +36,11 @@ const registerUser = async (userData) => {
         throw new Error("Invalid registration role");
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({
+        email: normalizedEmail,
+    });
 
     if (existingUser) {
         throw new Error("Email is already registered");
@@ -55,31 +63,63 @@ const registerUser = async (userData) => {
     }
 
     if (role === "TECHNICIAN") {
-        if (!Array.isArray(specializations) || specializations.length === 0) {
-            throw new Error("At least one specialization is required for technicians");
+        if (
+            !Array.isArray(specializations) ||
+            specializations.length === 0
+        ) {
+            throw new Error(
+                "At least one specialization is required for technicians"
+            );
         }
     }
 
-    const user = await User.create({
-        name,
-        email,
-        phone,
-        password,
-        role,
-        unitId: role === "RESIDENT" ? unitId : null,
-        specializations: role === "TECHNICIAN" ? specializations : [],
-        status: "PENDING",
-    });
+    try {
+        const user = await User.create({
+            name,
+            email: normalizedEmail,
+            phone,
+            password,
+            role,
+            unitId: role === "RESIDENT" ? unitId : null,
+            specializations:
+                role === "TECHNICIAN"
+                    ? specializations
+                    : [],
+            status: "PENDING",
+        });
 
-    return user;
+        return user;
+    } catch (error) {
+        if (error.code === 11000) {
+            if (error.keyPattern?.unitId) {
+                throw new Error(
+                    "Unit is already reserved by another resident"
+                );
+            }
+
+            if (error.keyPattern?.email) {
+                throw new Error(
+                    "Email is already registered"
+                );
+            }
+        }
+
+        throw error;
+    }
 };
 
 const loginUser = async (email, password) => {
     if (!email || !password) {
-        throw new Error("Email and password are required");
+        throw new Error(
+            "Email and password are required"
+        );
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+        email: normalizedEmail,
+    }).select("+password");
 
     if (!user) {
         throw new Error("Invalid email or password");
@@ -89,13 +129,18 @@ const loginUser = async (email, password) => {
         throw new Error("Account is not active");
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect =
+        await bcrypt.compare(
+            password,
+            user.password
+        );
 
     if (!isPasswordCorrect) {
         throw new Error("Invalid email or password");
     }
 
     user.lastLoginAt = new Date();
+
     await user.save();
 
     const token = jwt.sign(
@@ -125,8 +170,43 @@ const getCurrentUser = async (userId) => {
     return user;
 };
 
+const updateCurrentUser = async (userId, updates = {}) => {
+    const allowedFields = ["name", "phone", "profileImage"];
+
+    const sanitized = {};
+    for (const field of allowedFields) {
+        if (updates[field] !== undefined) {
+            sanitized[field] = updates[field];
+        }
+    }
+
+    if (sanitized.name !== undefined) {
+        if (typeof sanitized.name !== "string" || sanitized.name.trim().length < 2) {
+            throw new Error("Name must be at least 2 characters");
+        }
+        sanitized.name = sanitized.name.trim();
+    }
+
+    if (Object.keys(sanitized).length === 0) {
+        throw new Error("No valid fields to update");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: sanitized },
+        { new: true, runValidators: true }
+    );
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    return user;
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getCurrentUser,
+    updateCurrentUser,
 };
