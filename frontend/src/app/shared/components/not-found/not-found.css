@@ -1,0 +1,163 @@
+:host {
+  display: block;
+}
+
+.state-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 32px 20px;
+  perspective: 1400px;
+}
+
+.state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 520px;
+  padding: 40px 32px;
+  text-align: center;
+  border: 1px solid var(--cs-border, #e2e8f0);
+  border-radius: 20px;
+  background: var(--cs-surface, #ffffff);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+
+  /* The card rotates up out of the page — a real 3D reveal. */
+  transform-style: preserve-3d;
+  animation: cs-notfound-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+.state-card:hover {
+  transform: translateY(-5px) rotateX(4deg);
+  box-shadow: 0 26px 55px rgba(15, 23, 42, 0.13);
+}
+
+@keyframes cs-notfound-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) rotateX(-12deg) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+.state-icon {
+  font-size: 44px;
+  color: var(--cs-primary, #315b8f);
+  opacity: 0.8;
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.state-code {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--cs-primary, #315b8f);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.state-card h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cs-text, #202238);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.state-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cs-text-soft, #64748b);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both;
+}
+
+.state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+.btn-primary,
+.btn-ghost {
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary {
+  border: none;
+  background: var(--cs-primary, #315b8f);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--cs-primary-dark, #1d3f68);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.28);
+}
+
+.btn-primary:active,
+.btn-ghost:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn-ghost {
+  border: 1px solid var(--cs-border, #e2e8f0);
+  background: transparent;
+  color: var(--cs-text, #202238);
+}
+
+.btn-ghost:hover {
+  border-color: var(--cs-primary, #315b8f);
+  color: var(--cs-primary, #315b8f);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-card,
+  .state-icon,
+  .state-code,
+  .state-card h1,
+  .state-card p,
+  .state-actions {
+    animation: none;
+  }
+
+  .state-card:hover,
+  .btn-primary:hover,
+  .btn-ghost:hover {
+    transform: none;
+  }
+}
+
+html.dark-mode .state-card {
+  background: #151f2d;
+  border-color: #29394c;
+}
+
+html.dark-mode .state-card h1 {
+  color: #f1f5f9;
+}
+
+html.dark-mode .state-card p {
+  color: #94a3b8;
+}
+
+html.dark-mode .btn-ghost {
+  border-color: #29394c;
+  color: #e8eef6;
+}

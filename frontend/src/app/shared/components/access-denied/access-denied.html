@@ -1,0 +1,25 @@
+<div class="state-page">
+  <div class="state-card">
+    <span class="state-icon material-symbols-outlined" aria-hidden="true">lock</span>
+
+    <span class="state-code">403</span>
+
+    <h1>Access denied</h1>
+
+    <p>
+      You are signed in as <strong>{{ roleLabel }}</strong>, and this page
+      belongs to a different role. If you believe this is a mistake, contact
+      your compound administrator.
+    </p>
+
+    <div class="state-actions">
+      <button type="button" class="btn-primary" (click)="goHome()">
+        Go to my dashboard
+      </button>
+
+      <button type="button" class="btn-ghost" (click)="goBack()">
+        Go back
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,11 @@
 const MaintenanceTicket = require("../models/maintenanceTicket");
+const Review = require("../models/review");
 const { createNotification } = require("./notificationService");
+const {
+    TICKET_STATUS,
+    assertTicketTransition,
+    isTicketChatLocked,
+} = require("../utils/statusConstants");
 
 const createTicket = async (residentId, ticketData) => {
     const {
@@ -59,7 +65,15 @@ const getTicketDetails = async (ticketId, residentId) => {
         throw error;
     }
 
-    return ticket;
+    const review = await Review.findOne({
+        ticketId: ticket._id,
+        residentId,
+    }).populate("technicianId", "name email phone role rating totalReviews");
+
+    return {
+        ticket,
+        review,
+    };
 };
 
 const closeTicket = async (ticketId, residentId) => {
@@ -82,7 +96,15 @@ const closeTicket = async (ticketId, residentId) => {
         throw error;
     }
 
+    // Shared state machine: only RESOLVED -> CLOSED is legal.
+    assertTicketTransition(
+        ticket.status,
+        TICKET_STATUS.CLOSED
+    );
+
     ticket.status = "CLOSED";
+    // Closing is terminal: the maintenance conversation stays locked.
+    ticket.chatLocked = isTicketChatLocked(TICKET_STATUS.CLOSED);
 
     return await ticket.save();
 };

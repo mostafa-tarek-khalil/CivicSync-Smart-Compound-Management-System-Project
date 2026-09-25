@@ -1,0 +1,205 @@
+<div class="invoices-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">BILLING</span>
+      <h1>Invoices</h1>
+      <p>Your compound charges and maintenance payments.</p>
+    </div>
+
+    <button type="button" class="refresh-btn" [disabled]="loading" (click)="load()">
+      <i class="fa-solid fa-rotate-right" [class.spinning]="loading"></i>
+      Refresh
+    </button>
+  </div>
+
+  @if (errorMessage) {
+  <div class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    {{ errorMessage }}
+  </div>
+  }
+
+  <!-- Summary -->
+  <div class="row g-3 mb-4">
+
+    <div class="col-xl-4 col-md-6">
+      <div class="summary-card">
+        <span class="summary-label">Total Outstanding</span>
+        <h3>
+          {{ outstandingBalance | number:'1.0-2' }}
+          <small>EGP</small>
+        </h3>
+        <span class="summary-hint">Total billed (paid + unpaid)</span>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+      <div class="summary-card">
+        <span class="summary-label">Invoices Due</span>
+        <h3>
+          {{ invoicesDue | number:'1.0-2' }}
+          <small>EGP</small>
+        </h3>
+        <span class="summary-hint">Issued and unpaid</span>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-12">
+      <div class="summary-card">
+        <span class="summary-label">Maintenance Not Invoiced</span>
+        <h3>
+          {{ maintenanceDue | number:'1.0-2' }}
+          <small>EGP</small>
+        </h3>
+        <span class="summary-hint">
+          {{ uninvoicedMaintenanceCount }} agreed job(s) awaiting an invoice
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Invoice table -->
+  <div class="panel">
+
+    <div class="panel-header">
+      <div>
+        <h5>Billing History</h5>
+        <span>All invoices issued to your unit</span>
+      </div>
+      <i class="fa-solid fa-file-invoice-dollar panel-icon"></i>
+    </div>
+
+    @if (loading) {
+    <div class="table-empty">Loading invoices…</div>
+    } @else if (!hasInvoices) {
+    <div class="table-empty">
+      <i class="fa-solid fa-file-circle-xmark"></i>
+      <span>No invoices yet</span>
+      <small>Invoices appear here once your compound issues them.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Type</th>
+            <th>Related Request</th>
+            <th>Issued</th>
+            <th>Due Date</th>
+            <th>Paid On</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (invoice of invoices; track invoice._id) {
+          <tr>
+            <td>
+              <strong class="invoice-no">
+                INV-{{ invoice._id.slice(-6).toUpperCase() }}
+              </strong>
+            </td>
+
+            <!-- Distinguishes a maintenance bill from a regular compound
+                 charge, both of which live in this same list. -->
+            <td>
+              @if (invoice.ticketId) {
+              <span class="type-badge maintenance">Maintenance</span>
+              } @else {
+              <span class="type-badge regular">Compound</span>
+              }
+            </td>
+
+            <td>
+              @if (invoice.ticketTitle) {
+              <button type="button" class="link-btn" (click)="goToMaintenance()">
+                {{ invoice.ticketTitle }}
+              </button>
+              } @else {
+              <span class="muted">—</span>
+              }
+            </td>
+
+            <td>{{ formatDate(invoice.issueDate) }}</td>
+            <td>{{ formatDate(invoice.dueDate) }}</td>
+            <td>{{ invoice.paidAt ? formatDate(invoice.paidAt) : '—' }}</td>
+
+            <td>
+              <strong>
+                {{ invoice.amount | number:'1.0-2' }} EGP
+              </strong>
+            </td>
+
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(invoice.statusLabel)">
+                {{ statusLabel(invoice.statusLabel) }}
+              </span>
+            </td>
+
+            <td>
+              <div class="row-actions">
+                @if (canPay(invoice)) {
+                <button
+                  type="button"
+                  class="pay-btn"
+                  [disabled]="invoice.paying"
+                  (click)="payInvoice(invoice)">
+
+                  <span class="material-symbols-outlined">payments</span>
+                  {{ invoice.paying ? 'Submitting…' : 'Pay' }}
+
+                </button>
+                } @else if (invoice.status === 'PAYMENT_SUBMITTED') {
+                <span class="awaiting-note">
+                  Awaiting admin confirmation
+                </span>
+                }
+
+                <!-- The receipt is available for every invoice regardless of
+                     status; only a CLOSED-ticket bill is printable per the
+                     billing rules, which the receipt itself reflects. -->
+                <button
+                  type="button"
+                  class="receipt-btn"
+                  (click)="openReceipt(invoice)">
+
+                  <span class="material-symbols-outlined">receipt_long</span>
+                  Receipt
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+
+  </div>
+
+</div><!-- ===================== RECEIPT MODAL ===================== -->
+@if (receiptOpen && receiptInvoice) {
+<div class="modal-backdrop" (click)="closeReceipt()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head no-print">
+      <h3>Invoice receipt</h3>
+      <button type="button" class="modal-close" (click)="closeReceipt()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <app-invoice-receipt
+        [invoice]="receiptInvoice"
+        [viewerRole]="'Resident'">
+      </app-invoice-receipt>
+    </div>
+  </div>
+</div>
+}

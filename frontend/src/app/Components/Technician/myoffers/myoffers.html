@@ -1,0 +1,266 @@
+
+<div class="offers-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <div class="page-header mb-4">
+
+    <div>
+      <h2 class="page-title">
+        My Offers
+      </h2>
+
+      <p class="page-subtitle">
+        Manage the offers you have submitted to residents.
+      </p>
+    </div>
+
+    <div class="offers-count">
+
+      <i class="fa-solid fa-file-invoice-dollar"></i>
+
+      <span>
+        {{ offers.length }} Offers
+      </span>
+
+    </div>
+
+  </div>
+
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div class="spinner-border"></div>
+
+      <p>
+        Loading your offers...
+      </p>
+
+    </div>
+
+  }
+
+  @else if (errorMessage) {
+
+    <div class="error-box">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="loadOffers()">
+
+        Try Again
+
+      </button>
+
+    </div>
+
+  }
+
+  @else {
+
+    @if (offers.length > 0) {
+
+      <div class="row g-4">
+
+        @for (
+          offer of offers;
+          track offer._id
+        ) {
+
+          <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="offer-card">
+
+              <div class="offer-header">
+
+                <div class="offer-icon">
+
+                  <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                </div>
+
+                <span
+                  class="status"
+                  [class]="getStatusClass(offer.status)">
+
+                  {{ offer.status }}
+
+                </span>
+
+              </div>
+
+
+              <h5 class="offer-title">
+                Maintenance Offer
+              </h5>
+
+
+              <div class="offer-info">
+
+                <div class="info-item">
+
+                  <i class="fa-solid fa-money-bill"></i>
+
+                  <div>
+                    <span>
+                      Price
+                    </span>
+
+                    <strong>
+                      {{ offer.price }} EGP
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                  <i class="fa-regular fa-clock"></i>
+
+                  <div>
+                    <span>
+                      Duration
+                    </span>
+
+                    <strong>
+                      {{ offer.estimatedDuration }} Hours
+                    </strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              @if (offer.note) {
+
+                <div class="offer-note">
+
+                  <span>
+                    Note
+                  </span>
+
+                  <p>
+                    {{ offer.note }}
+                  </p>
+
+                </div>
+
+              }
+
+
+              <div class="offer-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                {{ offer.createdAt | date:'MMM d, y' }}
+
+              </div>
+
+
+              <div class="offer-actions">
+
+                @if (offer.status === 'PENDING') {
+
+                  <button
+                    type="button"
+                    class="withdraw-btn"
+                    (click)="withdrawOffer(offer._id)">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    Withdraw
+
+                  </button>
+
+                }
+
+
+                <a
+                  *ngIf="canNegotiate(offer)"
+                  [routerLink]="[
+                    '/technician/offer',
+                    offer._id,
+                    'negotiation'
+                  ]"
+                  class="details-btn">
+
+                  <i class="fa-solid fa-comments"></i>
+
+                  Negotiate
+
+                </a>
+
+
+                @if (offer.status === 'ACCEPTED' && getTicketId(offer)) {
+
+                  <a
+                    [routerLink]="[
+                      '/technician/job',
+                      getTicketId(offer)
+                    ]"
+                    class="details-btn">
+
+                    <i class="fa-solid fa-briefcase"></i>
+
+                    Go to Job
+
+                  </a>
+
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+    @else {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+
+        </div>
+
+        <h4>
+          No Offers Yet
+        </h4>
+
+        <p>
+          You haven't submitted any offers yet.
+        </p>
+
+        <a
+          routerLink="/technician/available-requests"
+          class="browse-btn">
+
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+
+          Browse Available Requests
+
+        </a>
+
+      </div>
+
+    }
+
+  }
+
+</div>

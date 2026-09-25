@@ -1,7 +1,21 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/user");
 const Unit = require("../models/unit");
+const { sendPasswordResetEmail } = require("./emailService");
+
+const PASSWORD_RESET_TTL = 15 * 60 * 1000;
+
+/**
+ * Single place where e-mails are normalised. Keeping this in one helper
+ * guarantees register / login / password-reset all agree on the stored form.
+ */
+const normalizeEmail = (email) =>
+    typeof email === "string" ? email.trim().toLowerCase() : "";
+
+const hashToken = (token) =>
+    crypto.createHash("sha256").update(token).digest("hex");
 
 const registerUser = async (userData) => {
     const {
@@ -36,7 +50,7 @@ const registerUser = async (userData) => {
         throw new Error("Invalid registration role");
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = normalizeEmail(email);
 
     const existingUser = await User.findOne({
         email: normalizedEmail,
@@ -115,7 +129,7 @@ const loginUser = async (email, password) => {
         );
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = normalizeEmail(email);
 
     const user = await User.findOne({
         email: normalizedEmail,
@@ -204,9 +218,127 @@ const updateCurrentUser = async (userId, updates = {}) => {
     return user;
 };
 
+/**
+ * Start the forgot-password flow.
+ *
+ * Always resolves the same way whether or not the address exists, so the
+ * endpoint cannot be used to enumerate registered accounts.
+ */
+const requestPasswordReset = async (email) => {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
+        const error = new Error("Email is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+        return { sent: false };
+    }
+
+    const rawToken = crypto.randomBytes(32).toString("hex");
+
+    user.passwordResetTokenHash = hashToken(rawToken);
+    user.passwordResetExpiresAt = new Date(Date.now() + PASSWORD_RESET_TTL);
+
+    await user.save();
+
+    try {
+        await sendPasswordResetEmail(user.email, rawToken);
+    } catch (error) {
+        // Never leak mail-transport failures as a valid/invalid account signal.
+        console.error("Failed to send password reset email:", error.message);
+    }
+
+    return { sent: true };
+};
+
+/** Complete the reset flow with the token from the e-mail link. */
+const resetPassword = async (token, password) => {
+    if (!token || typeof token !== "string") {
+        const error = new Error("Reset token is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!password || typeof password !== "string" || password.length < 8) {
+        const error = new Error("Password must be at least 8 characters");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const user = await User.findOne({
+        passwordResetTokenHash: hashToken(token),
+        passwordResetExpiresAt: { $gt: new Date() },
+    }).select("+passwordResetTokenHash +passwordResetExpiresAt");
+
+    if (!user) {
+        const error = new Error("Reset link is invalid or has expired");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    user.password = password;
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
+
+    await user.save();
+
+    return { email: user.email };
+};
+
+/**
+ * Change the password of an already signed-in user.
+ *
+ * The current password is verified against the stored hash before the new one
+ * is written, so a stolen session token alone cannot silently rotate the
+ * password.
+ */
+const changePassword = async (userId, currentPassword, newPassword) => {
+    if (!currentPassword || typeof currentPassword !== "string") {
+        const error = new Error("Current password is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!newPassword || typeof newPassword !== "string" || newPassword.length < 8) {
+        const error = new Error("New password must be at least 8 characters");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const user = await User.findById(userId).select("+password");
+
+    if (!user) {
+        const error = new Error("User not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    const isCorrect = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isCorrect) {
+        const error = new Error("Current password is incorrect");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return { email: user.email };
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getCurrentUser,
     updateCurrentUser,
+    requestPasswordReset,
+    resetPassword,
+    changePassword,
+    normalizeEmail,
 };

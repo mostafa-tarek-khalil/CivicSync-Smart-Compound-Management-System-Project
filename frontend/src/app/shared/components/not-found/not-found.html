@@ -1,0 +1,24 @@
+<div class="state-page">
+  <div class="state-card">
+    <span class="state-icon material-symbols-outlined" aria-hidden="true">travel_explore</span>
+
+    <span class="state-code">404</span>
+
+    <h1>Page not found</h1>
+
+    <p>
+      The page you are looking for does not exist, was moved, or the link is
+      out of date.
+    </p>
+
+    <div class="state-actions">
+      <button type="button" class="btn-primary" (click)="goHome()">
+        {{ isSignedIn ? 'Go to my dashboard' : 'Back to home' }}
+      </button>
+
+      <button type="button" class="btn-ghost" (click)="goBack()">
+        Go back
+      </button>
+    </div>
+  </div>
+</div>

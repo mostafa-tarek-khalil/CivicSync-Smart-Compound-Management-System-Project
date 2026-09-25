@@ -1,0 +1,119 @@
+<div class="in-progress-page">
+
+  <div class="background-shape shape-one"></div>
+
+  <div class="prog-container">
+
+    <!-- BRAND -->
+    <header class="prog-brand">
+      <span class="brand-icon">
+        <span></span><span></span><span></span>
+      </span>
+      CivicSync
+    </header>
+
+    <!-- HERO -->
+    <section class="prog-hero">
+      <div class="hero-icon" [class.done]="isCheckedOut">
+        <span class="material-symbols-outlined">
+          {{ isCheckedOut ? 'task_alt' : 'login' }}
+        </span>
+      </div>
+
+      <span class="eyebrow">
+        {{ isCheckedOut ? 'VISIT COMPLETED' : 'CHECKED IN' }}
+      </span>
+
+      <h1>
+        {{ isCheckedOut ? 'Thanks for visiting!' : 'Welcome in, ' + (visitorName || 'visitor') }}
+      </h1>
+
+      <p *ngIf="!isCheckedOut">
+        You are checked in. If you need anything from your host, message them below.
+      </p>
+      <p *ngIf="isCheckedOut">
+        Your visit has been completed. We hope you had a great time.
+      </p>
+    </section>
+
+    <div class="state-box error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- VISIT SUMMARY -->
+    <section class="info-card">
+      <div class="card-title">
+        <div class="title-icon">
+          <span class="material-symbols-outlined">event_available</span>
+        </div>
+        <div>
+          <span>YOUR VISIT</span>
+          <h3>Visit Details</h3>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span>Host</span>
+          <strong>{{ residentName || 'Your host' }}</strong>
+        </div>
+        <div class="info-item">
+          <span>Location</span>
+          <strong>{{ building }}<span *ngIf="unit"> · Unit {{ unit }}</span></strong>
+        </div>
+        <div class="info-item">
+          <span>Date</span>
+          <strong>{{ visitDate }}</strong>
+        </div>
+        <div class="info-item">
+          <span>Scheduled time</span>
+          <strong>{{ startTime }}</strong>
+        </div>
+        <div class="info-item" *ngIf="checkInTime">
+          <span>Checked in</span>
+          <strong>{{ formatTime(checkInTime) }}</strong>
+        </div>
+        <div class="info-item" *ngIf="checkOutTime">
+          <span>Checked out</span>
+          <strong>{{ formatTime(checkOutTime) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="info-card chat-card" *ngIf="!isCheckedOut">
+      <div class="card-title">
+        <div class="title-icon">
+          <span class="material-symbols-outlined">forum</span>
+        </div>
+        <div>
+          <span>NEED SOMETHING?</span>
+          <h3>Message your host</h3>
+        </div>
+      </div>
+
+      <p class="chat-hint" *ngIf="canChat">
+        Reach {{ residentName || 'the resident' }} directly through CivicSync chat.
+      </p>
+      <p class="chat-hint" *ngIf="!canChat">
+        Chat with your host becomes available once they approve the visit.
+      </p>
+
+      <button class="primary-btn" type="button" [disabled]="!canChat" (click)="openChat()">
+        <span class="material-symbols-outlined">chat</span>
+        Chat with Host
+      </button>
+    </section>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="secondary-btn" type="button" (click)="trackAnother()">
+        <span class="material-symbols-outlined">travel_explore</span>
+        Track another visit
+      </button>
+    </div>
+
+  </div>
+
+</div>

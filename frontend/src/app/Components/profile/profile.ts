@@ -2,7 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../Services/auth-service';
+import { AuthService } from '../../core/services/auth.service';
+import { ModalService } from '../../core/services/modal.service';
+import { AvatarComponent } from '../../shared/components/avatar/avatar';
 
 interface ProfileData {
   name: string;
@@ -21,7 +23,7 @@ interface ProfileData {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvatarComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -38,9 +40,22 @@ export class Profile implements OnInit {
   name = '';
   phone = '';
 
+  // ---------- Change password ----------
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  showPasswords = false;
+  changingPassword = false;
+  passwordError = '';
+  passwordSuccess = '';
+
+  // ---------- Profile picture ----------
+  uploadingAvatar = false;
+
   constructor(
     private authService: AuthService,
     private router: Router,
+    private modalService: ModalService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -130,13 +145,107 @@ export class Profile implements OnInit {
     this.successMessage = '';
   }
 
-  get homeLink(): string {
-    switch (this.profile?.role) {
-      case 'SECURITY': return '/security-dashboard';
-      case 'RESIDENT': return '/chat';
-      case 'TECHNICIAN': return '/';
-      default: return '/';
+  // ==================================================================
+  // PROFILE PICTURE
+  // ==================================================================
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file || this.uploadingAvatar) {
+      return;
     }
+
+    // Mirrors the backend limit so the user gets an instant answer instead of
+    // uploading 6 MB only to be rejected.
+    if (file.size > 5 * 1024 * 1024) {
+      this.modalService.error('The image must be 5 MB or smaller.');
+      input.value = '';
+      return;
+    }
+
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) {
+      this.modalService.error('Please choose a JPEG, PNG, WEBP or GIF image.');
+      input.value = '';
+      return;
+    }
+
+    this.uploadingAvatar = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.authService.uploadProfileImage(file).subscribe({
+      next: response => {
+        this.uploadingAvatar = false;
+        this.profile = response.data;
+        this.successMessage = 'Profile picture updated.';
+        input.value = '';
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.uploadingAvatar = false;
+        input.value = '';
+        this.errorMessage =
+          error?.error?.message || 'Could not upload the picture.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // ==================================================================
+  // CHANGE PASSWORD
+  // ==================================================================
+
+  changePassword(): void {
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
+    if (!this.currentPassword) {
+      this.passwordError = 'Enter your current password.';
+      return;
+    }
+
+    if (this.newPassword.length < 8) {
+      this.passwordError = 'New password must be at least 8 characters.';
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.passwordError = 'New password and confirmation do not match.';
+      return;
+    }
+
+    if (this.newPassword === this.currentPassword) {
+      this.passwordError = 'New password must be different from the current one.';
+      return;
+    }
+
+    this.changingPassword = true;
+
+    this.authService
+      .changePassword(this.currentPassword, this.newPassword)
+      .subscribe({
+        next: response => {
+          this.changingPassword = false;
+          this.passwordSuccess =
+            response?.message || 'Password updated successfully.';
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+          this.cdr.detectChanges();
+        },
+        error: error => {
+          this.changingPassword = false;
+          this.passwordError =
+            error?.error?.message || 'Could not update your password.';
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  get homeLink(): string {
+    return this.authService.homeRoute;
   }
 
   goHome(): void {

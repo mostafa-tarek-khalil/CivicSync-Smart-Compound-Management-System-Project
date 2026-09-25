@@ -1,0 +1,371 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ------------------------------------------------------------ Empty state */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 180px;
+  color: var(--cs-text-soft, #64748b);
+}
+
+.chart-empty .material-symbols-outlined {
+  font-size: 32px;
+  opacity: 0.6;
+}
+
+.chart-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------------- Donut */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.donut {
+  flex-shrink: 0;
+  width: auto;
+  max-width: 200px;
+  transform: rotate(-90deg);
+}
+
+.donut-track {
+  fill: none;
+  stroke: var(--cs-border, #e2e8f0);
+  stroke-width: 4;
+}
+
+.donut-segment {
+  fill: none;
+  stroke-width: 4;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.legend {
+  flex: 1 1 160px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--cs-text, #202238);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-value {
+  font-weight: 700;
+}
+
+.legend-percent {
+  min-width: 42px;
+  text-align: right;
+  color: var(--cs-text-soft, #64748b);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------------ Bars */
+.bars-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 10px;
+  min-height: 160px;
+}
+
+.bar-column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.bar-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cs-text, #202238);
+}
+
+.bar-track {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 44px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 8px;
+  background: var(--cs-primary-soft, #eef3f9);
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.3s ease;
+  min-height: 4px;
+}
+
+.bar-label {
+  font-size: 11px;
+  text-align: center;
+  color: var(--cs-text-soft, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ Line */
+.line-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.line-svg {
+  width: 100%;
+  overflow: visible;
+}
+
+.line-path {
+  fill: none;
+  stroke: var(--cs-primary, #315b8f);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.line-axis {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--cs-text-soft, #64748b);
+  overflow: hidden;
+}
+
+.line-axis span {
+  flex: 1 1 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ Dark */
+:host-context(html.dark-mode) .donut-track {
+  stroke: #29394c;
+}
+
+:host-context(html.dark-mode) .legend li,
+:host-context(html.dark-mode) .bar-value {
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .bar-track {
+  background: #1e2f47;
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this chart uses.
+   ========================================================= */
+
+.chart-empty {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.chart-empty .material-symbols-outlined {
+  animation: cs-fade-in 0.45s ease 0.08s both;
+}
+
+/* --- Donut ---
+   The ring draws itself on load and the legend lists its slices in order,
+   so the proportions are read as they appear rather than all at once. */
+.donut-wrap {
+  animation: cs-pop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  perspective: 1200px;
+}
+
+.donut {
+  transform-style: preserve-3d;
+  animation: cs-donut-turn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The chart is pre-rotated -90deg, so the reveal rotates around that. */
+@keyframes cs-donut-turn {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) rotateY(70deg) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(-90deg) rotateY(0) scale(1);
+  }
+}
+
+.donut-segment {
+  transition: stroke-dasharray 0.3s ease, stroke-width 0.25s ease;
+}
+
+.donut:hover .donut-segment {
+  stroke-width: 5;
+}
+
+/* --- Legend --- */
+.legend li {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.22s ease;
+}
+
+.legend li:nth-child(1) { animation-delay: 0.16s; }
+.legend li:nth-child(2) { animation-delay: 0.22s; }
+.legend li:nth-child(3) { animation-delay: 0.28s; }
+.legend li:nth-child(4) { animation-delay: 0.34s; }
+.legend li:nth-child(5) { animation-delay: 0.4s; }
+.legend li:nth-child(6) { animation-delay: 0.46s; }
+
+.legend li:hover {
+  transform: translateX(3px);
+}
+
+.legend-dot {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.legend li:hover .legend-dot {
+  transform: scale(1.35);
+}
+
+/* --- Bars ---
+   Each bar grows out of the axis, staggered left to right. */
+.bars-wrap {
+  animation: cs-fade-in 0.35s ease both;
+  perspective: 1000px;
+}
+
+.bar-column {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bar-column:nth-child(1) { animation-delay: 0.08s; }
+.bar-column:nth-child(2) { animation-delay: 0.14s; }
+.bar-column:nth-child(3) { animation-delay: 0.2s; }
+.bar-column:nth-child(4) { animation-delay: 0.26s; }
+.bar-column:nth-child(5) { animation-delay: 0.32s; }
+.bar-column:nth-child(6) { animation-delay: 0.38s; }
+.bar-column:nth-child(7) { animation-delay: 0.44s; }
+.bar-column:nth-child(8) { animation-delay: 0.5s; }
+
+.bar-fill {
+  transform-origin: bottom center;
+  animation: cs-bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: height 0.3s ease, transform 0.25s ease, filter 0.25s ease;
+}
+
+@keyframes cs-bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.bar-column:hover .bar-fill {
+  transform: scaleY(1) translateY(-3px);
+  filter: brightness(1.08);
+}
+
+.bar-value {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bar-column:hover .bar-value {
+  transform: scale(1.12);
+}
+
+/* --- Line ---
+   The path draws itself left to right via a dash offset. */
+.line-wrap {
+  animation: cs-fade-in 0.4s ease both;
+}
+
+.line-path {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: cs-line-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+@keyframes cs-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.line-axis {
+  animation: cs-fade-in 0.5s ease 0.5s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-empty,
+  .chart-empty .material-symbols-outlined,
+  .donut-wrap,
+  .donut,
+  .legend li,
+  .bars-wrap,
+  .bar-column,
+  .bar-fill,
+  .line-wrap,
+  .line-path,
+  .line-axis {
+    animation: none;
+  }
+
+  /* The drawn path must be fully visible when motion is off. */
+  .line-path {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .legend li:hover,
+  .bar-column:hover .bar-fill,
+  .bar-column:hover .bar-value {
+    transform: none;
+  }
+}

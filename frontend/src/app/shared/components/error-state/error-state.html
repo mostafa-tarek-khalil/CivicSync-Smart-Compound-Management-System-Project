@@ -1,0 +1,12 @@
+<div class="state-block error-state" role="alert">
+  <span class="state-icon material-symbols-outlined" aria-hidden="true">error</span>
+
+  <h3 class="state-title">{{ title() }}</h3>
+
+  <p class="state-message">{{ message() }}</p>
+
+  <button type="button" class="state-action" (click)="onRetry()">
+    <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+    {{ retryLabel() }}
+  </button>
+</div>

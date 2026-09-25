@@ -1,0 +1,205 @@
+
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <button class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Visitors
+      </button>
+
+      <p class="eyebrow">SECURITY • VISITOR MANAGEMENT</p>
+      <h1>Visitor Details</h1>
+      <p class="subtitle">
+        Review visitor information and access status.
+      </p>
+    </div>
+
+    <button class="secondary-btn" (click)="scanAgain()">
+      <span class="material-symbols-outlined">qr_code_scanner</span>
+      Scan Another QR
+    </button>
+  </div>
+
+  <div class="status-banner" *ngIf="!loading && !errorMessage">
+    <div class="status-icon">
+      <span class="material-symbols-outlined">verified</span>
+    </div>
+
+    <div>
+      <span class="label">QR STATUS</span>
+      <h3>{{ qrStatus }}</h3>
+      <p>This visitor pass is valid for access.</p>
+    </div>
+
+    <span class="status-pill valid">
+      {{ visitStatus }}
+    </span>
+  </div>
+
+  <div class="status-banner" *ngIf="loading">
+    <div class="status-icon">
+      <span class="material-symbols-outlined">hourglass_top</span>
+    </div>
+    <div>
+      <span class="label">LOADING</span>
+      <h3>Fetching visitor details…</h3>
+    </div>
+  </div>
+
+  <div class="status-banner" *ngIf="!loading && errorMessage">
+    <div class="status-icon">
+      <span class="material-symbols-outlined">error</span>
+    </div>
+    <div>
+      <span class="label">ERROR</span>
+      <h3>Could not load visitor</h3>
+      <p>{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <div class="content-grid" *ngIf="!loading && !errorMessage">
+
+    <section class="card visitor-card">
+      <div class="card-title">
+        <div class="title-icon">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+
+        <div>
+          <h2>Visitor Information</h2>
+          <p>Identity details</p>
+        </div>
+      </div>
+
+      <div class="details-grid">
+
+        <div class="detail">
+          <span>Visitor Name</span>
+          <strong>{{ visitorName }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Email</span>
+          <strong>{{ visitorEmail }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Phone</span>
+          <strong>{{ visitorPhone }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Resident</span>
+          <strong>{{ residentName }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Building</span>
+          <strong>{{ buildingName }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Unit</span>
+          <strong>{{ unitNumber }}</strong>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="card visit-card">
+      <div class="card-title">
+        <div class="title-icon">
+          <span class="material-symbols-outlined">event</span>
+        </div>
+
+        <div>
+          <h2>Visit Information</h2>
+          <p>Approved visit details</p>
+        </div>
+      </div>
+
+      <div class="details-grid">
+
+        <div class="detail">
+          <span>Visit Date</span>
+          <strong>{{ visitDate }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Start Time</span>
+          <strong>{{ startTime }}</strong>
+        </div>
+
+        <div class="detail full">
+          <span>Purpose</span>
+          <strong>{{ purpose }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>QR Status</span>
+          <strong class="green-text">{{ qrStatus }}</strong>
+        </div>
+
+        <div class="detail">
+          <span>Visit Status</span>
+          <strong>{{ visitStatus }}</strong>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <section class="access-card" *ngIf="!loading && !errorMessage">
+
+    <div>
+      <span class="section-label">ACCESS ACTION</span>
+
+      <h2>
+        {{ visitStatus === 'Approved'
+          ? 'Visitor is ready for check-in'
+          : visitStatus === 'Checked In'
+          ? 'Visitor is currently inside'
+          : 'Visit completed' }}
+      </h2>
+
+      <p>
+        Confirm entry or exit from the dedicated access screen.
+      </p>
+    </div>
+
+    <div class="action-area">
+
+      <button
+        *ngIf="visitStatus === 'Approved'"
+        class="primary-btn"
+        (click)="openCheckInOut()">
+
+        <span class="material-symbols-outlined">login</span>
+        Check In
+      </button>
+
+      <button
+        *ngIf="visitStatus === 'Checked In'"
+        class="primary-btn"
+        (click)="openCheckInOut()">
+
+        <span class="material-symbols-outlined">logout</span>
+        Check Out
+      </button>
+
+      <div
+        *ngIf="visitStatus === 'Checked Out'"
+        class="completed-state">
+
+        <span class="material-symbols-outlined">task_alt</span>
+        Visit Completed
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+

@@ -715,3 +715,290 @@ form {
 :host-context(html.dark-mode) .showcase-footer {
   color: #7f8ea3;
 }
+/* =========================================================
+   FORGOT-PASSWORD SUCCESS CARD (shared by forgot/reset pages)
+========================================================= */
+
+.login-heading.center {
+  text-align: center;
+}
+
+.reset-success-card {
+  text-align: center;
+}
+
+.reset-success-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(49, 91, 143, 0.1);
+  color: #315b8f;
+}
+
+.reset-success-icon .material-symbols-outlined {
+  font-size: 38px;
+}
+
+.reset-success-icon.success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.reset-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  margin: 4px 0 24px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.reset-hint .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #315b8f;
+}
+
+.login-submit.as-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+:host-context(html.dark-mode) .reset-success-icon {
+  background: rgba(142, 178, 232, 0.14);
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .reset-hint {
+  background: #16233a;
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .reset-hint .material-symbols-outlined {
+  color: #8eb2e8;
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+/* The decorative background shapes drift for a sense of depth. */
+.background-shape {
+  animation: cs-login-drift 16s ease-in-out infinite;
+}
+
+.shape-one {
+  animation: cs-login-drift 20s ease-in-out infinite reverse;
+}
+
+.shape-two {
+  animation: cs-login-drift 24s ease-in-out infinite;
+}
+
+@keyframes cs-login-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -26px) scale(1.07);
+  }
+}
+
+/* The showcase panel and the form card enter from opposite sides so the
+   split layout assembles itself. */
+.login-showcase {
+  animation: cs-slide-in-left 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.login-form-section,
+.login-card {
+  animation: cs-slide-in-right 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.brand {
+  animation: cs-fade-in 0.5s ease 0.16s both;
+}
+
+.brand-icon {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.eyebrow,
+.form-eyebrow {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both;
+}
+
+.login-heading {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+/* Feature list items light up in sequence. */
+.feature {
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.feature:nth-child(1) { animation-delay: 0.34s; }
+.feature:nth-child(2) { animation-delay: 0.4s; }
+.feature:nth-child(3) { animation-delay: 0.46s; }
+
+.feature-icon {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feature:hover .feature-icon {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+.showcase-footer {
+  animation: cs-fade-in 0.5s ease 0.5s both;
+}
+
+.error-message {
+  animation: cs-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cs-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.form-group {
+  animation: cs-fade-up 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.2s; }
+.form-group:nth-child(2) { animation-delay: 0.26s; }
+
+.input-wrapper {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(49, 91, 143, 0.14);
+}
+
+.input-icon {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.input-wrapper:focus-within .input-icon {
+  transform: scale(1.12);
+}
+
+.form-options {
+  animation: cs-fade-up 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+}
+
+.forgot-link {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.forgot-link:hover {
+  transform: translateX(2px);
+}
+
+.login-submit {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.38s both;
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.login-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(49, 91, 143, 0.3);
+}
+
+.login-submit:hover:not(:disabled) .submit-arrow {
+  transform: translateX(4px);
+}
+
+.submit-arrow {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.login-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.register-link,
+.security-note {
+  animation: cs-fade-in 0.45s ease 0.44s both;
+}
+
+.reset-success-card {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reset-success-icon {
+  animation: cs-pop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.reset-hint {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-shape,
+  .shape-one,
+  .shape-two,
+  .login-showcase,
+  .login-form-section,
+  .login-card,
+  .brand,
+  .brand-icon,
+  .eyebrow,
+  .form-eyebrow,
+  .login-heading,
+  .feature,
+  .showcase-footer,
+  .error-message,
+  .form-group,
+  .form-options,
+  .login-submit,
+  .register-link,
+  .security-note,
+  .reset-success-card,
+  .reset-success-icon,
+  .reset-hint {
+    animation: none;
+  }
+
+  .login-submit:hover,
+  .feature:hover .feature-icon {
+    transform: none;
+  }
+}

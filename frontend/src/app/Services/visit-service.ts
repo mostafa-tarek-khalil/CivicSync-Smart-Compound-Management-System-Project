@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment';
+
 export interface VisitUnit {
   _id: string;
   unitNumber: string | number;
@@ -30,6 +32,12 @@ export interface VisitRecord {
   qrScannedAt?: string | null;
   approvedAt?: string | null;
   createdAt?: string;
+  /**
+   * Only present on the visitor-facing status endpoint, and only while the
+   * visit is chat-eligible. Required to open the visitor conversation.
+   */
+  visitorChatToken?: string | null;
+  visitorChatTokenExpiresAt?: string | null;
 }
 
 export interface ResidentVisitorRequest extends VisitRecord {
@@ -54,9 +62,9 @@ export interface VisitorRequestSummary {
 
 @Injectable({ providedIn: 'root' })
 export class VisitService {
-  private readonly apiUrl = 'http://localhost:3000/api/visits';
+  private readonly apiUrl = `${environment.apiUrl}/visits`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getVisitorUnits(): Observable<{ success: boolean; data: VisitUnit[] }> {
     return this.http.get<{ success: boolean; data: VisitUnit[] }>(`${this.apiUrl}/visitor-units`);
@@ -75,8 +83,18 @@ export class VisitService {
     return this.http.post<{ success: boolean; data: { visitId: string; status: string } }>(`${this.apiUrl}/visitor-requests`, data);
   }
 
-  sendVisitorOtp(visitId: string): Observable<unknown> {
-    return this.http.post(`${this.apiUrl}/visitor-requests/${visitId}/otp`, {});
+  /**
+   * (Re)sends the visitor OTP. The backend returns the new expiry so the UI can
+   * count down against the real deadline instead of guessing the TTL.
+   */
+  sendVisitorOtp(visitId: string): Observable<{
+    success: boolean;
+    data: { visitId: string; expiresAt: string; expiresInSeconds?: number };
+  }> {
+    return this.http.post<{
+      success: boolean;
+      data: { visitId: string; expiresAt: string; expiresInSeconds?: number };
+    }>(`${this.apiUrl}/visitor-requests/${visitId}/otp`, {});
   }
 
   verifyVisitorOtp(visitId: string, otp: string): Observable<{ success: boolean; data: { status: string } }> {
@@ -96,8 +114,26 @@ export class VisitService {
     );
   }
 
-  getVisitorQr(visitId: string, email: string): Observable<{ success: boolean; data: { qrToken: string; expiresAt: string } }> {
-    return this.http.post<{ success: boolean; data: { qrToken: string; expiresAt: string } }>(`${this.apiUrl}/visitor-requests/${visitId}/qr`, { email });
+  getVisitorQr(
+    visitId: string,
+    email: string
+  ): Observable<{
+    success: boolean;
+    data: {
+      qrToken: string;
+      expiresAt: string;
+    };
+  }> {
+    return this.http.post<{
+      success: boolean;
+      data: {
+        qrToken: string;
+        expiresAt: string;
+      };
+    }>(
+      `${this.apiUrl}/visitor-requests/${visitId}/qr`,
+      { email }
+    );
   }
 
   getSecurityVisits(): Observable<{ success: boolean; data: VisitRecord[] }> {
@@ -108,8 +144,19 @@ export class VisitService {
     return this.http.get<{ success: boolean; data: VisitRecord }>(`${this.apiUrl}/security/visits/${visitId}`);
   }
 
-  scanQr(qrToken: string): Observable<{ success: boolean; data: VisitRecord & { visitId: string } }> {
-    return this.http.post<{ success: boolean; data: VisitRecord & { visitId: string } }>(`${this.apiUrl}/scan`, { qrToken });
+  scanQr(
+    qrToken: string
+  ): Observable<{
+    success: boolean;
+    data: VisitRecord & { visitId: string };
+  }> {
+    return this.http.post<{
+      success: boolean;
+      data: VisitRecord & { visitId: string };
+    }>(
+      `${this.apiUrl}/scan`,
+      { qrToken }
+    );
   }
 
   checkIn(visitId: string): Observable<{ success: boolean; data: VisitRecord }> {
@@ -121,6 +168,28 @@ export class VisitService {
   }
 
   // ---------- Resident flow ----------
+
+  /**
+   * A resident inviting a visitor directly. The backend derives the building
+   * and unit from the resident's own profile, so only the visitor details and
+   * the visit slot are sent.
+   */
+  createVisit(data: {
+    visitorName: string;
+    visitorEmail: string;
+    visitorPhone?: string;
+    visitDate: string;
+    visitStartTime: string;
+    purpose?: string;
+  }): Observable<{ success: boolean; data: VisitRecord }> {
+    return this.http.post<{ success: boolean; data: VisitRecord }>(`${this.apiUrl}`, data);
+  }
+
+  /** All visits the signed-in resident created (invites they issued). */
+  getMyVisits(): Observable<{ success: boolean; data: VisitRecord[] }> {
+    return this.http.get<{ success: boolean; data: VisitRecord[] }>(`${this.apiUrl}`);
+  }
+
   getResidentVisitorRequests(): Observable<{ success: boolean; data: ResidentVisitorRequest[] }> {
     return this.http.get<{ success: boolean; data: ResidentVisitorRequest[] }>(`${this.apiUrl}/visitor-requests`);
   }

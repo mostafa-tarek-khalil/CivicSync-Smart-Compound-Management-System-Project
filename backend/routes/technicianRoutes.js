@@ -1,7 +1,9 @@
 const express = require("express");
 
 const {
+    getDashboard,
     getAvailableTickets,
+    getAvailableTicketDetails,
     startTicket,
     resolveTicket,
     skipTicket,
@@ -36,8 +38,18 @@ router.use(
 );
 
 router.get(
+    "/dashboard",
+    getDashboard
+);
+
+router.get(
     "/available-tickets",
     getAvailableTickets
+);
+
+router.get(
+    "/available-tickets/:id",
+    getAvailableTicketDetails
 );
 
 router.get(

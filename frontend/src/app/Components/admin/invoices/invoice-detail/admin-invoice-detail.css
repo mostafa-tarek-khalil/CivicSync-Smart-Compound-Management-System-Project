@@ -1,0 +1,174 @@
+:host {
+  display: block;
+}
+
+.invoice-print-page {
+  padding: 1.5rem;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--cs-primary);
+}
+
+.page-head h1 {
+  margin: 0.15rem 0 0.2rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.page-head p {
+  margin: 0;
+  color: var(--cs-text-soft);
+  font-size: 0.9rem;
+}
+
+.btn-back,
+.btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border-radius: 9px;
+  border: 1px solid var(--cs-border);
+  background: var(--cs-surface);
+  color: var(--cs-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-back:hover,
+.btn-retry:hover {
+  background: var(--cs-primary-soft);
+}
+
+.btn-back .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: var(--cs-surface);
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  color: var(--cs-text-soft);
+}
+
+.state-card.error {
+  color: #dc2626;
+}
+
+.state-card.error .material-symbols-outlined {
+  font-size: 30px;
+}
+
+.state-card .spin {
+  font-size: 28px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 767px) {
+  .invoice-print-page {
+    padding: 1rem;
+  }
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.page-head {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.eyebrow {
+  animation: cs-fade-in 0.45s ease 0.06s both;
+}
+
+.state-card {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+/* The receipt itself gets a 3D lift so it reads as the single object on
+   the page rather than another flat panel. */
+.invoice-print-area {
+  transform-style: preserve-3d;
+  animation: cs-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+.invoice-print-area:hover {
+  transform: translateY(-4px) rotateX(2deg);
+  box-shadow: 0 20px 44px rgba(20, 43, 70, 0.13);
+}
+
+.btn-back,
+.btn-retry {
+  transition: transform 0.22s ease, background-color 0.2s ease,
+    box-shadow 0.22s ease;
+}
+
+.btn-back:hover {
+  transform: translateX(-3px);
+}
+
+.btn-retry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.26);
+}
+
+.btn-back:active,
+.btn-retry:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Printing must never animate — force the static, final state. */
+@media print {
+  .page-head,
+  .eyebrow,
+  .state-card,
+  .invoice-print-area {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-head,
+  .eyebrow,
+  .state-card,
+  .invoice-print-area {
+    animation: none;
+  }
+
+  .invoice-print-area:hover,
+  .btn-back:hover,
+  .btn-retry:hover {
+    transform: none;
+  }
+}

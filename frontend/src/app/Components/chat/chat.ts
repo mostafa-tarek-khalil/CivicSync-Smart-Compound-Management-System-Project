@@ -12,9 +12,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ChatService } from '../../Services/chat-service';
-import { ChatSocket } from '../../Services/chat-socket';
-import { AuthService } from '../../Services/auth-service';
-import { ThemeService } from '../VisitorAccess/services/theme';
+import { ChatSocket } from '../../core/services/chat-socket';
+import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { AvatarComponent } from '../../shared/components/avatar/avatar';
 
 interface Conversation {
   _id: string;
@@ -27,6 +28,12 @@ interface Conversation {
   lastMessageAt?: string | null;
   unreadCount?: number;
   deletedFor?: string[];
+  /**
+   * Set by the backend when this DIRECT conversation is a finished maintenance
+   * thread. The composer is replaced with a notice; the server also rejects
+   * any message sent anyway.
+   */
+  chatLocked?: boolean;
 }
 
 interface Message {
@@ -49,7 +56,8 @@ interface Message {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    AvatarComponent
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css'
@@ -798,7 +806,8 @@ export class Chat implements OnInit, OnDestroy {
     if (
       !message ||
       !this.selectedConversation ||
-      this.sendingMessage
+      this.sendingMessage ||
+      this.isConversationLocked
     ) {
       return;
     }
@@ -1398,6 +1407,41 @@ export class Chat implements OnInit, OnDestroy {
         ?.toUpperCase() ||
       '?'
     );
+  }
+
+  /**
+   * True when the open conversation is a finished maintenance thread.
+   *
+   * Drives the read-only composer: the server rejects these messages anyway, so
+   * the UI stops the user from typing one in the first place.
+   */
+  get isConversationLocked(): boolean {
+    return !!this.selectedConversation?.chatLocked;
+  }
+
+  /**
+   * Profile picture of the other participant in a DIRECT chat.
+   *
+   * Groups have no single owner, so they keep their initial. Returns null when
+   * the peer has not uploaded a picture (the avatar then shows initials).
+   */
+  getConversationAvatarImage(
+    conversation: Conversation
+  ): string | null {
+
+    if (conversation.type !== 'DIRECT') {
+      return null;
+    }
+
+    const participants = conversation.participants || [];
+
+    const peer = participants.find(
+      participant =>
+        String(participant?._id ?? participant) !==
+        this.currentUserId
+    );
+
+    return peer?.profileImage ?? null;
   }
 
   getLastMessagePreview(

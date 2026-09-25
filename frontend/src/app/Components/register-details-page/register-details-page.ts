@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { TimeoutError } from 'rxjs';
 import { timeout } from 'rxjs/operators';
-import { AuthService } from '../../Services/auth-service';
+import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 type RegisterRole = 'RESIDENT' | 'TECHNICIAN' | 'SECURITY';
 
@@ -181,23 +182,19 @@ export class RegisterDetailsPage implements OnInit {
     this.errorMessage = '';
     this.cdr.detectChanges();
 
-    this.http.get<{ success: boolean; data: AvailableUnit[] }>('http://localhost:3000/api/units/available').pipe(timeout(10000)).subscribe({
+    this.http.get<{ success: boolean; data: AvailableUnit[] }>(`${environment.apiUrl}/units/available`).pipe(timeout(10000)).subscribe({
       next: (response) => {
-        console.log('AVAILABLE UNITS RESPONSE:', response);
         if (response && response.success && Array.isArray(response.data)) {
           this.availableUnits = response.data;
-          console.log('AVAILABLE UNITS ARRAY:', this.availableUnits);
           this.restoreSavedUnit();
         } else {
           this.availableUnits = [];
           this.errorMessage = 'Unable to load available units.';
         }
         this.loadingUnits = false;
-        console.log('UNITS READY:', this.availableUnits.length);
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('AVAILABLE UNITS ERROR:', error);
         this.availableUnits = [];
         this.loadingUnits = false;
         this.unitDropdownOpen = false;
@@ -209,9 +206,6 @@ export class RegisterDetailsPage implements OnInit {
           this.errorMessage = error?.error?.message || 'Unable to load available units. Please try again.';
         }
         this.cdr.detectChanges();
-      },
-      complete: () => {
-        console.log('AVAILABLE UNITS REQUEST COMPLETED');
       }
     });
   }
@@ -289,13 +283,15 @@ export class RegisterDetailsPage implements OnInit {
 
     this.loading = true;
     this.authService.register(payload).pipe(timeout(15000)).subscribe({
-      next: (response) => {
-        console.log('REGISTRATION SUCCESS:', response);
+      next: () => {
         sessionStorage.removeItem('civicsync_register');
-        this.router.navigate(['/login']);
+        // New accounts are created as PENDING and can't log in until an
+        // admin approves them. Tell the login page so it can explain that
+        // instead of letting the user hit a confusing "Account is not
+        // active" error right after registering.
+        this.router.navigate(['/login'], { queryParams: { registered: 'pending' } });
       },
       error: (error) => {
-        console.error('REGISTRATION ERROR:', error);
         this.loading = false;
         if (error instanceof TimeoutError) {
           this.errorMessage = 'The registration request is taking too long. Please try again.';

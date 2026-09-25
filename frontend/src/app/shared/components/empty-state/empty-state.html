@@ -1,0 +1,16 @@
+<div class="state-block empty-state">
+  <span class="state-icon material-symbols-outlined" aria-hidden="true">{{ icon() }}</span>
+
+  <h3 class="state-title">{{ title() }}</h3>
+
+  <p class="state-message" *ngIf="message()">{{ message() }}</p>
+
+  <button
+    type="button"
+    class="state-action"
+    *ngIf="actionLabel()"
+    (click)="onAction()"
+  >
+    {{ actionLabel() }}
+  </button>
+</div>

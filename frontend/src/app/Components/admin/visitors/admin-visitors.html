@@ -1,0 +1,105 @@
+<div class="admin-section">
+
+  <header class="section-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Visitors</h1>
+      <p>Compound-wide view of every visit, invitation and access request.</p>
+    </div>
+
+    <span class="header-count">{{ visits.length }} visit(s)</span>
+  </header>
+
+  @if (errorMessage) {
+  <div class="alert">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    {{ errorMessage }}
+  </div>
+  }
+
+  <div class="tiles">
+    <div class="tile">
+      <span>Pending</span>
+      <strong>{{ countBy('PENDING') }}</strong>
+    </div>
+    <div class="tile">
+      <span>Approved</span>
+      <strong>{{ countBy('APPROVED') + countBy('QR_GENERATED') }}</strong>
+    </div>
+    <div class="tile">
+      <span>Currently Inside</span>
+      <strong>{{ activeCount }}</strong>
+    </div>
+    <div class="tile">
+      <span>Completed</span>
+      <strong>{{ countBy('CHECKED_OUT') }}</strong>
+    </div>
+  </div>
+
+  <div class="filters">
+    <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="">All statuses</option>
+      @for (status of statuses; track status) {
+      @if (status) {
+      <option [value]="status">{{ status }}</option>
+      }
+      }
+    </select>
+
+    <select [(ngModel)]="sourceFilter" (change)="applyFilters()">
+      <option value="">All sources</option>
+      @for (source of sources; track source) {
+      @if (source) {
+      <option [value]="source">{{ sourceLabel(source) }}</option>
+      }
+      }
+    </select>
+  </div>
+
+  <div class="panel">
+    @if (loading) {
+    <div class="loading">Loading visits…</div>
+    } @else if (visits.length === 0) {
+    <div class="table-empty">
+      <i class="fa-solid fa-user-shield"></i>
+      <span>No visits found</span>
+      <small>Nothing matches the current filters.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Visitor</th>
+            <th>Resident</th>
+            <th>Unit</th>
+            <th>Source</th>
+            <th>Visit Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (visit of visits; track visit._id) {
+          <tr>
+            <td>
+              <strong>{{ visit.visitorName }}</strong>
+            </td>
+            <td>{{ personLabel(visit.residentId) }}</td>
+            <td>{{ unitLabel(visit.unitId) }}</td>
+            <td>{{ sourceLabel(visit.source) }}</td>
+            <td>{{ formatDate(visit.visitDate) }} · {{ visit.visitStartTime }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="statusClass(visit.status)">
+                {{ visit.status }}
+              </span>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+</div>

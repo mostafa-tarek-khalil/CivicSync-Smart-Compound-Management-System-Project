@@ -1,19 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
-
 :host {
   display: block;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
 }
 
 .landing-page {
@@ -85,13 +71,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   border-radius: 11px;
-  color: #ffffff;
   background: linear-gradient(145deg, #315b8f, #1d3f68);
-  font-family: "Manrope", sans-serif;
-  font-size: 16px;
-  font-weight: 800;
   box-shadow: 0 7px 16px rgba(49, 91, 143, 0.2);
+}
+
+.brand-icon > span {
+  display: block;
+  width: 4px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.brand-icon > span:nth-child(1) {
+  height: 11px;
+}
+
+.brand-icon > span:nth-child(2) {
+  height: 18px;
+}
+
+.brand-icon > span:nth-child(3) {
+  height: 14px;
 }
 
 .brand-text {
@@ -422,7 +424,6 @@ body {
 .hero h1 span {
   display: block;
   color: var(--primary);
-  font-style: italic;
 }
 
 .hero-copy > p {
@@ -3327,6 +3328,17 @@ body {
   --line: rgba(142, 178, 232, 0.16);
   --blue-glow: rgba(87, 135, 190, 0.28);
   --blue-shadow: rgba(0, 0, 0, 0.45);
+  color: var(--ink);
+
+  /* Force the dark page background so the landing page never shows a light
+     body behind the hero when the global theme is toggled. */
+  background: var(--bg) !important;
+}
+
+:host-context(html.dark-mode) .landing-page h1,
+:host-context(html.dark-mode) .landing-page h2,
+:host-context(html.dark-mode) .landing-page h3,
+:host-context(html.dark-mode) .landing-page h4 {
   color: var(--ink);
 }
 

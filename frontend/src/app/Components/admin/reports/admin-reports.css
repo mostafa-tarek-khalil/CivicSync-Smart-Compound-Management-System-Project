@@ -1,0 +1,434 @@
+/* =========================================================
+   Reports & analytics layout.
+   Builds on admin-shared.css; this file only adds the
+   report-specific grid, stat cards and print rules.
+   ========================================================= */
+
+.report-header {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-primary {
+  border: none;
+  background: var(--primary, #315b8f);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #24466f;
+}
+
+.btn-ghost {
+  border: 1px solid var(--border, #dce4f0);
+  background: transparent;
+  color: var(--text-primary, #17253d);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--primary, #315b8f);
+  color: var(--primary, #315b8f);
+}
+
+.btn-primary:disabled,
+.btn-ghost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary .material-symbols-outlined,
+.btn-ghost .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ---- Stat cards --------------------------------------------------------- */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--border, #dce4f0);
+  border-radius: 14px;
+  background: var(--surface, #ffffff);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(20, 43, 70, 0.06));
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.stat-icon .material-symbols-outlined {
+  font-size: 23px;
+}
+
+.stat-icon.blue {
+  background: rgba(49, 91, 143, 0.12);
+  color: #315b8f;
+}
+
+.stat-icon.green {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.stat-icon.amber {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.stat-label {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 3px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary, #17253d);
+}
+
+/* ---- Chart grid --------------------------------------------------------- */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.card {
+  padding: 20px 22px 24px;
+  border: 1px solid var(--border, #dce4f0);
+  border-radius: 16px;
+  background: var(--surface, #ffffff);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(20, 43, 70, 0.06));
+  margin-bottom: 18px;
+}
+
+.grid-2 .card {
+  margin-bottom: 0;
+}
+
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.card-heading>.material-symbols-outlined {
+  font-size: 22px;
+  color: var(--primary, #315b8f);
+  margin-top: 2px;
+}
+
+.card-heading h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #17253d);
+}
+
+.card-heading p {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary, #64748b);
+}
+
+/* ---- Revenue boxes ------------------------------------------------------ */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.revenue-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--primary-soft, rgba(49, 91, 143, 0.1));
+}
+
+.revenue-box span {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+.revenue-box strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #17253d);
+}
+
+.revenue-box.success {
+  background: rgba(22, 163, 74, 0.12);
+}
+
+.revenue-box.warning {
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.revenue-box.danger {
+  background: rgba(220, 38, 38, 0.12);
+}
+
+/* ---- States ------------------------------------------------------------- */
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 50px 20px;
+  color: var(--text-secondary, #64748b);
+}
+
+.state-box .material-symbols-outlined {
+  font-size: 34px;
+}
+
+.spinning {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+
+.alert.error {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+}
+
+/* ---- Dark mode ---------------------------------------------------------- */
+:host-context(html.dark-mode) .card,
+:host-context(html.dark-mode) .stat-card {
+  background: #151f2d;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .stat-value,
+:host-context(html.dark-mode) .card-heading h3,
+:host-context(html.dark-mode) .revenue-box strong {
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .btn-ghost {
+  border-color: #29394c;
+  color: #e8eef6;
+}
+
+/* ---- Print: a clean PDF via the browser dialog ------------------------- */
+@media print {
+
+  .header-actions,
+  app-topbar,
+  .nav-toggle {
+    display: none !important;
+  }
+
+  .card,
+  .stat-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border-color: #cbd5e1;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.section-header,
+.report-header {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.header-actions {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+/* Report tiles and chart panels arrive in sequence and tilt in 3D. */
+.tiles,
+.stats-grid,
+.report-grid {
+  perspective: 1200px;
+}
+
+.tile,
+.stat-card,
+.report-card,
+.panel {
+  transform-style: preserve-3d;
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease;
+  will-change: transform;
+}
+
+.tile:nth-child(1),
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+
+.tile:nth-child(2),
+.stat-card:nth-child(2) { animation-delay: 0.17s; }
+
+.tile:nth-child(3),
+.stat-card:nth-child(3) { animation-delay: 0.24s; }
+
+.tile:nth-child(4),
+.stat-card:nth-child(4) { animation-delay: 0.31s; }
+
+.tile:nth-child(5),
+.stat-card:nth-child(5) { animation-delay: 0.38s; }
+
+.tile:hover,
+.stat-card:hover {
+  transform: translateY(-6px) rotateX(6deg) rotateY(-6deg);
+  box-shadow: 0 22px 44px rgba(20, 43, 70, 0.16);
+}
+
+/* Chart panels get a gentler lift — a strong tilt on a wide surface
+   would distort the bars. */
+.report-card,
+.panel {
+  animation: cs-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.report-card:hover,
+.panel:hover {
+  transform: translateY(-4px) rotateX(2deg);
+  box-shadow: 0 18px 38px rgba(20, 43, 70, 0.13);
+}
+
+.btn-primary,
+.btn-ghost {
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.28);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn-primary:active:not(:disabled),
+.btn-ghost:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Data table rows cascade in. */
+.admin-table tbody tr,
+.table-wrapper tbody tr {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr:nth-child(1),
+.table-wrapper tbody tr:nth-child(1) { animation-delay: 0.3s; }
+
+.admin-table tbody tr:nth-child(2),
+.table-wrapper tbody tr:nth-child(2) { animation-delay: 0.35s; }
+
+.admin-table tbody tr:nth-child(3),
+.table-wrapper tbody tr:nth-child(3) { animation-delay: 0.4s; }
+
+.admin-table tbody tr:nth-child(4),
+.table-wrapper tbody tr:nth-child(4) { animation-delay: 0.45s; }
+
+.admin-table tbody tr:nth-child(5),
+.table-wrapper tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+.admin-table tbody tr:nth-child(6),
+.table-wrapper tbody tr:nth-child(6) { animation-delay: 0.55s; }
+
+.admin-table tbody tr:hover,
+.table-wrapper tbody tr:hover {
+  background-color: #f8fafe;
+}
+
+.loading,
+.table-empty {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-header,
+  .report-header,
+  .header-actions,
+  .tile,
+  .stat-card,
+  .report-card,
+  .panel,
+  .admin-table tbody tr,
+  .table-wrapper tbody tr,
+  .loading,
+  .table-empty {
+    animation: none;
+  }
+
+  .tile:hover,
+  .stat-card:hover,
+  .report-card:hover,
+  .panel:hover,
+  .btn-primary:hover,
+  .btn-ghost:hover {
+    transform: none;
+  }
+}

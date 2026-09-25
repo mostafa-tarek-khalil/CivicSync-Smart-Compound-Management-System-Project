@@ -1,0 +1,257 @@
+<div class="admin-section">
+
+  <header class="section-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Maintenance</h1>
+      <p>Every maintenance request in the compound and where it stands.</p>
+    </div>
+
+    <span class="header-count">{{ tickets.length }} request(s)</span>
+  </header>
+
+  @if (errorMessage) {
+  <div class="alert">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    {{ errorMessage }}
+  </div>
+  }
+
+  <div class="tiles">
+    <div class="tile">
+      <span>Open</span>
+      <strong>{{ countBy('OPEN') }}</strong>
+    </div>
+    <div class="tile">
+      <span>In Progress</span>
+      <strong>{{ countBy('IN_PROGRESS') + countBy('ASSIGNED') }}</strong>
+    </div>
+    <div class="tile">
+      <span>Resolved</span>
+      <strong>{{ countBy('RESOLVED') }}</strong>
+    </div>
+    <div class="tile">
+      <span>Closed</span>
+      <strong>{{ countBy('CLOSED') }}</strong>
+    </div>
+  </div>
+
+  <div class="filters">
+    <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="">All statuses</option>
+      @for (status of statuses; track status) {
+      @if (status) {
+      <option [value]="status">{{ status }}</option>
+      }
+      }
+    </select>
+
+    <select [(ngModel)]="categoryFilter" (change)="applyFilters()">
+      <option value="">All categories</option>
+      @for (category of categories; track category) {
+      @if (category) {
+      <option [value]="category">{{ category }}</option>
+      }
+      }
+    </select>
+  </div>
+
+  <div class="panel">
+    @if (loading) {
+    <div class="loading">Loading requests…</div>
+    } @else if (tickets.length === 0) {
+    <div class="table-empty">
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+      <span>No maintenance requests</span>
+      <small>Nothing matches the current filters.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Request</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Resident</th>
+            <th>Technician</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (ticket of tickets; track ticket._id) {
+          <tr>
+            <td><strong>{{ ticket.title }}</strong></td>
+            <td>{{ ticket.category }}</td>
+            <td>{{ ticket.priority }}</td>
+            <td>{{ personLabel(ticket.residentId) }}</td>
+            <td>{{ personLabel(ticket.assignedTo) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="statusClass(ticket.status)">
+                {{ ticket.status }}
+              </span>
+            </td>
+            <td>{{ formatDate(ticket.createdAt) }}</td>
+            <td>
+              <button type="button" class="btn-sm view" (click)="openTicket(ticket)">
+                <span class="material-symbols-outlined">visibility</span>
+                View
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+</div>
+
+<!-- ===================== TICKET DETAILS MODAL ===================== -->
+@if (ticketModalOpen) {
+<div class="modal-backdrop" (click)="closeTicketModal()">
+  <div class="modal-card modal-wide" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Ticket Details</h3>
+      <button type="button" class="modal-close" (click)="closeTicketModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (detailsLoading) {
+      <div class="loading">Loading ticket details…</div>
+      } @else if (detailsError) {
+      <div class="alert">
+        <span class="material-symbols-outlined">error</span>
+        {{ detailsError }}
+      </div>
+      } @else if (details) {
+
+      <div class="detail-head">
+        <h4>{{ details.ticket.title }}</h4>
+        <div class="detail-badges">
+          <span class="status-badge" [ngClass]="statusClass(details.ticket.status)">
+            {{ details.ticket.status }}
+          </span>
+          <span class="status-badge">{{ details.ticket.category }}</span>
+          <span class="status-badge">{{ details.ticket.priority }}</span>
+        </div>
+      </div>
+
+      <p class="detail-description">{{ details.ticket.description }}</p>
+
+      <div class="detail-grid">
+        <section class="detail-block">
+          <span class="detail-label">Resident</span>
+          <strong>{{ personLabel(details.ticket.residentId) }}</strong>
+          <small>{{ detailResidentContact }}</small>
+        </section>
+
+        <section class="detail-block">
+          <span class="detail-label">Assigned Technician</span>
+          <strong>{{ technicianName }}</strong>
+          @if (technicianMeta) {
+          <small>{{ technicianMeta }}</small>
+          }
+        </section>
+
+        <section class="detail-block">
+          <span class="detail-label">Location</span>
+          <strong>{{ locationLabel }}</strong>
+        </section>
+
+        <section class="detail-block">
+          <span class="detail-label">Created</span>
+          <strong>{{ formatDateTime(details.ticket.createdAt) }}</strong>
+        </section>
+      </div>
+
+      @if (details.ticket.attachmentUrl) {
+      <div class="detail-block">
+        <span class="detail-label">Attachment</span>
+        <a [href]="attachmentUrl" target="_blank" rel="noopener" class="attachment-link">
+          <img [src]="attachmentUrl" alt="Ticket attachment" loading="lazy" />
+        </a>
+      </div>
+      }
+
+      <!-- Review ------------------------------------------------------- -->
+      <div class="detail-block">
+        <span class="detail-label">Resident Review</span>
+
+        @if (details.review) {
+        <div class="review-box">
+          <div class="review-stars">
+            @for (star of starsFor(details.review.rating); track star) {
+            <span class="material-symbols-outlined filled">star</span>
+            }
+            @for (star of emptyStarsFor(details.review.rating); track star) {
+            <span class="material-symbols-outlined">star</span>
+            }
+            <strong>{{ details.review.rating }}/5</strong>
+          </div>
+
+          <p class="review-comment">
+            {{ details.review.comment || 'No comment left.' }}
+          </p>
+
+          <small>
+            By {{ personLabel(details.review.residentId) }} ·
+            {{ formatDateTime(details.review.createdAt) }}
+          </small>
+        </div>
+        } @else {
+        <small class="muted">
+          No review yet — reviews are submitted after a ticket is closed.
+        </small>
+        }
+      </div>
+
+      <!-- Invoice ------------------------------------------------------ -->
+      <div class="detail-block">
+        <span class="detail-label">Invoice</span>
+
+        @if (details.invoice) {
+        <div class="invoice-line">
+          <strong>{{ details.invoice.amount | number:'1.0-2' }} EGP</strong>
+          <span class="status-badge" [ngClass]="statusClass(details.invoice.status)">
+            {{ details.invoice.status }}
+          </span>
+        </div>
+        <small>Due {{ formatDate(details.invoice.dueDate) }}</small>
+
+        @if (details.invoice.description) {
+        <small class="muted">{{ details.invoice.description }}</small>
+        }
+
+        <!-- Drill-through: opens the printable receipt for this invoice. -->
+        <button type="button" class="btn-sm view invoice-open" (click)="openInvoice(details.invoice._id)">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Open invoice
+        </button>
+        } @else {
+        <small class="muted">No invoice issued for this ticket.</small>
+
+        @if (details.ticket.status === 'CLOSED') {
+        <small class="muted">
+          This ticket is closed, so an invoice can be raised for it from the
+          Invoices screen.
+        </small>
+        }
+        }
+      </div>
+
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeTicketModal()">Close</button>
+    </div>
+  </div>
+</div>
+}

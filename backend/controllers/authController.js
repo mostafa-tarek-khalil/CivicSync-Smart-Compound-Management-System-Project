@@ -41,8 +41,15 @@ const login = async (req, res) => {
           id: result.user._id,
           name: result.user.name,
           email: result.user.email,
+          phone: result.user.phone,
           role: result.user.role,
           status: result.user.status,
+          profileImage: result.user.profileImage,
+          unitId: result.user.unitId,
+          specializations: result.user.specializations,
+          rating: result.user.rating,
+          totalReviews: result.user.totalReviews,
+          lastLoginAt: result.user.lastLoginAt,
         },
       },
     });
@@ -117,9 +124,66 @@ const updateMe = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    await authService.requestPasswordReset(req.body.email);
+
+    // Deliberately generic: the client must not be able to tell whether the
+    // address is registered.
+    res.status(200).json({
+      success: true,
+      message: "If that email is registered, a reset link has been sent.",
+    });
+  } catch (error) {
+    res.status(error.statusCode || 400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    await authService.resetPassword(req.body.token, req.body.password);
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully. You can now sign in.",
+    });
+  } catch (error) {
+    res.status(error.statusCode || 400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    await authService.changePassword(
+      req.user.userId,
+      req.body.currentPassword,
+      req.body.newPassword
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully.",
+    });
+  } catch (error) {
+    res.status(error.statusCode || 400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
   updateMe,
+  forgotPassword,
+  resetPassword,
+  changePassword,
 };

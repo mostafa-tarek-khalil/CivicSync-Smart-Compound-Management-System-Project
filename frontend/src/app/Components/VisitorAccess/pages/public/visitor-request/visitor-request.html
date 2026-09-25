@@ -1,0 +1,673 @@
+
+<div class="request-page">
+
+  <!-- LEFT SIDE -->
+  <aside class="info-side">
+
+    <div class="info-content">
+
+      <a class="logo" routerLink="/visitor-entry">
+        <span class="brand-icon">
+          <span></span><span></span><span></span>
+        </span>
+        CivicSync
+      </a>
+
+      <div class="intro">
+
+        <div class="small-title">
+          REQUEST A VISIT
+        </div>
+
+        <h1>
+          Welcome to the<br>
+          connected community.
+        </h1>
+
+        <p>
+          Submit your visit request and get access
+          to the compound in a simple and secure way.
+        </p>
+
+      </div>
+
+      <!-- STEPS -->
+      <div class="steps">
+
+        <!-- STEP 1 -->
+        <div
+          class="step"
+          [class.active]="currentStep === 1"
+          [class.completed]="currentStep > 1"
+        >
+
+          <div class="step-number">
+
+            <span *ngIf="currentStep === 1">
+              01
+            </span>
+
+            <span *ngIf="currentStep > 1">
+              ✓
+            </span>
+
+          </div>
+
+          <div class="step-info">
+
+            <h3>
+              Visitor Information
+            </h3>
+
+            <p>
+              Tell us a little about yourself.
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- STEP 2 -->
+        <div
+          class="step"
+          [class.active]="currentStep === 2"
+          [class.completed]="currentStep > 2"
+        >
+
+          <div class="step-number">
+
+            <span *ngIf="currentStep <= 2">
+              02
+            </span>
+
+            <span *ngIf="currentStep > 2">
+              ✓
+            </span>
+
+          </div>
+
+          <div class="step-info">
+
+            <h3>
+              Visit Details
+            </h3>
+
+            <p>
+              Select building, unit and visit time.
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- STEP 3 -->
+        <div
+          class="step"
+          [class.active]="currentStep === 3"
+        >
+
+          <div class="step-number">
+            03
+          </div>
+
+          <div class="step-info">
+
+            <h3>
+              OTP Verification
+            </h3>
+
+            <p>
+              Confirm your visit code.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="side-footer">
+
+      <span>
+        © 2026 CivicSync
+      </span>
+
+      <span>
+        Smart Compound Management
+      </span>
+
+    </div>
+
+  </aside>
+
+
+  <!-- RIGHT SIDE -->
+  <main class="form-side">
+
+    <div class="form-container">
+
+
+      <!-- ========================= -->
+      <!-- STEP 01 -->
+      <!-- ========================= -->
+
+      <section
+        class="form-step"
+        *ngIf="currentStep === 1"
+      >
+
+        <div class="step-label">
+          STEP 01 OF 03
+        </div>
+
+        <h2>
+          Request a Visit
+        </h2>
+
+        <p class="form-description">
+          Start with your basic information.
+        </p>
+
+
+        <!-- FULL NAME -->
+        <div class="form-group">
+
+          <label for="fullName">
+            Full name
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <circle
+                  cx="12"
+                  cy="8"
+                  r="4"
+                />
+
+                <path
+                  d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"
+                />
+              </svg>
+
+            </span>
+
+            <input
+              id="fullName"
+              type="text"
+              placeholder="Enter your full name"
+              [(ngModel)]="visitor.fullName"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- PHONE -->
+        <div class="form-group">
+
+          <label for="phone">
+            Phone number
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <rect
+                  x="6"
+                  y="2"
+                  width="12"
+                  height="20"
+                  rx="2"
+                />
+
+                <line
+                  x1="10"
+                  y1="18"
+                  x2="14"
+                  y2="18"
+                />
+
+              </svg>
+
+            </span>
+
+            <input
+              id="phone"
+              type="tel"
+              placeholder="Enter your phone number"
+              [(ngModel)]="visitor.phone"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- EMAIL -->
+        <div class="form-group">
+
+          <label for="email">
+            Email address
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <rect
+                  x="3"
+                  y="5"
+                  width="18"
+                  height="14"
+                  rx="2"
+                />
+
+                <path
+                  d="M3 7l9 6 9-6"
+                />
+
+              </svg>
+
+            </span>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email address"
+              [(ngModel)]="visitor.email"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- CONTINUE -->
+        <button
+          class="primary-btn"
+          type="button"
+          (click)="goToStep2()"
+        >
+
+          <span>
+            Continue
+          </span>
+
+          <span class="arrow">
+            →
+          </span>
+
+        </button>
+
+      </section>
+
+
+      <!-- ========================= -->
+      <!-- STEP 02 -->
+      <!-- ========================= -->
+
+      <section
+        class="form-step"
+        *ngIf="currentStep === 2"
+      >
+
+        <div class="step-label">
+          STEP 02 OF 03
+        </div>
+
+        <h2>
+          Visit Details
+        </h2>
+
+        <p class="form-description">
+          Tell us when and where you would like to visit.
+        </p>
+
+
+        <!-- BUILDING -->
+        <div class="form-group">
+
+          <label for="building">
+            Building
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+
+                <path
+                  d="M4 21V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v16"
+                />
+
+                <path
+                  d="M2 21h20"
+                />
+
+                <path
+                  d="M8 7h2M12 7h2M8 11h2M12 11h2M8 15h2M12 15h2"
+                />
+
+              </svg>
+
+            </span>
+
+            <select
+              id="building"
+              [(ngModel)]="visit.building"
+              (ngModelChange)="onBuildingChange()"
+              [disabled]="loadingUnits || buildings.length === 0"
+            >
+
+              <option
+                value=""
+                disabled
+              >
+                Select building
+              </option>
+
+              <option *ngFor="let building of buildings" [value]="building._id">
+                {{ building.name }}
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- UNIT -->
+        <div class="form-group">
+
+          <label for="unit">
+            Unit
+          </label>
+
+          <div class="input-wrapper">
+
+            <span class="input-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="16"
+                  rx="2"
+                />
+
+                <path
+                  d="M8 20v-4h8v4"
+                />
+
+                <path
+                  d="M7 8h.01M11 8h.01M15 8h.01"
+                />
+
+              </svg>
+
+            </span>
+
+            <select
+              id="unit"
+              [(ngModel)]="visit.unit"
+              [disabled]="!visit.building"
+            >
+
+              <option
+                value=""
+                disabled
+              >
+                {{
+                  visit.building
+                    ? 'Select unit'
+                    : 'Select building first'
+                }}
+              </option>
+
+              <option
+                *ngFor="let unit of filteredUnits"
+                [value]="unit._id"
+              >
+                {{ unit.unitNumber }} (Floor {{ unit.floor }})
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- DATE + TIME -->
+        <div class="two-columns">
+
+
+          <!-- DATE -->
+          <div class="form-group">
+
+            <label for="date">
+              Visit date
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="17"
+                    rx="2"
+                  />
+
+                  <line
+                    x1="16"
+                    y1="2"
+                    x2="16"
+                    y2="6"
+                  />
+
+                  <line
+                    x1="8"
+                    y1="2"
+                    x2="8"
+                    y2="6"
+                  />
+
+                  <line
+                    x1="3"
+                    y1="10"
+                    x2="21"
+                    y2="10"
+                  />
+
+                </svg>
+
+              </span>
+
+              <input
+                id="date"
+                type="date"
+                [min]="minDate"
+                [(ngModel)]="visit.date"
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- TIME -->
+          <div class="form-group">
+
+            <label for="time">
+              Visit time
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                  />
+
+                  <polyline
+                    points="12 7 12 12 15 14"
+                  />
+
+                </svg>
+
+              </span>
+
+              <input
+                id="time"
+                type="time"
+                [(ngModel)]="visit.time"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- PURPOSE -->
+        <div class="form-group">
+
+          <label for="purpose">
+            Purpose of visit
+          </label>
+
+          <div class="input-wrapper textarea-wrapper">
+
+            <span class="input-icon textarea-icon">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+
+                <path
+                  d="M4 4h16v16H4z"
+                />
+
+                <path
+                  d="M8 9h8M8 13h8M8 17h5"
+                />
+
+              </svg>
+
+            </span>
+
+            <textarea
+              id="purpose"
+              placeholder="Tell us the purpose of your visit"
+              [(ngModel)]="visit.purpose"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <p class="form-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+        <p class="form-hint" *ngIf="loadingUnits">Loading occupied units...</p>
+        <p class="form-hint" *ngIf="!loadingUnits && !buildings.length && !errorMessage">No occupied units are available for visitor requests.</p>
+
+        <div class="button-row">
+
+          <button
+            class="back-btn"
+            type="button"
+            (click)="goBack()"
+          >
+            ← Back
+          </button>
+
+          <button
+            class="primary-btn"
+            type="button"
+            (click)="goToStep3()"
+            [disabled]="submitting || loadingUnits || !buildings.length"
+          >
+
+            <span>
+              {{ submitting ? 'Submitting...' : 'Request Visit' }}
+            </span>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>

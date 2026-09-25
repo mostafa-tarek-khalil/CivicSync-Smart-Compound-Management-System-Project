@@ -1,113 +1,197 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface VisitorFlowData {
   requestId: string;
-  visitorName: string;
   visitorEmail: string;
+
+  visitorName: string;
   visitorPhone: string;
+
   residentName: string;
+
   building: string;
   unit: string;
   buildingId: string;
   unitId: string;
+
   visitDate: string;
   startTime: string;
   purpose: string;
-  requestStatus: 'Pending' | 'Approved' | 'Rejected';
-  qrStatus: 'Not Generated' | 'Valid' | 'Expired' | 'Already Used';
-  visitStatus: 'Pending Approval' | 'Approved' | 'QR Generated' | 'Checked In' | 'Checked Out' | 'Rejected' | 'Expired';
-  qrExpiration: string;
-  qrToken: string;
+
+  status: string;
+
+  qrExpiresAt: string;
+
   checkInTime: string;
   checkOutTime: string;
+
+  visitorChatToken: string;
 }
 
 const STORAGE_KEY = 'civicsync.visitor-flow';
 
 const emptyVisit = (): VisitorFlowData => ({
-  requestId: '', visitorName: '', visitorEmail: '', visitorPhone: '',
-  residentName: '', building: '', unit: '', buildingId: '', unitId: '',
-  visitDate: '', startTime: '', purpose: '', requestStatus: 'Pending',
-  qrStatus: 'Not Generated', visitStatus: 'Pending Approval', qrExpiration: '',
-  qrToken: '', checkInTime: '', checkOutTime: ''
+  requestId: '',
+  visitorEmail: '',
+
+  visitorName: '',
+  visitorPhone: '',
+
+  residentName: '',
+
+  building: '',
+  unit: '',
+  buildingId: '',
+  unitId: '',
+
+  visitDate: '',
+  startTime: '',
+  purpose: '',
+
+  status: '',
+
+  qrExpiresAt: '',
+
+  checkInTime: '',
+  checkOutTime: '',
+
+  visitorChatToken: ''
 });
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class VisitorFlow {
-  private visit: VisitorFlowData = this.load();
+
+  private readonly state =
+    new BehaviorSubject<VisitorFlowData>(
+      this.load()
+    );
+
+  readonly visit$: Observable<VisitorFlowData> =
+    this.state.asObservable();
 
   getVisit(): VisitorFlowData {
-    return { ...this.visit };
+    return {
+      ...this.state.value
+    };
   }
 
   hasVisit(): boolean {
-    return !!this.visit.requestId;
+    const visit = this.state.value;
+
+    return !!visit.requestId &&
+           !!visit.visitorEmail;
   }
 
-  updateVisit(data: Partial<VisitorFlowData>): void {
-    this.visit = { ...this.visit, ...data };
-    this.persist();
-  }
+  trackVisit(
+    data: Pick<
+      VisitorFlowData,
+      'requestId' | 'visitorEmail'
+    > &
+    Partial<VisitorFlowData>
+  ): void {
 
-  submitRequest(data: Partial<VisitorFlowData>): void {
-    this.visit = { ...emptyVisit(), ...data };
-    this.persist();
-  }
+    const current = this.state.value;
 
-  checkIn(): void {
-    if (this.visit.visitStatus !== 'QR Generated') {
-      return;
-    }
-
-    this.visit = {
-      ...this.visit,
-      checkInTime: this.getCurrentTime(),
-      visitStatus: 'Checked In'
+    const visit: VisitorFlowData = {
+      ...emptyVisit(),
+      ...current,
+      ...data
     };
 
-    this.persist();
+    this.set(visit);
   }
 
-  checkOut(): void {
-    if (this.visit.visitStatus !== 'Checked In') {
-      return;
-    }
+  updateVisit(
+    data: Partial<VisitorFlowData>
+  ): void {
 
-    this.visit = {
-      ...this.visit,
-      checkOutTime: this.getCurrentTime(),
-      visitStatus: 'Checked Out',
-      qrStatus: 'Already Used'
+    const visit: VisitorFlowData = {
+      ...this.state.value,
+      ...data
     };
 
-    this.persist();
-  }
-
-  getCurrentTime(): string {
-    return new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    this.set(visit);
   }
 
   clear(): void {
-    this.visit = emptyVisit();
-    if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(STORAGE_KEY);
+    const visit = emptyVisit();
+
+    this.state.next(visit);
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  private set(
+    visit: VisitorFlowData
+  ): void {
+
+    this.state.next({
+      ...visit
+    });
+
+    this.persist(visit);
   }
 
   private load(): VisitorFlowData {
-    if (typeof sessionStorage === 'undefined') return emptyVisit();
+
+    if (typeof localStorage === 'undefined') {
+      return emptyVisit();
+    }
+
     try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      return stored ? { ...emptyVisit(), ...JSON.parse(stored) } : emptyVisit();
-    } catch {
+
+      const stored =
+        localStorage.getItem(STORAGE_KEY);
+
+      if (!stored) {
+        return emptyVisit();
+      }
+
+      const parsed =
+        JSON.parse(stored);
+
+      return {
+        ...emptyVisit(),
+        ...parsed
+      };
+
+    } catch (error) {
+
+      console.error(
+        'Failed to load visitor flow:',
+        error
+      );
+
       return emptyVisit();
     }
   }
 
-  private persist(): void {
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(this.visit));
+  private persist(
+    visit: VisitorFlowData
+  ): void {
+
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    try {
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(visit)
+      );
+
+    } catch (error) {
+
+      console.error(
+        'Failed to persist visitor flow:',
+        error
+      );
     }
   }
 }

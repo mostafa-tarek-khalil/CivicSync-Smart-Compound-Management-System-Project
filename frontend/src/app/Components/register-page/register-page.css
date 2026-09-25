@@ -660,3 +660,195 @@ form {
 :host-context(html.dark-mode) .showcase-footer {
   color: #7f8ea3;
 }
+/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.background-shape {
+  animation: cs-regp-drift 16s ease-in-out infinite;
+}
+
+.shape-one {
+  animation: cs-regp-drift 20s ease-in-out infinite reverse;
+}
+
+.shape-two {
+  animation: cs-regp-drift 24s ease-in-out infinite;
+}
+
+@keyframes cs-regp-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -26px) scale(1.07);
+  }
+}
+
+/* Split layout: showcase enters left, form card enters right. */
+.register-showcase {
+  animation: cs-slide-in-left 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.register-form-section,
+.register-card {
+  animation: cs-slide-in-right 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.brand {
+  animation: cs-fade-in 0.5s ease 0.16s both;
+}
+
+.brand-icon {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* Progress steps light up one after another. */
+.step {
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.step:nth-child(1) { animation-delay: 0.28s; }
+.step:nth-child(2) { animation-delay: 0.36s; }
+.step:nth-child(3) { animation-delay: 0.44s; }
+
+.step-number {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+.step:hover .step-number {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.12);
+}
+
+.progress-eyebrow,
+.form-eyebrow {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.register-heading {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.showcase-footer {
+  animation: cs-fade-in 0.5s ease 0.48s both;
+}
+
+.error-message {
+  animation: cs-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cs-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.form-group {
+  animation: cs-fade-up 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.2s; }
+.form-group:nth-child(2) { animation-delay: 0.26s; }
+.form-group:nth-child(3) { animation-delay: 0.32s; }
+.form-group:nth-child(4) { animation-delay: 0.38s; }
+
+.input-wrapper {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(49, 91, 143, 0.14);
+}
+
+.input-icon {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.input-wrapper:focus-within .input-icon {
+  transform: scale(1.12);
+}
+
+.field-error {
+  animation: cs-fade-in 0.3s ease both;
+}
+
+.register-submit {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.42s both;
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.register-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(49, 91, 143, 0.3);
+}
+
+.register-submit:hover:not(:disabled) .submit-arrow {
+  transform: translateX(4px);
+}
+
+.submit-arrow {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.register-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.login-link,
+.security-note {
+  animation: cs-fade-in 0.45s ease 0.48s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-shape,
+  .shape-one,
+  .shape-two,
+  .register-showcase,
+  .register-form-section,
+  .register-card,
+  .brand,
+  .brand-icon,
+  .step,
+  .progress-eyebrow,
+  .form-eyebrow,
+  .register-heading,
+  .showcase-footer,
+  .error-message,
+  .form-group,
+  .field-error,
+  .register-submit,
+  .login-link,
+  .security-note {
+    animation: none;
+  }
+
+  .register-submit:hover {
+    transform: none;
+  }
+}

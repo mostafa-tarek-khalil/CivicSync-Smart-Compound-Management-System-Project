@@ -72,11 +72,13 @@ const getAssignedTickets = async (req, res) => {
 
 const getAssignedTicketDetails = async (req, res) => {
   try {
-    const ticket = await technicianService.getAssignedTicketDetails(
+    // The service returns { ticket, location, invoice } — pass all of it through
+    // so the job screen can render the printable receipt for this ticket.
+    const details = await technicianService.getAssignedTicketDetails(
       req.params.id,
       req.user.userId
     );
-    res.status(200).json({ ticket });
+    res.status(200).json(details);
   } catch (error) {
     res.status(error.statusCode || 500).json({
       message: error.message || "Failed to get ticket details",
@@ -84,8 +86,39 @@ const getAssignedTicketDetails = async (req, res) => {
   }
 };
 
+const getAvailableTicketDetails = async (req, res) => {
+  try {
+    const { ticket, existingOffer } =
+      await technicianService.getAvailableTicketDetails(
+        req.params.id,
+        req.user.userId
+      );
+    res.status(200).json({ ticket, existingOffer });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Failed to get ticket details",
+    });
+  }
+};
+
+const getDashboard = async (req, res) => {
+  try {
+    const dashboard = await technicianService.getTechnicianDashboard(
+      req.user.userId
+    );
+    res.status(200).json({ success: true, data: dashboard });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Failed to load the technician dashboard",
+    });
+  }
+};
+
 module.exports = {
+  getDashboard,
   getAvailableTickets,
+  getAvailableTicketDetails,
   startTicket,
   resolveTicket,
   skipTicket,

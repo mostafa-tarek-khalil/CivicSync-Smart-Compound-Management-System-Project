@@ -1,0 +1,189 @@
+<div class="admin-section">
+
+  <header class="section-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Invoices</h1>
+      <p>Billing issued across the compound and its payment status.</p>
+    </div>
+
+    <span class="header-count">{{ invoices.length }} invoice(s)</span>
+  </header>
+
+  @if (errorMessage) {
+  <div class="alert">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+  }
+
+  <div class="tiles">
+    <div class="tile">
+      <span>Total Billed</span>
+      <strong>{{ totalBilled | number:'1.0-2' }}</strong>
+      <small>EGP</small>
+    </div>
+    <div class="tile">
+      <span>Collected</span>
+      <strong>{{ totalCollected | number:'1.0-2' }}</strong>
+      <small>EGP paid</small>
+    </div>
+    <div class="tile">
+      <span>Outstanding</span>
+      <strong>{{ totalOutstanding | number:'1.0-2' }}</strong>
+      <small>EGP unpaid</small>
+    </div>
+    <div class="tile">
+      <span>Overdue Invoices</span>
+      <strong>{{ countBy('OVERDUE') }}</strong>
+    </div>
+    <div class="tile" [class.tile-alert]="awaitingApprovalCount > 0">
+      <span>Awaiting Approval</span>
+      <strong>{{ awaitingApprovalCount }}</strong>
+      <small>payment claims</small>
+    </div>
+  </div>
+
+  <div class="filters">
+    <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="">All statuses</option>
+      @for (status of statuses; track status) {
+      @if (status) {
+      <option [value]="status">{{ status }}</option>
+      }
+      }
+    </select>
+
+    <button type="button" class="btn-sm add" (click)="openCreateInvoice()">
+      <span class="material-symbols-outlined">add</span>
+      Create Invoice
+    </button>
+  </div>
+
+  <div class="panel">
+    @if (loading) {
+    <div class="loading">Loading invoices…</div>
+    } @else if (invoices.length === 0) {
+    <div class="table-empty">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span>No invoices found</span>
+      <small>Create an invoice for a resident, or one is generated per completed request.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Resident</th>
+            <th>Request</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (invoice of invoices; track invoice._id) {
+          <tr>
+            <td>
+              <strong>INV-{{ invoice._id.slice(-6).toUpperCase() }}</strong>
+            </td>
+            <td>{{ personLabel(invoice.residentId) }}</td>
+            <td>{{ ticketLabel(invoice.ticketId) }}</td>
+            <td><strong>{{ invoice.amount | number:'1.0-2' }} EGP</strong></td>
+            <td>{{ formatDate(invoice.dueDate) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="statusClass(invoice.status)">
+                {{ invoice.status }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <!-- Opens the receipt screen, which is also what the Print
+                     action prints. -->
+                <button type="button" class="btn-sm view" (click)="openInvoice(invoice)">
+                  <span class="material-symbols-outlined">receipt_long</span>
+                  View
+                </button>
+
+                @if (invoice.status === 'PAYMENT_SUBMITTED') {
+                <button type="button" class="btn-sm approve" [disabled]="actioningId === invoice._id"
+                  (click)="approvePaid(invoice)">
+                  Approve Paid
+                </button>
+                }
+
+                @if (invoice.status === 'PENDING' || invoice.status === 'PAYMENT_SUBMITTED') {
+                <button type="button" class="btn-sm reject" [disabled]="actioningId === invoice._id"
+                  (click)="markOverdue(invoice)">
+                  Mark Overdue
+                </button>
+                }
+
+                @if (isUnpaid(invoice)) {
+                <button type="button" class="btn-sm reject" [disabled]="actioningId === invoice._id"
+                  (click)="cancelInvoice(invoice)">
+                  Cancel
+                </button>
+                }
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+</div>
+
+<!-- ===================== CREATE INVOICE MODAL ===================== -->
+@if (invoiceModalOpen) {
+<div class="modal-backdrop" (click)="closeInvoiceModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Create Invoice</h3>
+      <button type="button" class="modal-close" (click)="closeInvoiceModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-field">
+        <label>Resident</label>
+        <select [(ngModel)]="invoiceForm.residentId" [disabled]="loadingResidents">
+          <option value="">{{ loadingResidents ? 'Loading residents…' : 'Select a resident' }}</option>
+          @for (resident of residents; track resident._id) {
+          <option [value]="resident._id">{{ resident.name }} ({{ resident.email }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Amount (EGP)</label>
+        <input type="number" min="0" [(ngModel)]="invoiceForm.amount" />
+      </div>
+
+      <div class="form-field">
+        <label>Due date</label>
+        <input type="date" [(ngModel)]="invoiceForm.dueDate" />
+      </div>
+
+      <div class="form-field">
+        <label>Description <small>(optional)</small></label>
+        <input type="text" [(ngModel)]="invoiceForm.description" placeholder="e.g. Monthly maintenance fee" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeInvoiceModal()" [disabled]="savingInvoice">Cancel</button>
+      <button type="button" class="btn-primary" (click)="saveInvoice()" [disabled]="savingInvoice">
+        {{ savingInvoice ? 'Creating…' : 'Create invoice' }}
+      </button>
+    </div>
+  </div>
+</div>
+}

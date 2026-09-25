@@ -23,6 +23,11 @@ const {
     createNegotiation,
 } = require("../controllers/negotiationController");
 
+const {
+    getResidentDashboard,
+    payInvoice,
+} = require("../controllers/residentDashboardController");
+
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
@@ -32,6 +37,12 @@ router.use(
     authMiddleware,
     roleMiddleware("RESIDENT")
 );
+
+router.get("/dashboard", getResidentDashboard);
+
+// Resident payment claim: PENDING / OVERDUE -> PAYMENT_SUBMITTED.
+// Confirming it as PAID stays an admin action.
+router.patch("/invoices/:invoiceId/pay", payInvoice);
 
 router.get("/tickets", getResidentTickets);
 router.post("/tickets", createTicket);

@@ -1,79 +1,7 @@
-
 <header class="topbar">
-
-  <!-- LEFT SIDE -->
-  <div class="topbar-left">
-
-    <div class="page-info">
-      <span class="page-label">CIVICSYNC</span>
-          <h2>{{ currentUserRole }} Dashboard</h2>
-    </div>
-
-    <nav class="topbar-nav" *ngIf="currentUserRole === 'Resident'">
-      <a routerLink="/resident-visitor-requests">
-        <span class="material-symbols-outlined">how_to_reg</span>
-        Visitor Requests
-      </a>
-      <a routerLink="/chat">
-        <span class="material-symbols-outlined">forum</span>
-        Messages
-      </a>
-    </nav>
-
-    <nav class="topbar-nav" *ngIf="currentUserRole === 'Security'">
-      <a routerLink="/security-dashboard">
-        <span class="material-symbols-outlined">dashboard</span>
-        Dashboard
-      </a>
-      <a routerLink="/security-visits">
-        <span class="material-symbols-outlined">groups</span>
-        Visitors
-      </a>
-      <a routerLink="/chat">
-        <span class="material-symbols-outlined">forum</span>
-        Messages
-      </a>
-    </nav>
-
-  </div>
-
 
   <!-- RIGHT SIDE -->
   <div class="topbar-right">
-
-    <!-- SEARCH -->
-    <div class="search-wrapper">
-
-      <button
-        class="icon-button"
-        type="button"
-        (click)="toggleSearch()"
-        aria-label="Search">
-
-        <span class="material-symbols-outlined">
-          search
-        </span>
-
-      </button>
-
-      <div
-        class="search-box"
-        *ngIf="searchOpen">
-
-        <span class="material-symbols-outlined">
-          search
-        </span>
-
-        <input
-          type="text"
-          placeholder="Search..."
-          autofocus
-        />
-
-      </div>
-
-    </div>
-
 
     <!-- NOTIFICATIONS -->
     <div class="notification-wrapper">
@@ -91,9 +19,7 @@
         <span
           class="notification-badge"
           *ngIf="unreadCount > 0">
-
           {{ unreadCount }}
-
         </span>
 
       </button>
@@ -105,83 +31,72 @@
         *ngIf="notificationsOpen">
 
         <div class="dropdown-header">
-
           <div>
             <h3>Notifications</h3>
-            <span>{{ unreadCount }} unread</span>
+            <span class="unread-count">{{ unreadCount }} unread</span>
           </div>
 
           <button
+            class="dropdown-action"
             type="button"
             (click)="markAllAsRead()">
-
             Mark all
-
           </button>
-
         </div>
 
 
-        <!-- NOTIFICATIONS FROM DATABASE -->
-        <div
-          class="notification-item"
-          *ngFor="let notification of notifications"
-          (click)="markAsRead(notification)">
+        <!-- NOTIFICATIONS LIST -->
+        <div class="notifications-list">
+          <div
+            class="notification-item"
+            *ngFor="let notification of notifications"
+            (click)="openNotification(notification)">
 
-          <div class="notification-icon blue">
+            <div class="notification-icon blue">
+              <span class="material-symbols-outlined">
+                {{ getNotificationIcon(notification.type) }}
+              </span>
+            </div>
 
+            <div class="notification-content">
+              <h4 class="notification-title">
+                {{ notification.title }}
+              </h4>
+
+              <p class="notification-message">
+                {{ notification.message }}
+              </p>
+
+              <span class="notification-time">
+                {{ formatTime(notification.createdAt) }}
+              </span>
+            </div>
+
+          </div>
+
+          <!-- EMPTY -->
+          <div
+            class="empty-notifications"
+            *ngIf="notifications.length === 0">
             <span class="material-symbols-outlined">
-              {{ getNotificationIcon(notification.type) }}
+              notifications_off
             </span>
-
+            <p>No unread notifications</p>
           </div>
-
-          <div class="notification-content">
-
-            <h4>
-              {{ notification.title }}
-            </h4>
-
-            <p>
-              {{ notification.message }}
-            </p>
-
-            <span>
-              {{ formatTime(notification.createdAt) }}
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- EMPTY -->
-        <div
-          class="notification-empty"
-          *ngIf="notifications.length === 0">
-
-          <span class="material-symbols-outlined">
-            notifications_off
-          </span>
-
-          <p>No unread notifications</p>
-
         </div>
 
 
         <!-- VIEW ALL -->
-        <button
-          class="view-all"
-          type="button"
-          (click)="goToNotifications()">
-
-          View all notifications
-
-          <span class="material-symbols-outlined">
-            arrow_forward
-          </span>
-
-        </button>
+        <div class="notification-footer">
+          <button
+            type="button"
+            (click)="goToNotifications()">
+            View all notifications
+            <span class="material-symbols-outlined">
+              arrow_forward
+            </span>
+          </button>
+        </div>
 
       </div>
 
@@ -206,22 +121,21 @@
 
       <button
         class="profile-button"
+        [class.active]="profileOpen"
         type="button"
         (click)="toggleProfile()">
 
-        <div class="avatar">
-          {{ currentUserInitial }}
-        </div>
+        <app-avatar
+          [profileImage]="currentUserAvatar"
+          [name]="currentUserName"
+          size="md"></app-avatar>
 
         <div class="profile-info">
-
-          <strong>{{ currentUserName }}</strong>
-
-          <span>{{ currentUserRole }}</span>
-
+          <strong class="profile-name">{{ currentUserName }}</strong>
+          <span class="profile-role">{{ currentUserRole }}</span>
         </div>
 
-        <span class="material-symbols-outlined arrow">
+        <span class="material-symbols-outlined profile-chevron">
           expand_more
         </span>
 
@@ -234,57 +148,52 @@
         *ngIf="profileOpen">
 
         <div class="profile-header">
+          <app-avatar
+            [profileImage]="currentUserAvatar"
+            [name]="currentUserName"
+            size="lg"></app-avatar>
 
-            <div class="avatar large">
-              {{ currentUserInitial }}
-            </div>
-
-            <div>
-              <strong>{{ currentUserName }}</strong>
-              <span>{{ currentUserRole }}</span>
-            </div>
-
+          <div class="profile-header-info">
+            <strong class="profile-name">{{ currentUserName }}</strong>
+            <span class="profile-role">{{ currentUserRole }}</span>
           </div>
+        </div>
 
-          <div class="dropdown-divider"></div>
+        <div class="profile-dropdown-divider"></div>
 
-          <a
-            routerLink="/profile"
-            (click)="profileOpen = false">
+        <a
+          class="profile-dropdown-item"
+          routerLink="/profile"
+          (click)="profileOpen = false">
 
-            <span class="material-symbols-outlined">
-              person
-            </span>
+          <span class="material-symbols-outlined">
+            person
+          </span>
+          Profile
+        </a>
 
-            Profile
-          </a>
+        <a
+          class="profile-dropdown-item"
+          routerLink="/notifications"
+          (click)="profileOpen = false">
 
-          <a
-            routerLink="/profile"
-            (click)="profileOpen = false">
+          <span class="material-symbols-outlined">
+            notifications
+          </span>
+          Notifications
+        </a>
 
-            <span class="material-symbols-outlined">
-              settings
-            </span>
-
-            Settings
-          </a>
-
-
-        <div class="dropdown-divider"></div>
-
+        <div class="profile-dropdown-divider"></div>
 
         <button
-          class="logout"
+          class="profile-dropdown-item logout"
           type="button"
           (click)="logout()">
 
           <span class="material-symbols-outlined">
             logout
           </span>
-
           Logout
-
         </button>
 
       </div>

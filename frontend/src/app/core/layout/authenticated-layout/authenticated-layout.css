@@ -1,0 +1,498 @@
+:host {
+  display: block;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--cs-page-bg);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 252px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--cs-surface);
+  border-inline-end: 1px solid var(--cs-border);
+  transition: width 0.2s ease;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1020;
+}
+
+.sidebar-collapsed .sidebar {
+  width: 76px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+/*
+ * The brand doubles as the desktop collapse toggle.
+ * It is a real <button> so keyboard users can reach it, but it is styled to
+ * look like a brand lockup rather than a control.
+ */
+.brand-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+  transition: background-color 0.15s ease;
+}
+
+.brand-toggle:hover {
+  background: var(--cs-primary-soft);
+}
+
+.brand-toggle:focus-visible {
+  outline: 2px solid var(--cs-primary);
+  outline-offset: 2px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 8px 20px rgba(49, 91, 143, 0.20);
+}
+
+.brand-mark span {
+  display: block;
+  width: 4px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.brand-mark span:nth-child(1) {
+  height: 12px;
+}
+
+.brand-mark span:nth-child(2) {
+  height: 19px;
+}
+
+.brand-mark span:nth-child(3) {
+  height: 15px;
+}
+
+.sidebar-collapsed .sidebar-brand {
+  justify-content: center;
+  padding-inline: 0.5rem;
+}
+
+.sidebar-collapsed .brand-toggle {
+  flex: 0 0 auto;
+  justify-content: center;
+  padding: 0;
+}
+
+.brand-title {
+  font-weight: 700;
+  color: var(--cs-text);
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-soft);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.6rem;
+  flex-grow: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  color: var(--cs-text-soft);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--cs-primary-soft);
+  color: var(--cs-primary);
+}
+
+.nav-item.active {
+  background: var(--cs-primary);
+  color: #fff;
+}
+
+.nav-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.sidebar-collapsed .nav-item {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sidebar-footer {
+  padding: 0.75rem 0.6rem;
+  border-top: 1px solid var(--cs-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Dark/Light Theme Toggle Button inside Sidebar */
+.theme-toggle-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cs-text-soft);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.theme-toggle-button:hover {
+  background: var(--cs-primary-soft);
+  color: var(--cs-primary);
+}
+
+.sidebar-collapsed .theme-toggle-button {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.logout-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #c0392b;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.logout-button:hover {
+  background: rgba(192, 57, 43, 0.12);
+}
+
+.sidebar-collapsed .logout-button {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+/* Main area */
+.main-area {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-topbar {
+  display: flex;
+  align-items: center;
+  /* The mobile menu button sits at the start; the topbar cluster keeps to the
+     end. `space-between` gives that for free when the button is present, and
+     degrades to "cluster on the right" when it is hidden on desktop. */
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--cs-border);
+  background: var(--cs-surface);
+  padding-inline: 0.65rem;
+}
+
+/* Keep the topbar cluster pinned to the end even on desktop, where the menu
+   button is hidden and there is nothing to space against. */
+.shell-topbar app-topbar {
+  margin-inline-start: auto;
+}
+
+.nav-toggle {
+  border: none;
+  background: transparent;
+  color: var(--cs-text-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-toggle:hover {
+  background: var(--cs-primary-soft);
+  color: var(--cs-primary);
+}
+
+.nav-toggle .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-x: hidden;
+}
+
+/* Responsive */
+.d-mobile {
+  display: none;
+}
+
+.d-desktop {
+  display: inline-flex;
+}
+
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    transform: translateX(-105%);
+    transition: transform 0.2s ease;
+    width: 252px;
+    box-shadow: 0 0 40px rgba(15, 23, 42, 0.25);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-collapsed .sidebar,
+  .sidebar.mobile-open {
+    width: 252px;
+  }
+
+  .sidebar-collapsed .nav-item,
+  .sidebar-collapsed .logout-button,
+  .sidebar-collapsed .theme-toggle-button {
+    justify-content: flex-start;
+    padding-inline: 0.75rem;
+  }
+
+  /* The drawer always shows full labels, even if the desktop rail was
+     collapsed before the viewport shrank. */
+  .sidebar-collapsed .nav-label {
+    display: inline !important;
+  }
+
+  /* The drawer ignores the collapsed state entirely. */
+  .sidebar-collapsed .brand-text {
+    display: flex !important;
+  }
+
+  .sidebar-collapsed .sidebar-brand,
+  .sidebar-collapsed .brand-toggle {
+    justify-content: flex-start;
+    padding-inline: 0.35rem;
+  }
+
+  .d-mobile {
+    display: inline-flex;
+  }
+
+  .d-desktop {
+    display: none;
+  }
+
+  /* On mobile the drawer's menu toggle is inert — the close button replaces it
+     so the drawer never collapses to an icon rail on a small screen. */
+  .brand-toggle {
+    pointer-events: none;
+  }
+
+  .sidebar-close {
+    margin-inline-start: auto;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--cs-text-soft);
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 30;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
+
+:host-context(html.dark-mode) .sidebar,
+:host-context(html.dark-mode) .shell-topbar {
+  background: #111c2e;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .brand-title,
+:host-context(html.dark-mode) .nav-item,
+:host-context(html.dark-mode) .theme-toggle-button {
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-mode) .nav-item:hover,
+:host-context(html.dark-mode) .theme-toggle-button:hover {
+  background: #1e2f47;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .nav-item.active {
+  background: var(--cs-primary);
+  color: #fff;
+}
+
+:host-context(html.dark-mode) .nav-toggle {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .content {
+  color: #e8eef6;
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css).
+
+   The sidebar, its brand and its nav items deliberately have NO entrance
+   animation: this layout is not re-created on navigation, but the routed
+   content around it is, so any entrance animation here replays on every
+   click and makes the rail visibly slide open and shut. Only hover
+   feedback is kept.
+   ========================================================= */
+
+/* Opacity-only fade on the brand. Deliberately no transform — a moving
+   sidebar is exactly the distraction this avoids. */
+.sidebar-brand {
+  animation: cs-fade-in 0.5s ease 0.14s both;
+}
+
+.brand-mark {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-brand:hover .brand-mark {
+  transform: scale(1.08) rotate(-5deg);
+}
+
+/* Nav items slide in one after another down the rail. */
+/* Nav items keep hover feedback only — no entrance animation, so clicking a
+   link never makes the rail redraw itself. */
+.nav-item {
+  transition: background-color 0.2s ease, color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-item:hover {
+  transform: translateX(4px);
+}
+
+.nav-icon {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.12);
+}
+
+.sidebar-footer {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.theme-toggle-button,
+.logout-button {
+  transition: transform 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.theme-toggle-button:hover,
+.logout-button:hover {
+  transform: translateY(-2px);
+}
+
+.theme-toggle-button:active,
+.logout-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.shell-topbar {
+  animation: cs-fade-in 0.45s ease 0.1s both;
+}
+
+.nav-toggle {
+  transition: transform 0.22s ease, background-color 0.2s ease;
+}
+
+.nav-toggle:hover {
+  transform: scale(1.08);
+}
+
+.nav-toggle:active {
+  transform: scale(0.94);
+}
+
+/* The routed page fades in as it swaps on navigation. */
+.content {
+  animation: cs-fade-in 0.3s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-brand,
+  .sidebar-footer {
+    animation: none;
+  }
+
+  .nav-item:hover,
+  .sidebar-brand:hover .brand-mark,
+  .theme-toggle-button:hover,
+  .logout-button:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,253 @@
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  perspective: 1400px;
+  animation: dialog-fade 0.14s ease-out;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(440px, 100%);
+  padding: 28px 26px 22px;
+  text-align: center;
+  border: 1px solid var(--cs-border, #e2e8f0);
+  border-radius: 18px;
+  background: var(--cs-surface, #ffffff);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+
+  /* The dialog swings in from behind the backdrop — a 3D pop. */
+  transform-style: preserve-3d;
+  animation: dialog-pop 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* A soft halo pulses behind the status icon to draw the eye. */
+.dialog-icon {
+  animation: dialog-icon-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+.dialog-title {
+  animation: dialog-text-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.dialog-message {
+  animation: dialog-text-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.dialog-actions {
+  animation: dialog-text-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dialog:hover .dialog-icon {
+  transform: scale(1.08) translateZ(20px);
+}
+
+.dialog-icon .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.icon-info {
+  background: rgba(49, 91, 143, 0.12);
+  color: var(--cs-primary, #315b8f);
+}
+
+.icon-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.icon-warning,
+.icon-confirm {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.icon-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cs-text, #202238);
+}
+
+.dialog-message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cs-text-soft, #64748b);
+  white-space: pre-line;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.dialog-button {
+  flex: 1 1 auto;
+  min-width: 110px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dialog-button:hover {
+  transform: translateY(-2px);
+}
+
+.dialog-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.button-primary:hover {
+  background: var(--cs-primary-dark, #1d3f68);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.3);
+}
+
+.button-danger:hover {
+  background: #b91c1c;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.3);
+}
+
+.button-primary {
+  border: none;
+  background: var(--cs-primary, #315b8f);
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  background: var(--cs-primary-dark, #1d3f68);
+}
+
+.button-danger {
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.button-danger:hover {
+  background: #b91c1c;
+}
+.button-secondary {
+  border: 1px solid var(--cs-border, #e2e8f0);
+  background: transparent;
+  color: var(--cs-text, #202238);
+}
+
+.button-secondary:hover {
+  border-color: var(--cs-primary, #315b8f);
+  color: var(--cs-primary, #315b8f);
+}
+
+.button-ghost {
+  border: none;
+  background: transparent;
+  color: var(--cs-text-soft, #64748b);
+}
+
+html.dark-mode .dialog {
+  background: #151f2d;
+  border-color: #29394c;
+}
+
+html.dark-mode .dialog-title {
+  color: #f1f5f9;
+}
+
+html.dark-mode .dialog-message {
+  color: #94a3b8;
+}
+
+html.dark-mode .button-secondary {
+  border-color: #29394c;
+  color: #e8eef6;
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) rotateX(9deg) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@keyframes dialog-icon-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialog-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-backdrop,
+  .dialog,
+  .dialog-icon,
+  .dialog-title,
+  .dialog-message,
+  .dialog-actions {
+    animation: none;
+  }
+
+  .dialog-button:hover,
+  .dialog:hover .dialog-icon {
+    transform: none;
+  }
+}

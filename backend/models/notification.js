@@ -33,6 +33,14 @@ const notificationSchema = new mongoose.Schema(
 
                 "INVOICE_CREATED",
                 "INVOICE_DUE",
+                // Both of these are emitted by the billing flow
+                // (invoiceService.submitInvoicePayment / adminService
+                // .updateInvoiceStatus). Without them here the write is
+                // rejected by validation and the realtime push never fires,
+                // which is why invoice screens looked stale.
+                "INVOICE_PAID",
+                "INVOICE_PAYMENT_SUBMITTED",
+                "INVOICE_UPDATED",
             ],
             required: true,
         },

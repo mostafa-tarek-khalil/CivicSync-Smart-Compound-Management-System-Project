@@ -1,0 +1,79 @@
+<div class="chat-page">
+
+  <header class="page-header">
+    <div class="header-content">
+      <span class="eyebrow">VISITOR • MESSAGES</span>
+      <h1>Chat with {{ residentName || 'your host' }}</h1>
+      <p>Messages here are private to you and the resident who approved your visit.</p>
+    </div>
+
+    <button class="back-btn" type="button" (click)="backToVisit()">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back to visit
+    </button>
+  </header>
+
+  <div class="alert error" *ngIf="errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+
+  <section class="chat-shell" *ngIf="!unavailable">
+
+    <div class="chat-thread">
+
+      <div class="empty-state" *ngIf="loading">
+        <span class="material-symbols-outlined">hourglass_top</span>
+        <h3>Opening conversation…</h3>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && messages.length === 0">
+        <span class="material-symbols-outlined">forum</span>
+        <h3>No messages yet</h3>
+        <p>Say hello to let your host know you've arrived.</p>
+      </div>
+
+      <div
+        class="bubble-row"
+        *ngFor="let message of messages"
+        [class.mine]="message.isMine">
+
+        <div class="bubble">
+          <p>{{ message.message }}</p>
+          <span class="bubble-time">{{ formatTime(message.createdAt) }}</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <form class="chat-composer" (ngSubmit)="send()">
+      <input
+        type="text"
+        name="message"
+        [(ngModel)]="draft"
+        placeholder="Write a message…"
+        autocomplete="off"
+        [disabled]="sending || loading"
+      />
+
+      <button type="submit" [disabled]="sending || loading || !draft.trim()">
+        <span class="material-symbols-outlined">
+          {{ sending ? 'hourglass_top' : 'send' }}
+        </span>
+        Send
+      </button>
+    </form>
+
+  </section>
+
+  <section class="chat-shell unavailable-shell" *ngIf="unavailable">
+    <div class="empty-state">
+      <span class="material-symbols-outlined">lock</span>
+      <h3>Chat not available yet</h3>
+      <p>{{ errorMessage || 'Chat opens once the resident approves your visit.' }}</p>
+      <button class="back-btn" type="button" (click)="backToVisit()">Back to visit</button>
+    </div>
+  </section>
+
+</div>

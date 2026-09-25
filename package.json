@@ -8,7 +8,7 @@
     "dev": "node --watch index.js",
     "seed:admin": "node backend/seed/adminSeed.js",
     "seed:demo": "node backend/seed/demoSeed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test \"backend/tests/**/*.test.js\""
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.4",
+    "multer": "^2.4.0",
     "nodemailer": "^10.0.10",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"

@@ -1,0 +1,785 @@
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+.status-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 28px 60px;
+  color: #0f172a;
+}
+
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.eyebrow,
+.mini-label {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.page-header h1 {
+  margin: 8px 0 7px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.page-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.request-id {
+  min-width: 145px;
+  padding: 13px 17px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: right;
+}
+
+.request-id span {
+  display: block;
+  margin-bottom: 4px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.request-id strong {
+  color: #0f172a;
+  font-size: 14px;
+}
+
+
+/* =========================
+   MAIN GRID
+========================= */
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+  gap: 22px;
+  align-items: start;
+}
+
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.main-card,
+.info-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.055);
+}
+
+.main-card {
+  overflow: hidden;
+}
+
+
+/* =========================
+   STATUS HERO
+========================= */
+
+.status-hero {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbff 0%,
+      #eef6ff 100%
+    );
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.status-icon {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-icon .material-symbols-outlined {
+  font-size: 29px;
+}
+
+.status-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.status-content h2 {
+  margin: 0 0 6px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.status-content p {
+  max-width: 570px;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+
+/* =========================
+   TIMELINE
+========================= */
+
+.timeline-section {
+  padding: 29px;
+}
+
+.section-heading {
+  margin-bottom: 26px;
+}
+
+.section-heading h3 {
+  margin: 6px 0 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 21px;
+  bottom: 21px;
+  width: 1px;
+  background: #e2e8f0;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  min-height: 82px;
+}
+
+.timeline-item.last {
+  min-height: auto;
+}
+
+.timeline-marker {
+  position: relative;
+  z-index: 2;
+  width: 41px;
+  height: 41px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #94a3b8;
+}
+
+.timeline-marker .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.timeline-item.completed .timeline-marker {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.timeline-item.active .timeline-marker {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #2563eb;
+  box-shadow: 0 0 0 6px #eff6ff;
+}
+
+.timeline-content {
+  padding: 2px 0 25px;
+}
+
+.timeline-content h4 {
+  margin: 0 0 5px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.timeline-item:not(.completed):not(.active) .timeline-content h4 {
+  color: #94a3b8;
+}
+
+.timeline-content p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-title span {
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+
+/* =========================
+   SIDE COLUMN
+========================= */
+
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+
+/* =========================
+   INFO CARD
+========================= */
+
+.info-card {
+  padding: 22px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.title-icon {
+  width: 39px;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.title-icon .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.card-title span {
+  display: block;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.card-title h3 {
+  margin: 4px 0 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+/* =========================
+   VISITOR INFO
+========================= */
+
+.info-list {
+  padding-top: 4px;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.info-row span,
+.visit-item span,
+.purpose-box span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.info-row strong,
+.visit-item strong,
+.purpose-box strong {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   VISIT DETAILS
+========================= */
+
+.visit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+.visit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.purpose-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 17px;
+  padding: 13px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+
+/* =========================
+   NEXT ACTION
+========================= */
+
+.next-action {
+  display: flex;
+  gap: 13px;
+  padding: 19px;
+  border: 1px solid #dbeafe;
+  border-radius: 18px;
+  background: #eff6ff;
+}
+
+.action-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.action-icon .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.next-action > div:last-child > span {
+  color: #2563eb;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.next-action h3 {
+  margin: 4px 0 5px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.next-action p {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  min-height: 46px;
+  border-radius: 12px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.actions .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.secondary-btn {
+  flex: 1;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+}
+
+.secondary-btn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.primary-btn {
+  flex: 1;
+  border: none;
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.primary-btn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .side-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .next-action,
+  .actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 650px) {
+  .status-page {
+    padding: 24px 16px 40px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .request-id {
+    width: 100%;
+    text-align: left;
+  }
+
+  .page-header h1 {
+    font-size: 26px;
+  }
+
+  .side-column {
+    display: flex;
+  }
+
+  .status-hero,
+  .timeline-section {
+    padding: 22px;
+  }
+
+  .status-hero {
+    align-items: flex-start;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .visit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+:host-context(html.dark-mode) .status-page {
+  background: #0d1420;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .page-header h1,
+:host-context(html.dark-mode) .status-hero h2,
+:host-context(html.dark-mode) .section-heading h3,
+:host-context(html.dark-mode) .card-title h3,
+:host-context(html.dark-mode) .timeline-content h4,
+:host-context(html.dark-mode) .next-action h3,
+:host-context(html.dark-mode) .info-row strong,
+:host-context(html.dark-mode) .visit-item strong,
+:host-context(html.dark-mode) .purpose-box strong,
+:host-context(html.dark-mode) .request-id strong {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .page-header p,
+:host-context(html.dark-mode) .status-hero p,
+:host-context(html.dark-mode) .timeline-content p,
+:host-context(html.dark-mode) .next-action p,
+:host-context(html.dark-mode) .eyebrow,
+:host-context(html.dark-mode) .mini-label,
+:host-context(html.dark-mode) .info-row span,
+:host-context(html.dark-mode) .visit-item span,
+:host-context(html.dark-mode) .purpose-box span,
+:host-context(html.dark-mode) .request-id span {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .main-card,
+:host-context(html.dark-mode) .info-card,
+:host-context(html.dark-mode) .next-action,
+:host-context(html.dark-mode) .request-id {
+  background: #172235;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .timeline-item {
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-mode) .purpose-box {
+  background: #131f31;
+}
+/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.page-header {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.eyebrow,
+.mini-label {
+  animation: cs-fade-in 0.45s ease 0.06s both;
+}
+
+.request-id {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.content-grid {
+  perspective: 1200px;
+}
+
+/* Main status card tilts in 3D; side info cards follow. */
+.main-card,
+.info-card {
+  transform-style: preserve-3d;
+  animation: cs-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s ease, border-color 0.25s ease;
+}
+
+.main-card {
+  animation-delay: 0.12s;
+}
+
+.info-card {
+  animation-delay: 0.2s;
+}
+
+.main-card:hover {
+  transform: translateY(-4px) rotateX(2.5deg);
+  box-shadow: 0 20px 42px rgba(20, 43, 70, 0.14);
+}
+
+.info-card:hover {
+  transform: translateY(-6px) rotateX(6deg) rotateY(-6deg);
+  box-shadow: 0 22px 44px rgba(20, 43, 70, 0.16);
+}
+
+.status-icon {
+  animation: cs-status-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes cs-status-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+/* Timeline items fill in top to bottom. */
+.timeline-item {
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.timeline-item:nth-child(1) { animation-delay: 0.28s; }
+.timeline-item:nth-child(2) { animation-delay: 0.35s; }
+.timeline-item:nth-child(3) { animation-delay: 0.42s; }
+.timeline-item:nth-child(4) { animation-delay: 0.49s; }
+.timeline-item:nth-child(5) { animation-delay: 0.56s; }
+
+.timeline-marker {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+.timeline-item:hover .timeline-marker {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 5px rgba(49, 91, 143, 0.12);
+}
+
+.info-row {
+  animation: cs-fade-in 0.4s ease both;
+  transition: transform 0.22s ease;
+}
+
+.info-row:nth-child(1) { animation-delay: 0.34s; }
+.info-row:nth-child(2) { animation-delay: 0.4s; }
+.info-row:nth-child(3) { animation-delay: 0.46s; }
+.info-row:nth-child(4) { animation-delay: 0.52s; }
+
+.info-row:hover {
+  transform: translateX(3px);
+}
+
+.visit-grid {
+  perspective: 900px;
+}
+
+.visit-item {
+  animation: cs-pop-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.visit-item:nth-child(1) { animation-delay: 0.38s; }
+.visit-item:nth-child(2) { animation-delay: 0.44s; }
+.visit-item:nth-child(3) { animation-delay: 0.5s; }
+.visit-item:nth-child(4) { animation-delay: 0.56s; }
+
+.visit-item:hover {
+  transform: translateY(-4px) rotateX(5deg);
+  box-shadow: 0 14px 30px rgba(20, 43, 70, 0.12);
+}
+
+.title-icon {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.info-card:hover .title-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+button,
+.btn,
+.primary-btn,
+.secondary-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 43, 70, 0.18);
+}
+
+.primary-btn:active:not(:disabled),
+.secondary-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header,
+  .eyebrow,
+  .mini-label,
+  .request-id,
+  .main-card,
+  .info-card,
+  .status-icon,
+  .timeline-item,
+  .info-row,
+  .visit-item {
+    animation: none;
+  }
+
+  .main-card:hover,
+  .info-card:hover,
+  .visit-item:hover,
+  .info-row:hover,
+  .primary-btn:hover {
+    transform: none;
+  }
+}

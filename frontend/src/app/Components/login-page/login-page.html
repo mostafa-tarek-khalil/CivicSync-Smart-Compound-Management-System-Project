@@ -62,6 +62,13 @@
           <p>Enter your account details to continue.</p>
         </div>
 
+        @if (infoMessage) {
+          <div class="error-message" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8;">
+            <span class="error-icon">i</span>
+            <span>{{ infoMessage }}</span>
+          </div>
+        }
+
         @if (errorMessage) {
           <div class="error-message">
             <span class="error-icon">!</span>
@@ -88,7 +95,7 @@
           <div class="form-group">
             <div class="label-row">
               <label for="password">Password</label>
-              <a href="javascript:void(0)" class="forgot-link">Forgot password?</a>
+              <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
             </div>
 
             <div class="input-wrapper">

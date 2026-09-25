@@ -93,6 +93,21 @@ const userSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+
+        // ---- Password reset (forgot / reset password flow) ----
+        // Only the SHA-256 hash of the emailed token is stored, so a database
+        // leak cannot be replayed against the reset endpoint.
+        passwordResetTokenHash: {
+            type: String,
+            default: null,
+            select: false,
+        },
+
+        passwordResetExpiresAt: {
+            type: Date,
+            default: null,
+            select: false,
+        },
     },
     {
         timestamps: true,

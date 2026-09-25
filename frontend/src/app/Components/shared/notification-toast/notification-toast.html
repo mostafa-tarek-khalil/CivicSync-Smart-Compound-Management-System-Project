@@ -1,0 +1,9 @@
+<div class="toast-stack">
+  <div class="toast-card" *ngFor="let toast of toasts" (click)="open(toast)">
+    <div class="toast-content">
+      <h4>{{ toast.title }}</h4>
+      <p>{{ toast.message }}</p>
+    </div>
+    <button class="toast-close" type="button" (click)="$event.stopPropagation(); dismiss(toast.toastId)">✕</button>
+  </div>
+</div>

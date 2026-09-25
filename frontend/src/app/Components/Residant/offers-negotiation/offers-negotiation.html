@@ -1,0 +1,671 @@
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+      <div>
+
+        <button
+          type="button"
+          class="back-btn"
+          (click)="goBack()">
+
+          <i class="fa-solid fa-arrow-left"></i>
+
+          Back to Request
+
+        </button>
+
+        <span class="page-label">
+          MAINTENANCE REQUEST
+        </span>
+
+        <h1>Technician Offers</h1>
+
+        <p>
+          Review offers from technicians and choose
+          the one that works best for you.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="refresh-btn"
+        (click)="loadOffers()">
+
+        <i class="fa-solid fa-rotate"></i>
+
+        Refresh
+
+      </button>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    @if (isLoading) {
+
+      <div class="loading-state">
+
+        <div
+          class="spinner-border"
+          role="status">
+        </div>
+
+        <p>
+          Loading technician offers...
+        </p>
+
+      </div>
+
+    }
+
+
+    <!-- ERROR -->
+
+    @if (!isLoading && errorMessage) {
+
+      <div class="error-state">
+
+        <i
+          class="fa-solid fa-circle-exclamation">
+        </i>
+
+        <h4>
+          Unable to load offers
+        </h4>
+
+        <p>
+          {{ errorMessage }}
+        </p>
+
+        <button
+          class="retry-btn"
+          type="button"
+          (click)="loadOffers()">
+
+          Try Again
+
+        </button>
+
+      </div>
+
+    }
+
+
+    @if (!isLoading && !errorMessage) {
+
+      <!-- ACCEPT ERROR -->
+
+      @if (acceptErrorMessage) {
+
+        <div class="alert alert-danger d-flex align-items-center justify-content-between gap-2">
+
+          <span class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ acceptErrorMessage }}
+          </span>
+
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="acceptErrorMessage = ''">
+          </button>
+
+        </div>
+
+      }
+
+      <!-- SUMMARY -->
+
+      <div class="offers-summary">
+
+        <div>
+
+          <span class="summary-label">
+            AVAILABLE OFFERS
+          </span>
+
+          <h2>
+
+            {{ offers.length }}
+
+            @if (offers.length === 1) {
+              Technician Offer
+            } @else {
+              Technician Offers
+            }
+
+          </h2>
+
+        </div>
+
+        <span class="request-id">
+
+          Request #{{ ticketId }}
+
+        </span>
+
+      </div>
+
+
+      <!-- OFFERS -->
+
+      @if (offers.length > 0) {
+
+        <div class="offers-list">
+
+          @for (
+            offer of offers;
+            track offer._id
+          ) {
+
+            <section class="offer-card">
+
+
+              <!-- TOP -->
+
+              <div class="offer-top">
+
+                <div class="technician-info">
+
+                  <div class="technician-avatar">
+
+                    <i
+                      class="fa-solid fa-user-gear">
+                    </i>
+
+                  </div>
+
+
+                  <div>
+
+                    <h3>
+                      {{ getTechnicianName(offer) }}
+                    </h3>
+
+                    <span class="specialization">
+
+                      {{ getTechnicianSpecialization(offer) }}
+
+                    </span>
+
+
+                    <div class="rating">
+
+                      <i
+                        class="fa-solid fa-star">
+                      </i>
+
+                      <strong>
+
+                        {{
+                          getTechnicianRating(offer) || 'N/A'
+                        }}
+
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <span
+                  class="offer-status"
+                  [ngClass]="
+                    'status-' +
+                    offer.status.toLowerCase()
+                  ">
+
+                  {{ offer.status }}
+
+                </span>
+
+              </div>
+
+
+              <!-- DETAILS -->
+
+              <div class="offer-details">
+
+                <div class="offer-detail">
+
+                  <span>
+                    Price
+                  </span>
+
+                  <strong>
+                    {{ offer.price | number }} EGP
+                  </strong>
+
+                </div>
+
+
+                <div class="offer-detail">
+
+                  <span>
+                    Estimated Duration
+                  </span>
+
+                  <strong>
+                    {{ offer.estimatedDuration }}
+                  </strong>
+
+                </div>
+
+
+                <div class="offer-detail">
+
+                  <span>
+                    Submitted
+                  </span>
+
+                  <strong>
+                    {{ offer.createdAt | date:'MMM d, y' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- MESSAGE -->
+
+              @if (offer.note) {
+
+                <div class="offer-message">
+
+                  <span>
+                    Technician Message
+                  </span>
+
+                  <p>
+                    "{{ offer.note }}"
+                  </p>
+
+                </div>
+
+              }
+
+
+              <!-- ACTIONS -->
+
+              <div class="offer-actions">
+
+                @if (offer.status === 'PENDING') {
+
+                  <button
+                    type="button"
+                    class="action-btn negotiate"
+                    (click)="openNegotiation(offer)">
+
+                    <i
+                      class="fa-regular fa-comments">
+                    </i>
+
+                    Negotiate
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="action-btn accept"
+                    [disabled]="isAccepting"
+                    (click)="acceptOffer(offer)">
+
+                    <i
+                      class="fa-solid fa-check">
+                    </i>
+
+                    Accept Offer
+
+                  </button>
+
+                }
+
+
+                @if (offer.status === 'ACCEPTED') {
+
+                  <div class="accepted-message">
+
+                    <i
+                      class="fa-solid fa-circle-check">
+                    </i>
+
+                    Offer Accepted
+
+                  </div>
+
+                }
+
+
+                @if (offer.status === 'REJECTED') {
+
+                  <div class="rejected-message">
+
+                    <i
+                      class="fa-solid fa-circle-xmark">
+                    </i>
+
+                    Offer Rejected
+
+                  </div>
+
+                }
+
+
+                @if (offer.status === 'WITHDRAWN') {
+
+                  <div class="withdrawn-message">
+
+                    Offer Withdrawn
+
+                  </div>
+
+                }
+
+              </div>
+
+            </section>
+
+          }
+
+        </div>
+
+      }
+
+
+      <!-- EMPTY -->
+
+      @if (offers.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+
+            <i
+              class="fa-solid fa-user-clock">
+            </i>
+
+          </div>
+
+          <h3>
+            No Offers Yet
+          </h3>
+
+          <p>
+            Technicians haven't submitted any offers
+            for this maintenance request yet.
+          </p>
+
+        </div>
+
+      }
+
+    }
+
+
+    <!-- NEGOTIATION PANEL -->
+
+    @if (selectedOffer) {
+
+      <div
+        class="negotiation-overlay"
+        (click)="closeNegotiation()">
+
+
+        <div
+          class="negotiation-panel"
+          (click)="$event.stopPropagation()">
+
+
+          <!-- HEADER -->
+
+          <div class="negotiation-header">
+
+            <div>
+
+              <span class="panel-label">
+                NEGOTIATION
+              </span>
+
+              <h3>
+                {{ getTechnicianName(selectedOffer) }}
+              </h3>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="close-btn"
+              (click)="closeNegotiation()">
+
+              <i
+                class="fa-solid fa-xmark">
+              </i>
+
+            </button>
+
+          </div>
+
+
+          <!-- ORIGINAL OFFER -->
+
+          <div class="original-offer">
+
+            <div>
+
+              <span>
+                Original Offer
+              </span>
+
+              <strong>
+                {{ selectedOffer.price | number }} EGP
+              </strong>
+
+            </div>
+
+            <span>
+              {{ selectedOffer.estimatedDuration }}
+            </span>
+
+          </div>
+
+
+          <!-- CONVERSATION -->
+
+          <div class="conversation">
+
+            @if (isNegotiationLoading) {
+
+              <div class="conversation-loading">
+
+                <div
+                  class="spinner-border spinner-border-sm">
+                </div>
+
+                Loading conversation...
+
+              </div>
+
+            }
+
+
+            @if (
+              !isNegotiationLoading &&
+              negotiations.length === 0
+            ) {
+
+              <div class="no-negotiations">
+
+                <i
+                  class="fa-regular fa-comments">
+                </i>
+
+                <p>
+                  No negotiations yet.
+                </p>
+
+                <span>
+                  Send your first counter offer below.
+                </span>
+
+              </div>
+
+            }
+
+
+            @if (
+              !isNegotiationLoading &&
+              negotiations.length > 0
+            ) {
+
+              <div class="messages">
+
+                @for (
+                  negotiation of negotiations;
+                  track negotiation._id
+                ) {
+
+                  <div
+                    class="message-row"
+                    [class.my-message]="
+                      negotiation.senderRole === 'RESIDENT'
+                    ">
+
+                    <div class="message-bubble">
+
+                      <div class="message-top">
+
+                        <strong>
+                          {{ getSenderName(negotiation) }}
+                        </strong>
+
+                        <span>
+                          {{
+                            negotiation.createdAt
+                              | date:'MMM d, h:mm a'
+                          }}
+                        </span>
+
+                      </div>
+
+
+                      <div class="negotiation-price">
+
+                        {{ negotiation.price | number }} EGP
+
+                      </div>
+
+
+                      @if (negotiation.message) {
+
+                        <p>
+                          {{ negotiation.message }}
+                        </p>
+
+                      }
+
+                    </div>
+
+                  </div>
+
+                }
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <!-- FORM -->
+
+          @if (selectedOffer.status === 'PENDING') {
+
+            <div class="negotiation-form">
+
+              <div class="form-title">
+                Send Counter Offer
+              </div>
+
+
+              <div class="price-input">
+
+                <label>
+                  Your Price
+                </label>
+
+                <div class="input-wrapper">
+
+                  <input
+                    type="number"
+                    [(ngModel)]="negotiationPrice"
+                    min="1">
+
+                  <span>
+                    EGP
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="message-input">
+
+                <label>
+                  Message
+                </label>
+
+                <textarea
+                  rows="3"
+                  [(ngModel)]="negotiationMessage"
+                  placeholder="Write your message...">
+                </textarea>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="send-btn"
+                [disabled]="isSendingNegotiation"
+                (click)="sendNegotiation()">
+
+                @if (isSendingNegotiation) {
+
+                  <span
+                    class="spinner-border spinner-border-sm">
+                  </span>
+
+                  Sending...
+
+                } @else {
+
+                  <i
+                    class="fa-solid fa-paper-plane">
+                  </i>
+
+                  Send Counter Offer
+
+                }
+
+              </button>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    }

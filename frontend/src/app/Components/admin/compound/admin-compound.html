@@ -1,0 +1,292 @@
+<div class="admin-section">
+
+  <header class="section-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Buildings &amp; Units</h1>
+      <p>The physical structure of the compound and its occupancy.</p>
+    </div>
+
+    <span class="header-count">
+      {{ buildings.length }} building(s) · {{ units.length }} unit(s)
+    </span>
+  </header>
+
+  @if (errorMessage) {
+  <div class="alert">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+  }
+
+  @if (successMessage) {
+  <div class="alert success">
+    <span class="material-symbols-outlined">check_circle</span>
+    {{ successMessage }}
+  </div>
+  }
+
+  <!-- Tiles -->
+  <div class="tiles">
+    <div class="tile">
+      <span>Buildings</span>
+      <strong>{{ buildings.length }}</strong>
+    </div>
+    <div class="tile">
+      <span>Total Units</span>
+      <strong>{{ units.length }}</strong>
+    </div>
+    <div class="tile">
+      <span>Occupied</span>
+      <strong>{{ occupiedCount }}</strong>
+      <small>{{ vacantCount }} vacant</small>
+    </div>
+  </div>
+
+  <!-- Buildings list -->
+  <div class="panel mb">
+    <div class="panel-head">
+      <h5>Buildings</h5>
+      <button type="button" class="btn-sm add" (click)="openCreateBuilding()">
+        <span class="material-symbols-outlined">add</span>
+        Add Building
+      </button>
+    </div>
+
+    @if (loading) {
+    <div class="loading">Loading buildings…</div>
+    } @else if (buildings.length === 0) {
+    <div class="table-empty">
+      <span class="material-symbols-outlined">apartment</span>
+      <span>No buildings yet</span>
+      <small>Add a building to start defining its units.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>No.</th>
+            <th>Floors</th>
+            <th>Units</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (building of buildings; track building._id) {
+          <tr>
+            <td><strong>{{ building.name }}</strong></td>
+            <td>{{ building.buildingNumber }}</td>
+            <td>{{ building.floorsCount || building.floors || '—' }}</td>
+            <td>{{ building.unitsCount ?? '—' }}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="btn-sm" (click)="openEditBuilding(building)">
+                  <span class="material-symbols-outlined">edit</span>
+                  Edit
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+  <!-- Units -->
+  <div class="panel">
+    <div class="panel-head">
+      <h5>Units</h5>
+
+      <div class="filters inline">
+        <select [(ngModel)]="selectedBuildingId" (change)="applyUnitFilters()">
+          <option value="">All buildings</option>
+          @for (building of buildings; track building._id) {
+          <option [value]="building._id">{{ building.name }}</option>
+          }
+        </select>
+
+        <select [(ngModel)]="unitStatusFilter" (change)="applyUnitFilters()">
+          @for (status of unitStatusFilters; track status) {
+          <option [value]="status">{{ status || 'All statuses' }}</option>
+          }
+        </select>
+
+        <button type="button" class="btn-sm add" (click)="openCreateUnit()">
+          <span class="material-symbols-outlined">add</span>
+          Add Unit
+        </button>
+      </div>
+    </div>
+
+    @if (unitsLoading) {
+    <div class="loading">Loading units…</div>
+    } @else if (units.length === 0) {
+    <div class="table-empty">
+      <span class="material-symbols-outlined">door_front</span>
+      <span>No units found</span>
+      <small>Create units for a building to see them here.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Building</th>
+            <th>Unit</th>
+            <th>Floor</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (unit of units; track unit._id) {
+          <tr>
+            <td>{{ buildingLabel(unit) }}</td>
+            <td><strong>{{ unit.unitNumber }}</strong></td>
+            <td>{{ unit.floor }}</td>
+            <td>{{ unit.type }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="statusClass(unit.status)">
+                {{ unit.status }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="btn-sm" (click)="openEditUnit(unit)">
+                  <span class="material-symbols-outlined">edit</span>
+                  Edit
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+</div>
+
+<!-- ===================== BUILDING MODAL ===================== -->
+@if (buildingModalOpen) {
+<div class="modal-backdrop" (click)="closeBuildingModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>{{ editingBuildingId ? 'Edit Building' : 'Add Building' }}</h3>
+      <button type="button" class="modal-close" (click)="closeBuildingModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-field">
+        <label>Building name</label>
+        <input type="text" [(ngModel)]="buildingForm.name" placeholder="e.g. Palm Tower" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label>Building number</label>
+          <input type="number" min="1" [(ngModel)]="buildingForm.buildingNumber" />
+        </div>
+
+        <div class="form-field">
+          <label>Floors count</label>
+          <input type="number" min="1" [(ngModel)]="buildingForm.floorsCount" />
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Units count</label>
+        <input type="number" min="0" [(ngModel)]="buildingForm.unitsCount" placeholder="Total planned units" />
+      </div>
+
+      <div class="form-field">
+        <label>Description <small>(optional)</small></label>
+        <input type="text" [(ngModel)]="buildingForm.description" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeBuildingModal()" [disabled]="savingBuilding">Cancel</button>
+      <button type="button" class="btn-primary" (click)="saveBuilding()" [disabled]="savingBuilding">
+        {{ savingBuilding ? 'Saving…' : (editingBuildingId ? 'Save changes' : 'Create building') }}
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ===================== UNIT MODAL ===================== -->
+@if (unitModalOpen) {
+<div class="modal-backdrop" (click)="closeUnitModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>{{ editingUnitId ? 'Edit Unit' : 'Add Unit' }}</h3>
+      <button type="button" class="modal-close" (click)="closeUnitModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (!editingUnitId) {
+      <div class="form-field">
+        <label>Building</label>
+        <select [(ngModel)]="unitForm.buildingId">
+          <option value="">Select a building</option>
+          @for (building of buildings; track building._id) {
+          <option [value]="building._id">{{ building.name }}</option>
+          }
+        </select>
+      </div>
+      }
+
+      <div class="form-row">
+        <div class="form-field">
+          <label>Unit number</label>
+          <input type="number" min="1" [(ngModel)]="unitForm.unitNumber" />
+        </div>
+
+        <div class="form-field">
+          <label>Floor</label>
+          <input type="number" min="0" [(ngModel)]="unitForm.floor" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label>Type</label>
+          <select [(ngModel)]="unitForm.type">
+            @for (type of unitTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Status</label>
+          <select [(ngModel)]="unitForm.status">
+            @for (status of unitStatuses; track status) {
+            <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeUnitModal()" [disabled]="savingUnit">Cancel</button>
+      <button type="button" class="btn-primary" (click)="saveUnit()" [disabled]="savingUnit">
+        {{ savingUnit ? 'Saving…' : (editingUnitId ? 'Save changes' : 'Create unit') }}
+      </button>
+    </div>
+  </div>
+</div>
+}

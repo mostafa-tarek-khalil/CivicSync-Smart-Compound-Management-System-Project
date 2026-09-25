@@ -1321,3 +1321,213 @@
   background: #16233a;
   border-color: #2a3a4e;
 }
+/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.background-shape {
+  animation: cs-regd-drift 16s ease-in-out infinite;
+}
+
+.shape-one {
+  animation: cs-regd-drift 20s ease-in-out infinite reverse;
+}
+
+.shape-two {
+  animation: cs-regd-drift 24s ease-in-out infinite;
+}
+
+@keyframes cs-regd-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -26px) scale(1.07);
+  }
+}
+
+/* Split layout: showcase enters left, form card enters right. */
+.register-showcase {
+  animation: cs-slide-in-left 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.register-form-section,
+.register-card {
+  animation: cs-slide-in-right 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.brand {
+  animation: cs-fade-in 0.5s ease 0.16s both;
+}
+
+.brand-icon {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.step {
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.step:nth-child(1) { animation-delay: 0.3s; }
+.step:nth-child(2) { animation-delay: 0.38s; }
+.step:nth-child(3) { animation-delay: 0.46s; }
+
+.step-number {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+.step:hover .step-number {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.12);
+}
+
+.progress-eyebrow,
+.form-eyebrow {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.register-heading {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.showcase-footer {
+  animation: cs-fade-in 0.5s ease 0.5s both;
+}
+
+.error-message {
+  animation: cs-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cs-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.role-details {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.details-icon {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.details-intro {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+.field-group {
+  animation: cs-fade-up 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.field-group:nth-child(1) { animation-delay: 0.32s; }
+.field-group:nth-child(2) { animation-delay: 0.38s; }
+.field-group:nth-child(3) { animation-delay: 0.44s; }
+
+.custom-select-trigger {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-select-trigger:hover {
+  box-shadow: 0 6px 18px rgba(20, 43, 70, 0.08);
+}
+
+.select-arrow {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The dropdown unfolds with a slight lift. */
+.custom-select-menu {
+  animation: cs-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top center;
+}
+
+.unit-option {
+  animation: cs-slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.unit-option:nth-child(1) { animation-delay: 0.04s; }
+.unit-option:nth-child(2) { animation-delay: 0.08s; }
+.unit-option:nth-child(3) { animation-delay: 0.12s; }
+.unit-option:nth-child(4) { animation-delay: 0.16s; }
+.unit-option:nth-child(5) { animation-delay: 0.2s; }
+
+.unit-option:hover {
+  transform: translateX(4px);
+}
+
+/* Specialization picker tiles. */
+.specialization-grid {
+  perspective: 1000px;
+}
+
+.specialization-card {
+  transform-style: preserve-3d;
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.34s ease, border-color 0.25s ease;
+}
+
+.specialization-card:nth-child(1) { animation-delay: 0.36s; }
+.specialization-card:nth-child(2) { animation-delay: 0.42s; }
+.specialization-card:nth-child(3) { animation-delay: 0.48s; }
+.specialization-card:nth-child(4) { animation-delay: 0.54s; }
+
+.specialization-card:hover {
+  transform: translateY(-5px) rotateX(5deg) rotateY(-5deg);
+  box-shadow: 0 18px 36px rgba(20, 43, 70, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-shape,
+  .shape-one,
+  .shape-two,
+  .register-showcase,
+  .register-form-section,
+  .register-card,
+  .brand,
+  .brand-icon,
+  .step,
+  .progress-eyebrow,
+  .form-eyebrow,
+  .register-heading,
+  .showcase-footer,
+  .error-message,
+  .role-details,
+  .details-icon,
+  .details-intro,
+  .field-group,
+  .custom-select-menu,
+  .unit-option,
+  .specialization-card {
+    animation: none;
+  }
+
+  .specialization-card:hover,
+  .unit-option:hover {
+    transform: none;
+  }
+}

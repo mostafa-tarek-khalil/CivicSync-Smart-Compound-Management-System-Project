@@ -1,0 +1,34 @@
+<div class="invoice-print-page">
+
+  <!-- Screen-only chrome. The global print rules strip all of this, so the
+       printed sheet is just the receipt. -->
+  <header class="page-head no-print">
+    <div>
+      <span class="eyebrow">BILLING</span>
+      <h1>Invoice</h1>
+      <p>Review the invoice and print a copy for the resident.</p>
+    </div>
+
+    <button type="button" class="btn-back" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back to invoices
+    </button>
+  </header>
+
+  @if (loading) {
+  <div class="state-card no-print">
+    <span class="material-symbols-outlined spin">progress_activity</span>
+    <p>Loading invoice…</p>
+  </div>
+  } @else if (errorMessage) {
+  <div class="state-card error no-print">
+    <span class="material-symbols-outlined">error</span>
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-retry" (click)="load()">Try again</button>
+  </div>
+  } @else if (invoice) {
+  <app-invoice-receipt [invoice]="invoice" [viewerRole]="viewerRole" (openTicket)="openTicket($event)">
+  </app-invoice-receipt>
+  }
+
+</div>

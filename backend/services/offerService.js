@@ -100,13 +100,15 @@ const createOffer = async (
             estimatedDuration: numericDuration,
             note,
         });
+
         await createNotification({
             userId: ticket.residentId,
             type: "NEW_OFFER",
             title: "New technician offer",
             message: `A technician submitted an offer for “${ticket.title}”.`,
-            relatedId: offer._id,
+            relatedId: ticketId,
         });
+
         return offer;
     } catch (error) {
         if (error.code === 11000) {
@@ -348,110 +350,137 @@ const acceptOffer = async (offerId, residentId) => {
         throw error;
     }
 
-    const latestNegotiation =
-        await Negotiation.findOne({
-            offerId: offer._id,
-        }).sort({ createdAt: -1 });
+    const latestNegotiation = await Negotiation.findOne({
+        offerId: offer._id,
+    }).sort({ createdAt: -1 });
 
     const finalPrice = latestNegotiation
         ? latestNegotiation.price
         : offer.price;
 
-    const assignedTicket =
-        await MaintenanceTicket.findOneAndUpdate(
-            {
-                _id: ticket._id,
-                residentId,
-                status: "OPEN",
+    // ---------------------------------------------------------------
+    // CONCURRENCY GUARD
+    // ---------------------------------------------------------------
+    // The offer is the exclusive resource of this operation, so it is
+    // claimed FIRST. `findOneAndUpdate({ status: "PENDING" })` is a single
+    // atomic compare-and-set: of N simultaneous callers (double click, two
+    // tabs, retried request) exactly ONE flips PENDING -> ACCEPTED. Every
+    // other caller fails here, before any ticket mutation happens, so the
+    // ticket can never be assigned by two racing requests.
+    const acceptedOffer = await Offer.findOneAndUpdate(
+        {
+            _id: offer._id,
+            status: "PENDING",
+        },
+        {
+            $set: {
+                status: "ACCEPTED",
+                price: finalPrice,
             },
-            {
-                $set: {
-                    status: "ASSIGNED",
-                    assignedTo: offer.technicianId,
-                },
-            },
-            {
-                new: true,
-            }
-        );
+        },
+        {
+            new: true,
+        }
+    );
 
-    if (!assignedTicket) {
+    if (!acceptedOffer) {
         const error = new Error(
-            "This ticket has already been assigned or changed"
+            "Offer is no longer pending. Refresh the page and try again."
         );
-        error.statusCode = 400;
+        error.statusCode = 409;
         throw error;
     }
 
-    const acceptedOffer =
+    // The ticket assignment is also a single conditional update. Accepting a
+    // *different* offer for the same ticket at the same time is possible, so
+    // this is what decides the winner: only the request that still sees
+    // status OPEN assigns the ticket.
+    const assignedTicket = await MaintenanceTicket.findOneAndUpdate(
+        {
+            _id: ticket._id,
+            residentId,
+            status: "OPEN",
+        },
+        {
+            $set: {
+                status: "ASSIGNED",
+                assignedTo: offer.technicianId,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    if (!assignedTicket) {
+        // This request lost the race for the ticket. Release the claim it
+        // placed on its own offer so the resident can still act on it.
         await Offer.findOneAndUpdate(
             {
-                _id: offer._id,
+                _id: acceptedOffer._id,
+                status: "ACCEPTED",
+            },
+            {
+                $set: {
+                    status: "PENDING",
+                    price: offer.price,
+                },
+            }
+        );
+
+        const error = new Error(
+            "This ticket has already been assigned or changed. Refresh the page and try again."
+        );
+        error.statusCode = 409;
+        throw error;
+    }
+
+    const rejectedOffers = await Offer.find({
+        ticketId: offer.ticketId,
+        _id: {
+            $ne: offer._id,
+        },
+        status: "PENDING",
+    }).select("_id technicianId");
+
+    if (rejectedOffers.length > 0) {
+        await Offer.updateMany(
+            {
+                ticketId: offer.ticketId,
+                _id: {
+                    $in: rejectedOffers.map(
+                        (item) => item._id
+                    ),
+                },
                 status: "PENDING",
             },
             {
                 $set: {
-                    status: "ACCEPTED",
-                    price: finalPrice,
-                },
-            },
-            {
-                new: true,
-            }
-        );
-
-    if (!acceptedOffer) {
-        await MaintenanceTicket.findOneAndUpdate(
-            {
-                _id: ticket._id,
-                assignedTo: offer.technicianId,
-                status: "ASSIGNED",
-            },
-            {
-                $set: {
-                    status: "OPEN",
-                    assignedTo: null,
+                    status: "REJECTED",
                 },
             }
         );
-
-        const error = new Error(
-            "Offer is no longer pending"
-        );
-        error.statusCode = 400;
-        throw error;
     }
-
-    const otherPendingOffers = await Offer.find({
-        ticketId: offer.ticketId,
-        _id: { $ne: offer._id },
-        status: "PENDING",
-    }).select("_id technicianId");
-
-    await Offer.updateMany(
-        { _id: { $in: otherPendingOffers.map((item) => item._id) } },
-        {
-            $set: {
-                status: "REJECTED",
-            },
-        }
-    );
 
     await createNotification({
         userId: acceptedOffer.technicianId,
         type: "OFFER_ACCEPTED",
         title: "Offer accepted",
         message: `Your offer for “${ticket.title}” was accepted.`,
-        relatedId: acceptedOffer._id,
+        relatedId: ticket._id,
     });
 
-    await Promise.all(otherPendingOffers.map((rejectedOffer) => createNotification({
-        userId: rejectedOffer.technicianId,
-        type: "OFFER_REJECTED",
-        title: "Offer not selected",
-        message: `Your offer for maintenance request "${ticket.title}" was not selected.`,
-        relatedId: rejectedOffer._id,
-    })));
+    await Promise.all(
+        rejectedOffers.map((rejectedOffer) =>
+            createNotification({
+                userId: rejectedOffer.technicianId,
+                type: "OFFER_REJECTED",
+                title: "Offer not selected",
+                message: `Your offer for maintenance request "${ticket.title}" was not selected.`,
+                relatedId: rejectedOffer._id,
+            })
+        )
+    );
 
     return acceptedOffer;
 };

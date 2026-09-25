@@ -1,0 +1,330 @@
+<div class="admin-page">
+
+  <header class="dashboard-header">
+    <div class="header-content">
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Dashboard</h1>
+      <p>Monitor your compound activity and manage daily operations.</p>
+    </div>
+
+    <div class="header-status">
+      <span class="status-dot"></span>
+      <span>System operational</span>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state">
+      <span class="material-symbols-outlined spinning">progress_activity</span>
+      <span>Loading dashboard...</span>
+    </div>
+  } @else if (overview) {
+
+    <section class="overview-section">
+
+      <div class="section-heading">
+        <div>
+          <span class="section-label">OVERVIEW</span>
+          <h2>Compound statistics</h2>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+
+        <article class="stat-card users-stat">
+          <div class="stat-top">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <span class="stat-label">Users</span>
+          </div>
+
+          <strong>{{ overview.users.total }}</strong>
+
+          <div class="stat-footer">
+            <span>{{ overview.users.pending }} pending</span>
+            <span class="stat-link">Accounts</span>
+          </div>
+        </article>
+
+        <article class="stat-card buildings-stat">
+          <div class="stat-top">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">apartment</span>
+            </div>
+            <span class="stat-label">Buildings</span>
+          </div>
+
+          <strong>{{ overview.buildings.total }}</strong>
+
+          <div class="stat-footer">
+            <span>{{ overview.units.total }} total units</span>
+            <span class="stat-link">Properties</span>
+          </div>
+        </article>
+
+        <article class="stat-card units-stat">
+          <div class="stat-top">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">home</span>
+            </div>
+            <span class="stat-label">Occupied units</span>
+          </div>
+
+          <strong>{{ overview.units.occupied }}</strong>
+
+          <div class="stat-footer">
+            <span>{{ overview.units.vacant }} vacant</span>
+            <span class="stat-link">Units</span>
+          </div>
+        </article>
+
+        <article class="stat-card maintenance-stat">
+          <div class="stat-top">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">build</span>
+            </div>
+            <span class="stat-label">Maintenance</span>
+          </div>
+
+          <strong>{{ overview.maintenance.open }}</strong>
+
+          <div class="stat-footer">
+            <span>Open tickets</span>
+            <span class="stat-link">Active</span>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="operations-grid">
+
+      <article class="panel pending-panel">
+
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="title-icon">
+              <span class="material-symbols-outlined">person_add</span>
+            </div>
+
+            <div>
+              <span class="panel-label">ACTION REQUIRED</span>
+              <h2>Pending registrations</h2>
+              <p>Review accounts waiting for approval.</p>
+            </div>
+          </div>
+
+          <span class="count-badge">
+            {{ pendingUsers.length }}
+          </span>
+        </div>
+
+        @if (usersLoading) {
+
+          <div class="panel-state">
+            <span class="material-symbols-outlined spinning">progress_activity</span>
+            <span>Loading pending accounts...</span>
+          </div>
+
+        } @else if (pendingUsers.length === 0) {
+
+          <div class="empty-state">
+            <div class="empty-icon">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+
+            <strong>Everything is up to date</strong>
+            <p>There are no registrations waiting for approval.</p>
+          </div>
+
+        } @else {
+
+          <div class="users-list">
+
+            @for (user of pendingUsers; track user._id) {
+
+              <div class="user-row">
+
+                <div class="user-avatar">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+
+                <div class="user-info">
+                  <strong>{{ user.name }}</strong>
+                  <span>{{ user.email }}</span>
+
+                  <div class="user-meta">
+                    <span>{{ user.role }}</span>
+                  </div>
+                </div>
+
+                <div class="user-actions">
+
+                  <button
+                    type="button"
+                    class="approve-btn"
+                    [disabled]="actionUserId === user._id"
+                    (click)="approveUser(user)">
+                    <span class="material-symbols-outlined">check</span>
+                    Approve
+                  </button>
+
+                  <button
+                    type="button"
+                    class="reject-btn"
+                    [disabled]="actionUserId === user._id"
+                    (click)="rejectUser(user)">
+                    <span class="material-symbols-outlined">close</span>
+                    Reject
+                  </button>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+      </article>
+
+      <article class="panel activity-panel">
+
+        <div class="panel-header compact">
+          <div>
+            <span class="panel-label">FINANCIAL</span>
+            <h2>Invoice overview</h2>
+            <p>Current compound payment status.</p>
+          </div>
+        </div>
+
+        <div class="finance-list">
+
+          <div class="finance-item">
+            <div class="finance-icon collected">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+
+            <div class="finance-info">
+              <span>Total collected</span>
+              <strong>{{ formatMoney(overview.invoices.totalCollected) }}</strong>
+            </div>
+          </div>
+
+          <div class="finance-item">
+            <div class="finance-icon billed">
+              <span class="material-symbols-outlined">receipt_long</span>
+            </div>
+
+            <div class="finance-info">
+              <span>Total billed</span>
+              <strong>{{ formatMoney(overview.invoices.totalBilled) }}</strong>
+            </div>
+          </div>
+
+          <div class="finance-item">
+            <div class="finance-icon outstanding">
+              <span class="material-symbols-outlined">account_balance_wallet</span>
+            </div>
+
+            <div class="finance-info">
+              <span>Outstanding</span>
+              <strong>{{ formatMoney(overview.invoices.totalOutstanding) }}</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="invoice-alert">
+          <div>
+            <span class="material-symbols-outlined">pending_actions</span>
+            <span>Awaiting payment approval</span>
+          </div>
+
+          <strong>{{ overview.invoices.awaitingApproval }}</strong>
+        </div>
+
+        <div class="overdue-row">
+          <span>
+            <span class="material-symbols-outlined">warning</span>
+            Overdue invoices
+          </span>
+
+          <strong>{{ overview.invoices.overdue }}</strong>
+        </div>
+
+      </article>
+
+    </section>
+
+    <section class="bottom-grid">
+
+      <article class="metric-panel">
+
+        <div class="metric-header">
+          <div class="metric-icon">
+            <span class="material-symbols-outlined">login</span>
+          </div>
+
+          <div>
+            <span>ACCESS</span>
+            <h3>Visitor activity</h3>
+          </div>
+        </div>
+
+        <strong>{{ overview.visits.total }}</strong>
+        <p>Total recorded visits</p>
+
+      </article>
+
+      <article class="metric-panel">
+
+        <div class="metric-header">
+          <div class="metric-icon">
+            <span class="material-symbols-outlined">construction</span>
+          </div>
+
+          <div>
+            <span>MAINTENANCE</span>
+            <h3>Open requests</h3>
+          </div>
+        </div>
+
+        <strong>{{ overview.maintenance.open }}</strong>
+        <p>Open, assigned or in progress</p>
+
+      </article>
+
+      <article class="metric-panel">
+
+        <div class="metric-header">
+          <div class="metric-icon">
+            <span class="material-symbols-outlined">event_available</span>
+          </div>
+
+          <div>
+            <span>REGISTRATIONS</span>
+            <h3>Waiting for review</h3>
+          </div>
+        </div>
+
+        <strong>{{ overview.users.pending }}</strong>
+        <p>Accounts pending approval</p>
+
+      </article>
+
+    </section>
+
+  }
+
+</div>

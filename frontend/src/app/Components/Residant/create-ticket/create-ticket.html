@@ -1,0 +1,265 @@
+    <!-- Page Header -->
+    <div class="page-header">
+
+      <button
+        type="button"
+        class="back-btn"
+        (click)="goBack()">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+      </button>
+
+      <div>
+        <h4>New Service Request</h4>
+        <p>Describe the issue and technicians will bid on it</p>
+      </div>
+
+    </div>
+
+
+    <!-- Request Form -->
+    <form
+      (ngSubmit)="submitRequest()"
+      #requestForm="ngForm">
+
+      <div class="row g-4">
+
+        <!-- ===== Left column ===== -->
+        <div class="col-lg-8">
+
+          <!-- Category -->
+          <div class="panel">
+
+            <h6>Category</h6>
+
+            <div class="hint">
+              Pick the trade that fits the problem.
+            </div>
+
+            <div class="cat-grid">
+
+              @for (cat of categories; track cat.value) {
+
+                <div
+                  class="cat-option"
+                  [class.selected]="selectedCategory === cat.value"
+                  (click)="selectCategory(cat.value)">
+
+                  <i [class]="cat.icon"></i>
+
+                  <span>
+                    {{ cat.label }}
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- Title + Description -->
+          <div class="panel">
+
+            <label
+              class="field-label"
+              for="titleInput">
+
+              Issue title
+
+            </label>
+
+            <input
+              type="text"
+              id="titleInput"
+              name="title"
+              class="form-control mb-4"
+              placeholder="e.g. Master bedroom AC not cooling, error E4"
+              [(ngModel)]="title"
+              required
+            >
+
+
+            <label
+              class="field-label"
+              for="descriptionInput">
+
+              Description
+
+            </label>
+
+            <textarea
+              id="descriptionInput"
+              name="description"
+              class="form-control"
+              rows="4"
+              [maxlength]="descriptionMaxLength"
+              placeholder="What happened, when it started, and anything you already tried."
+              [(ngModel)]="description">
+            </textarea>
+
+            <div class="char-count">
+              {{ description.length }} / {{ descriptionMaxLength }}
+            </div>
+
+          </div>
+
+
+          <!-- Media -->
+          <div class="panel">
+
+            <h6>Photo or video</h6>
+
+            <div class="hint">
+              Optional, but it usually gets you a more accurate quote.
+            </div>
+
+
+            <input
+              type="file"
+              #mediaInput
+              accept="image/*,video/*"
+              class="d-none"
+              (change)="onMediaSelected($event)"
+            >
+
+
+            @if (!mediaPreviewUrl) {
+
+              <div
+                class="upload-box"
+                (click)="mediaInput.click()">
+
+                <i class="fa-solid fa-camera"></i>
+
+                <span>
+                  Tap to add media
+                </span>
+
+              </div>
+
+            }
+
+
+            @if (mediaPreviewUrl) {
+
+              <div class="preview-wrap">
+
+                <button
+                  type="button"
+                  class="preview-remove"
+                  (click)="removeMedia()">
+
+                  <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+                <img
+                  [src]="mediaPreviewUrl"
+                  alt="attachment preview"
+                >
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- ===== Right column ===== -->
+        <div class="col-lg-4">
+
+          <div class="panel">
+
+            <h6>Priority</h6>
+
+            <div class="hint">
+              This sets how quickly dispatch responds.
+            </div>
+
+
+            @for (p of priorities; track p.value) {
+
+              <div
+                class="priority-row"
+                [class.selected]="selectedPriority === p.value"
+                (click)="selectPriority(p.value)">
+
+                <span
+                  class="p-dot"
+                  [ngClass]="p.dotClass">
+                </span>
+
+                <div>
+
+                  <div class="p-title">
+                    {{ p.label }}
+                  </div>
+
+                  <div class="p-sub">
+                    {{ p.hint }}
+                  </div>
+
+                </div>
+
+
+                @if (selectedPriority === p.value) {
+
+                  <i class="fa-solid fa-check check"></i>
+
+                }
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Submit -->
+      <div class="row">
+
+        <div class="col-lg-8">
+
+          @if (errorMessage) {
+
+            <div class="error-text mb-2">
+              {{ errorMessage }}
+            </div>
+
+          }
+
+
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isSubmitting">
+
+            <i class="fa-regular fa-paper-plane me-2"></i>
+
+            @if (isSubmitting) {
+
+              Submitting...
+
+            } @else {
+
+              Submit Request
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </form>

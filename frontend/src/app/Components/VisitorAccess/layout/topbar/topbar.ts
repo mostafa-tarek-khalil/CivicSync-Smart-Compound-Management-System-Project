@@ -1,27 +1,31 @@
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { ThemeService } from '../../services/theme';
-import { NotificationService, NotificationItem } from '../../../../Services/notification-service';
-import { AuthService } from '../../../../Services/auth-service';
-import { ChatSocket } from '../../../../Services/chat-socket';
+
+import { ThemeService } from '../../../../core/services/theme.service';
+import {
+  NotificationService,
+  NotificationItem
+} from '../../../../core/services/notification.service';
+
+import { AuthService } from '../../../../core/services/auth.service';
+import { ChatSocket } from '../../../../core/services/chat-socket';
+import { resolveNotificationRoute } from '../../../../core/services/notification-navigator';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, AvatarComponent],
   templateUrl: './topbar.html',
   styleUrl: './topbar.css'
 })
 export class Topbar implements OnInit, OnDestroy {
 
-  searchOpen = false;
   notificationsOpen = false;
   profileOpen = false;
 
   notifications: NotificationItem[] = [];
-
   unreadCount = 0;
 
   constructor(
@@ -41,28 +45,30 @@ export class Topbar implements OnInit, OnDestroy {
     this.chatSocket.off('notification:new');
   }
 
-  /**
-   * Listen for notifications pushed by the backend in real time.
-   * The backend emits `notification:new` to the `user:<id>` room, which every
-   * authenticated socket (including security) joins on connect.
-   */
   private setupRealtimeNotifications(): void {
     this.chatSocket.connect();
 
-    this.chatSocket.on('notification:new', (notification: NotificationItem) => {
-      if (!notification) {
-        return;
-      }
+    this.chatSocket.on(
+      'notification:new',
+      (notification: NotificationItem) => {
+        if (!notification) {
+          return;
+        }
 
-      const exists = this.notifications.some(
-        item => String(item._id) === String(notification._id)
-      );
+        const exists = this.notifications.some(
+          item => String(item._id) === String(notification._id)
+        );
 
-      if (!exists) {
-        this.notifications = [notification, ...this.notifications];
-        this.unreadCount = this.notifications.length;
+        if (!exists) {
+          this.notifications = [
+            notification,
+            ...this.notifications
+          ];
+
+          this.unreadCount = this.notifications.length;
+        }
       }
-    });
+    );
   }
 
   loadUnreadNotifications(): void {
@@ -71,22 +77,17 @@ export class Topbar implements OnInit, OnDestroy {
         this.notifications = response.data;
         this.unreadCount = response.data.length;
       },
-
       error: (error) => {
-        console.error('Failed to load notifications:', error);
+        console.error(
+          'Failed to load notifications:',
+          error
+        );
       }
     });
   }
 
-  toggleSearch(): void {
-    this.searchOpen = !this.searchOpen;
-    this.notificationsOpen = false;
-    this.profileOpen = false;
-  }
-
   toggleNotifications(): void {
     this.notificationsOpen = !this.notificationsOpen;
-    this.searchOpen = false;
     this.profileOpen = false;
 
     if (this.notificationsOpen) {
@@ -96,7 +97,6 @@ export class Topbar implements OnInit, OnDestroy {
 
   toggleProfile(): void {
     this.profileOpen = !this.profileOpen;
-    this.searchOpen = false;
     this.notificationsOpen = false;
   }
 
@@ -114,31 +114,45 @@ export class Topbar implements OnInit, OnDestroy {
         this.notifications = [];
         this.unreadCount = 0;
       },
-
       error: (error) => {
-        console.error('Failed to mark all notifications as read:', error);
+        console.error(
+          'Failed to mark all notifications as read:',
+          error
+        );
       }
     });
   }
 
-  markAsRead(notification: NotificationItem): void {
-    if (notification.isRead) {
-      return;
+  openNotification(notification: NotificationItem): void {
+    if (!notification.isRead) {
+      this.notificationService
+        .markAsRead(notification._id)
+        .subscribe({
+          next: () => {
+            this.notifications = this.notifications.filter(
+              item => item._id !== notification._id
+            );
+
+            this.unreadCount = this.notifications.length;
+          },
+          error: (error) => {
+            console.error(
+              'Failed to mark notification as read:',
+              error
+            );
+          }
+        });
     }
 
-    this.notificationService.markAsRead(notification._id).subscribe({
-      next: () => {
-        this.notifications = this.notifications.filter(
-          item => item._id !== notification._id
-        );
+    this.notificationsOpen = false;
 
-        this.unreadCount = this.notifications.length;
-      },
+    const route = resolveNotificationRoute(
+      notification.type,
+      this.currentUserRole.toUpperCase(),
+      notification.relatedId
+    );
 
-      error: (error) => {
-        console.error('Failed to mark notification as read:', error);
-      }
-    });
+    this.router.navigate(route);
   }
 
   getNotificationIcon(type: string): string {
@@ -177,11 +191,20 @@ export class Topbar implements OnInit, OnDestroy {
     const date = new Date(dateString);
     const now = new Date();
 
-    const difference = now.getTime() - date.getTime();
+    const difference =
+      now.getTime() - date.getTime();
 
-    const minutes = Math.floor(difference / (1000 * 60));
-    const hours = Math.floor(difference / (1000 * 60 * 60));
-    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const minutes = Math.floor(
+      difference / (1000 * 60)
+    );
+
+    const hours = Math.floor(
+      difference / (1000 * 60 * 60)
+    );
+
+    const days = Math.floor(
+      difference / (1000 * 60 * 60 * 24)
+    );
 
     if (minutes < 1) {
       return 'Just now';
@@ -218,10 +241,20 @@ export class Topbar implements OnInit, OnDestroy {
 
   get currentUserRole(): string {
     const role = this.authService.getUser()?.role || '';
-    return role.charAt(0) + role.slice(1).toLowerCase();
+
+    return (
+      role.charAt(0) +
+      role.slice(1).toLowerCase()
+    );
   }
 
   get currentUserInitial(): string {
-    return this.currentUserName.charAt(0).toUpperCase();
+    return this.currentUserName
+      .charAt(0)
+      .toUpperCase();
+  }
+
+  get currentUserAvatar(): string | null {
+    return this.authService.getUser()?.profileImage ?? null;
   }
 }

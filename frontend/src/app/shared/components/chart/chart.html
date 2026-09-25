@@ -1,0 +1,50 @@
+<!-- Empty state ------------------------------------------------------------->
+<div class="chart-empty" *ngIf="!hasData">
+  <span class="material-symbols-outlined">insights</span>
+  <p>No data to display yet.</p>
+</div>
+
+<!-- DONUT ------------------------------------------------------------------->
+<div class="donut-wrap" *ngIf="hasData && type === 'donut'">
+  <svg class="donut" viewBox="0 0 42 42" [style.height.px]="height">
+    <circle class="donut-track" cx="21" cy="21" r="15.915" />
+
+    <circle *ngFor="let segment of donutSegments" class="donut-segment" cx="21" cy="21" r="15.915"
+      [attr.stroke]="segment.color" [attr.stroke-dasharray]="segment.dash"
+      [attr.transform]="'rotate(' + segment.offset + ' 21 21)'" />
+  </svg>
+
+  <ul class="legend">
+    <li *ngFor="let slice of slices">
+      <span class="legend-dot" [style.background]="slice.color"></span>
+      <span class="legend-label">{{ slice.label }}</span>
+      <span class="legend-value">{{ slice.value }}</span>
+      <span class="legend-percent">{{ percent(slice.value) }}</span>
+    </li>
+  </ul>
+</div>
+
+<!-- BARS -------------------------------------------------------------------->
+<div class="bars-wrap" *ngIf="hasData && type === 'bars'" [style.height.px]="height">
+  <div class="bar-column" *ngFor="let slice of slices">
+    <span class="bar-value">{{ slice.value }}</span>
+
+    <div class="bar-track">
+      <div class="bar-fill" [style.height.%]="barHeight(slice.value)" [style.background]="slice.color">
+      </div>
+    </div>
+
+    <span class="bar-label">{{ slice.label }}</span>
+  </div>
+</div>
+
+<!-- LINE -------------------------------------------------------------------->
+<div class="line-wrap" *ngIf="hasData && type === 'line'">
+  <svg class="line-svg" viewBox="0 0 100 100" preserveAspectRatio="none" [style.height.px]="height">
+    <path class="line-path" [attr.d]="linePath" />
+  </svg>
+
+  <div class="line-axis">
+    <span *ngFor="let point of points">{{ point.label }}</span>
+  </div>
+</div>

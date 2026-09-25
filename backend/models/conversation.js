@@ -69,11 +69,22 @@ conversationSchema.index({
     buildingId: 1,
 });
 
+/**
+ * One visitor conversation per visit.
+ *
+ * The index is explicitly NAMED. Without a name, Mongoose derives
+ * `relatedVisitId_1`, which collides with the legacy index of the same name
+ * that older databases already contain (created before the partial filter
+ * existed). That collision is what produced the
+ * "Index already exists with a different name" / duplicate-index warning on
+ * startup. Naming it keeps the new definition isolated from the old one.
+ */
 conversationSchema.index(
     {
         relatedVisitId: 1,
     },
     {
+        name: "visitor_conversation_visit_unique",
         unique: true,
         partialFilterExpression: {
             type: "VISITOR",

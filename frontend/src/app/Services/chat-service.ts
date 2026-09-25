@@ -6,13 +6,15 @@ import {
 
 import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
 
   private readonly apiUrl =
-    'http://localhost:3000/api/chat';
+    `${environment.apiUrl}/chat`;
 
   constructor(
     private http: HttpClient

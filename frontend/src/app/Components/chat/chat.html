@@ -269,11 +269,11 @@
         (click)="selectConversation(conversation)"
       >
 
-        <div class="conversation-avatar">
-          {{
-            getConversationAvatar(conversation)
-          }}
-        </div>
+        <app-avatar
+          class="conversation-avatar"
+          [profileImage]="getConversationAvatarImage(conversation)"
+          [name]="getConversationTitle(conversation)"
+          size="md"></app-avatar>
 
         <div class="conversation-content">
 
@@ -433,13 +433,11 @@
           ←
         </button>
 
-        <div class="chat-header-avatar">
-          {{
-            getConversationAvatar(
-              selectedConversation
-            )
-          }}
-        </div>
+        <app-avatar
+          class="chat-header-avatar"
+          [profileImage]="getConversationAvatarImage(selectedConversation)"
+          [name]="getConversationTitle(selectedConversation)"
+          size="md"></app-avatar>
 
         <div class="chat-header-info">
 
@@ -837,38 +835,61 @@
 
       <!-- =====================================================
            MESSAGE INPUT
+           Replaced by a notice when the maintenance job that
+           owns this conversation is finished.
       ====================================================== -->
 
-      <form
-        class="message-input-container"
-        (ngSubmit)="sendMessage()"
+      <div
+        class="chat-locked-banner"
+        *ngIf="isConversationLocked; else composer"
       >
 
-        <textarea
-          [(ngModel)]="newMessage"
-          name="message"
-          placeholder="Write a message..."
-          rows="1"
-          [disabled]="sendingMessage"
-          (keydown)="handleMessageKeydown($event)"
-        ></textarea>
+        <span class="material-symbols-outlined">lock</span>
 
-        <button
-          type="submit"
-          class="send-button"
-          [disabled]="
-            !newMessage.trim() ||
-            sendingMessage
-          "
+        <div>
+          <strong>This conversation is closed</strong>
+          <p>
+            The maintenance job has been resolved, so no further
+            messages can be sent.
+          </p>
+        </div>
+
+      </div>
+
+      <ng-template #composer>
+
+        <form
+          class="message-input-container"
+          (ngSubmit)="sendMessage()"
         >
-          {{
-            sendingMessage
-              ? 'Sending...'
-              : 'Send'
-          }}
-        </button>
 
-      </form>
+          <textarea
+            [(ngModel)]="newMessage"
+            name="message"
+            placeholder="Write a message..."
+            rows="1"
+            [disabled]="sendingMessage"
+            (keydown)="handleMessageKeydown($event)"
+          ></textarea>
+
+          <button
+            type="submit"
+            class="send-button"
+            [disabled]="
+              !newMessage.trim() ||
+              sendingMessage
+            "
+          >
+            {{
+              sendingMessage
+                ? 'Sending...'
+                : 'Send'
+            }}
+          </button>
+
+        </form>
+
+      </ng-template>
 
     </div>
 

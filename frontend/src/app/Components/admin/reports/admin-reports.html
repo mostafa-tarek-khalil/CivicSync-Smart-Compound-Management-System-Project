@@ -1,0 +1,212 @@
+<div class="admin-page">
+
+  <!-- ------------------------------------------------------------- Header -->
+  <header class="page-header report-header">
+    <div class="header-copy">
+      <span class="eyebrow">ANALYTICS</span>
+      <h1>Reports &amp; Analytics</h1>
+      <p>Compound-wide metrics, breakdowns and downloadable reporting.</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-ghost" type="button" (click)="printReport()" [disabled]="!reports">
+        <span class="material-symbols-outlined">print</span>
+        Print / PDF
+      </button>
+
+      <button class="btn-primary" type="button" (click)="downloadFullReport()" [disabled]="exporting">
+        <span class="material-symbols-outlined">
+          {{ exporting ? 'hourglass_top' : 'download' }}
+        </span>
+        {{ exporting ? 'Preparing…' : 'Download full report' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- -------------------------------------------------------------- Errors -->
+  <div class="alert error" *ngIf="errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+
+  <!-- ------------------------------------------------------------- Loading -->
+  <div class="state-box" *ngIf="loading">
+    <span class="material-symbols-outlined spinning">hourglass_top</span>
+    <p>Crunching the numbers…</p>
+  </div>
+
+  <ng-container *ngIf="!loading && reports">
+
+    <!-- ------------------------------------------------------- Summary row -->
+    <section class="stat-row">
+      <article class="stat-card">
+        <span class="stat-icon blue"><span class="material-symbols-outlined">group</span></span>
+        <div>
+          <span class="stat-label">Total users</span>
+          <strong class="stat-value">{{ totalUsers }}</strong>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon green"><span class="material-symbols-outlined">home_work</span></span>
+        <div>
+          <span class="stat-label">Occupancy rate</span>
+          <strong class="stat-value">{{ occupancyRate }}%</strong>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon amber"><span class="material-symbols-outlined">handyman</span></span>
+        <div>
+          <span class="stat-label">Tickets tracked</span>
+          <strong class="stat-value">{{ totalTickets }}</strong>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-icon blue"><span class="material-symbols-outlined">badge</span></span>
+        <div>
+          <span class="stat-label">Total visits</span>
+          <strong class="stat-value">{{ totalVisits }}</strong>
+        </div>
+      </article>
+    </section>
+
+    <!-- --------------------------------------------- Users & occupancy row -->
+    <div class="grid-2">
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">pie_chart</span>
+          <div>
+            <h3>Users by role</h3>
+            <p>Every account on the compound, split by role.</p>
+          </div>
+        </div>
+
+        <app-chart type="donut" [slices]="usersByRoleSlices" [height]="180"></app-chart>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">home_work</span>
+          <div>
+            <h3>Occupancy rate</h3>
+            <p>{{ occupancyRate }}% of all units are occupied.</p>
+          </div>
+        </div>
+
+        <app-chart type="donut" [slices]="occupancySlices" [height]="180"></app-chart>
+      </section>
+
+    </div>
+
+    <!-- ------------------------------------------------------ Tickets row -->
+    <div class="grid-2">
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">bar_chart</span>
+          <div>
+            <h3>Tickets by status</h3>
+            <p>Where maintenance requests currently sit.</p>
+          </div>
+        </div>
+
+        <app-chart type="bars" [slices]="ticketStatusSlices" [height]="210"></app-chart>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">priority_high</span>
+          <div>
+            <h3>Tickets by priority</h3>
+            <p>How urgent the open workload is.</p>
+          </div>
+        </div>
+
+        <app-chart type="bars" [slices]="ticketPrioritySlices" [height]="210"></app-chart>
+      </section>
+
+    </div>
+
+    <!-- ---------------------------------------------- Revenue & invoices -->
+    <div class="grid-2">
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">payments</span>
+          <div>
+            <h3>Revenue summary</h3>
+            <p>Billing position across all issued invoices.</p>
+          </div>
+        </div>
+
+        <div class="revenue-grid" *ngIf="revenue">
+          <div class="revenue-box">
+            <span>Total billed</span>
+            <strong>{{ money(revenue.totalBilled) }}</strong>
+          </div>
+
+          <div class="revenue-box success">
+            <span>Paid</span>
+            <strong>{{ money(revenue.paid) }}</strong>
+          </div>
+
+          <div class="revenue-box warning">
+            <span>Outstanding</span>
+            <strong>{{ money(revenue.outstanding) }}</strong>
+          </div>
+
+          <div class="revenue-box danger">
+            <span>Overdue</span>
+            <strong>{{ money(revenue.overdue) }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <div>
+            <h3>Invoices by status</h3>
+            <p>Distribution of the billing ledger.</p>
+          </div>
+        </div>
+
+        <app-chart type="donut" [slices]="invoiceStatusSlices" [height]="180"></app-chart>
+      </section>
+
+    </div>
+
+    <!-- -------------------------------------------------------- Visit logs -->
+    <section class="card">
+      <div class="card-heading">
+        <span class="material-symbols-outlined">badge</span>
+        <div>
+          <h3>Visit logs over time</h3>
+          <p>
+            Visitor traffic for the last 30 days
+            ({{ totalVisits }} visits logged in total).
+          </p>
+        </div>
+      </div>
+
+      <app-chart type="line" [points]="visitsOverTime" [height]="200"></app-chart>
+    </section>
+
+    <section class="card">
+      <div class="card-heading">
+        <span class="material-symbols-outlined">list_alt</span>
+        <div>
+          <h3>Visits by status</h3>
+          <p>Current and historical visitor pass states.</p>
+        </div>
+      </div>
+
+      <app-chart type="bars" [slices]="visitStatusSlices" [height]="200"></app-chart>
+    </section>
+
+  </ng-container>
+
+</div>

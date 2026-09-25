@@ -1,0 +1,346 @@
+
+<div class="scanner-page">
+
+  <!-- HEADER -->
+  <section class="page-header">
+
+    <div class="back-area">
+      <button class="back-button" (click)="goBack()">
+        <span class="material-symbols-outlined">
+          arrow_back
+        </span>
+      </button>
+
+      <div>
+        <div class="eyebrow">
+          <span class="material-symbols-outlined">shield</span>
+          SECURITY ACCESS
+        </div>
+
+        <h1>QR Scanner</h1>
+
+        <p>
+          Scan a visitor pass to verify access.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- SCANNER AREA -->
+  <section class="scanner-card">
+
+    <div class="scanner-header">
+
+      <div>
+        <span class="section-label">VISITOR PASS</span>
+
+        <h2>
+          {{
+            scanState() === 'ready'
+              ? 'Ready to Scan'
+              : scanState() === 'scanning'
+              ? 'Scanning QR Code'
+              : scanState() === 'valid'
+              ? 'QR Code Verified'
+              : scanState() === 'invalid'
+              ? 'Invalid QR Code'
+              : scanState() === 'expired'
+              ? 'Expired QR Code'
+              : 'QR Code Already Used'
+          }}
+        </h2>
+      </div>
+
+      <div
+        class="state-badge"
+        [class.ready]="scanState() === 'ready'"
+        [class.scanning]="scanState() === 'scanning'"
+        [class.valid]="scanState() === 'valid'"
+        [class.invalid]="scanState() === 'invalid'"
+        [class.expired]="scanState() === 'expired'"
+        [class.used]="scanState() === 'used'"
+      >
+        <span class="status-dot"></span>
+
+        {{
+          scanState() === 'ready'
+            ? 'Ready'
+            : scanState() === 'scanning'
+            ? 'Scanning'
+            : scanState() === 'valid'
+            ? 'Valid QR'
+            : scanState() === 'invalid'
+            ? 'Invalid QR'
+            : scanState() === 'expired'
+            ? 'Expired QR'
+            : 'Already Used'
+        }}
+      </div>
+
+    </div>
+
+
+    <!-- CAMERA / SCAN FRAME -->
+    <div
+      class="scanner-frame"
+      [class.scanning]="scanState() === 'scanning'"
+      [class.valid]="scanState() === 'valid'"
+      [class.invalid]="
+        scanState() === 'invalid' ||
+        scanState() === 'expired' ||
+        scanState() === 'used'
+      "
+    >
+
+      <div class="corner top-left"></div>
+      <div class="corner top-right"></div>
+      <div class="corner bottom-left"></div>
+      <div class="corner bottom-right"></div>
+
+
+      <video #cameraVideo class="camera-preview" *ngIf="scanState() === 'scanning'" autoplay playsinline></video>
+
+
+      <!-- SCANNING LINE -->
+      <div
+        class="scan-line"
+        *ngIf="scanState() === 'scanning'"
+      ></div>
+
+
+      <!-- VALID ICON -->
+      <div
+        class="result-icon valid-result"
+        *ngIf="scanState() === 'valid'"
+      >
+        <span class="material-symbols-outlined">
+          check_circle
+        </span>
+      </div>
+
+
+      <!-- ERROR ICON -->
+      <div
+        class="result-icon error-result"
+        *ngIf="
+          scanState() === 'invalid' ||
+          scanState() === 'expired' ||
+          scanState() === 'used'
+        "
+      >
+        <span class="material-symbols-outlined">
+          {{
+            scanState() === 'used'
+              ? 'history'
+              : scanState() === 'expired'
+              ? 'schedule'
+              : 'cancel'
+          }}
+        </span>
+      </div>
+
+
+      <!-- FRAME MESSAGE -->
+      <div class="frame-message">
+
+        <span *ngIf="scanState() === 'ready'">
+          Position the visitor QR code inside the frame
+        </span>
+
+        <span *ngIf="scanState() === 'scanning'">
+          Verifying visitor pass...
+        </span>
+
+        <span *ngIf="scanState() === 'valid'">
+          Visitor pass successfully verified
+        </span>
+
+        <span *ngIf="scanState() === 'invalid'">
+          This QR code could not be verified
+        </span>
+
+        <span *ngIf="scanState() === 'expired'">
+          This visitor pass has expired
+        </span>
+
+        <span *ngIf="scanState() === 'used'">
+          This visitor pass has already been used
+        </span>
+
+      </div>
+
+    </div>
+
+    <p class="scanner-error" *ngIf="errorMessage" role="alert">{{ errorMessage() }}</p>
+    <div class="manual-entry">
+      <label for="passCode">Or enter the visitor pass code</label>
+      <div>
+        <input
+          id="passCode"
+          [ngModel]="manualQrToken()"
+          (ngModelChange)="setManualToken($event)"
+          [disabled]="verifying()"
+          autocomplete="off"
+          placeholder="Paste QR pass code" />
+        <button
+          type="button"
+          (click)="verifyToken()"
+          [disabled]="!manualQrToken().trim() || scanState() === 'scanning'">
+          {{ verifying() ? 'Verifying…' : 'Verify' }}
+        </button>
+      </div>
+    </div>
+
+
+    <!-- VALID RESULT -->
+    <div
+      class="result-card success-card"
+      *ngIf="scanState() === 'valid'"
+    >
+
+      <div class="result-card-icon">
+        <span class="material-symbols-outlined">
+          verified
+        </span>
+      </div>
+
+      <div class="result-card-content">
+
+        <span class="result-label">
+          VERIFIED VISITOR
+        </span>
+
+        <h3>{{ visitor().name }}</h3>
+
+        <p>
+          Visit for {{ visitor().resident }}
+          · {{ visitor().time }}
+        </p>
+
+      </div>
+
+      <button
+        class="result-button"
+        (click)="viewVisitorDetails()"
+      >
+        View Details
+
+        <span class="material-symbols-outlined">
+          arrow_forward
+        </span>
+      </button>
+
+    </div>
+
+
+    <!-- ERROR RESULT -->
+    <div
+      class="result-card error-card"
+      *ngIf="
+        scanState() === 'invalid' ||
+        scanState() === 'expired' ||
+        scanState() === 'used'
+      "
+    >
+
+      <div class="result-card-icon">
+        <span class="material-symbols-outlined">
+          {{
+            scanState() === 'used'
+              ? 'history'
+              : scanState() === 'expired'
+              ? 'event_busy'
+              : 'error'
+          }}
+        </span>
+      </div>
+
+      <div class="result-card-content">
+
+        <span class="result-label">
+          ACCESS VERIFICATION
+        </span>
+
+        <h3>
+          {{
+            scanState() === 'invalid'
+              ? 'Unable to verify pass'
+              : scanState() === 'expired'
+              ? 'Pass has expired'
+              : 'Pass already used'
+          }}
+        </h3>
+
+        <p>
+          {{
+            scanState() === 'invalid'
+              ? 'Please check the QR code and try again.'
+              : scanState() === 'expired'
+              ? 'This visitor pass is no longer valid.'
+              : 'This pass has already been used for entry.'
+          }}
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="scanner-actions">
+
+      <button
+        class="secondary-button"
+        *ngIf="
+          scanState() !== 'ready' &&
+          scanState() !== 'scanning'
+        "
+        (click)="resetScanner()"
+      >
+        <span class="material-symbols-outlined">
+          refresh
+        </span>
+
+        Scan Another
+      </button>
+
+
+      <button
+        class="primary-button"
+        *ngIf="scanState() === 'ready'"
+        (click)="startScan()"
+      >
+        <span class="material-symbols-outlined">
+          qr_code_scanner
+        </span>
+
+        Scan QR Code
+      </button>
+
+
+    </div>
+
+  </section>
+
+
+  <!-- SECURITY NOTE -->
+  <section class="security-note">
+
+    <span class="material-symbols-outlined">
+      info
+    </span>
+
+    <div>
+      <strong>Access verification</strong>
+
+      <p>
+        Only valid visitor passes can continue to visitor details
+        and access processing.
+      </p>
+    </div>
+
+  </section>
+
+</div>

@@ -1,0 +1,363 @@
+<div class="dashboard-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <div class="mb-4">
+
+    <h2 class="page-title">
+      Technician Dashboard
+    </h2>
+
+    <p class="page-subtitle">
+      Welcome back, Technician
+    </p>
+
+  </div>
+
+
+  @if (loading) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border text-primary"></div>
+
+      <p class="mt-3 text-muted">
+        Loading dashboard...
+      </p>
+
+    </div>
+
+  } @else if (errorMessage) {
+
+    <div class="text-center py-5">
+
+      <p class="text-danger mb-3">{{ errorMessage }}</p>
+
+      <button class="btn btn-primary" type="button" (click)="loadDashboard()">
+        Retry
+      </button>
+
+    </div>
+
+  } @else {
+
+    <!-- Statistics -->
+
+    <div class="row g-3 g-lg-4 mb-4">
+
+      <div class="col-6 col-xl-3">
+
+        <div class="stat-card">
+
+          <div class="stat-icon">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+
+          <div>
+            <span>Available</span>
+            <strong>{{ availableTickets.length }}</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-6 col-xl-3">
+
+        <div class="stat-card">
+
+          <div class="stat-icon">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+
+          <div>
+            <span>Assigned</span>
+            <strong>{{ assignedTickets.length }}</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-6 col-xl-3">
+
+        <div class="stat-card">
+
+          <div class="stat-icon">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+
+          <div>
+            <span>My Offers</span>
+            <strong>{{ offers.length }}</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-6 col-xl-3">
+
+        <div class="stat-card">
+
+          <div class="stat-icon">
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <div>
+            <span>Rating</span>
+            <strong>{{ averageRating }}</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Requests + Jobs -->
+
+    <div class="row g-4 mb-4">
+
+      <div class="col-12 col-xl-6">
+
+        <div class="dashboard-card h-100">
+
+          <div class="section-header">
+
+            <div>
+              <h5>Available Requests</h5>
+              <p>Requests you can offer on.</p>
+            </div>
+
+            <a
+              routerLink="/technician/available-requests"
+              class="view-link">
+
+              View All
+
+            </a>
+
+          </div>
+
+
+          @for (
+            ticket of availableTickets.slice(0, 3);
+            track ticket._id
+          ) {
+
+            <div class="ticket-row">
+
+              <div class="ticket-icon">
+                <i class="fa-solid fa-wrench"></i>
+              </div>
+
+              <div class="ticket-info">
+
+                <strong>
+                  {{ ticket.title }}
+                </strong>
+
+                <small>
+                  {{ ticket.category }}
+                </small>
+
+              </div>
+
+              <span
+                class="priority"
+                [class.high]="ticket.priority === 'HIGH'"
+                [class.urgent]="ticket.priority === 'URGENT'">
+
+                {{ ticket.priority }}
+
+              </span>
+
+            </div>
+
+          } @empty {
+
+            <div class="empty-small">
+              No available requests.
+            </div>
+
+          }
+
+
+          <a
+            routerLink="/technician/available-requests"
+            class="btn btn-primary w-100 mt-3">
+
+            View Requests
+
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-12 col-xl-6">
+
+        <div class="dashboard-card h-100">
+
+          <div class="section-header">
+
+            <div>
+              <h5>Assigned Jobs</h5>
+              <p>Your current maintenance jobs.</p>
+            </div>
+
+            <a
+              routerLink="/technician/assigned-jobs"
+              class="view-link">
+
+              View All
+
+            </a>
+
+          </div>
+
+
+          @for (
+            ticket of assignedTickets.slice(0, 3);
+            track ticket._id
+          ) {
+
+            <div class="ticket-row">
+
+              <div class="ticket-icon">
+                <i class="fa-solid fa-briefcase"></i>
+              </div>
+
+              <div class="ticket-info">
+
+                <strong>
+                  {{ ticket.title }}
+                </strong>
+
+                <small>
+                  {{ ticket.category }}
+                </small>
+
+              </div>
+
+              <span class="status">
+                {{ ticket.status }}
+              </span>
+
+            </div>
+
+          } @empty {
+
+            <div class="empty-small">
+              No assigned jobs.
+            </div>
+
+          }
+
+
+          <a
+            routerLink="/technician/assigned-jobs"
+            class="btn btn-primary w-100 mt-3">
+
+            View Jobs
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Reviews -->
+
+    <div class="dashboard-card">
+
+      <div class="section-header">
+
+        <div>
+          <h5>Recent Reviews</h5>
+          <p>Feedback from residents.</p>
+        </div>
+
+        <a
+          routerLink="/technician/reviews"
+          class="view-link">
+
+          View All
+
+        </a>
+
+      </div>
+
+
+      @for (
+        review of reviews.slice(0, 3);
+        track review._id
+      ) {
+
+        <div class="review-row">
+
+          <div class="avatar">
+
+            {{ getResidentName(review).charAt(0) }}
+
+          </div>
+
+          <div class="review-content">
+
+            <div class="review-top">
+
+              <strong>
+                {{ getResidentName(review) }}
+              </strong>
+
+              <div class="stars">
+
+                @for (
+                  star of getStars(review.rating);
+                  track $index
+                ) {
+
+                  <i
+                    class="fa-star"
+                    [class.fa-solid]="star === 'full'"
+                    [class.fa-regular]="star === 'empty'">
+                  </i>
+
+                }
+
+              </div>
+
+            </div>
+
+            @if (review.comment) {
+
+              <p>
+                "{{ review.comment }}"
+              </p>
+
+            }
+
+          </div>
+
+        </div>
+
+      } @empty {
+
+        <div class="empty-small">
+          No reviews yet.
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+</div>

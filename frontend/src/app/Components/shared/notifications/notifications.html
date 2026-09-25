@@ -1,0 +1,176 @@
+<div class="notifications-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+
+    <div>
+      <button class="back-btn" type="button" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back
+      </button>
+
+      <span class="eyebrow">COMMUNICATIONS</span>
+
+      <h1>Notifications</h1>
+
+      <p>
+        Stay updated with the latest activity in your compound.
+      </p>
+    </div>
+
+    <button
+      class="mark-all-btn"
+      (click)="markAllAsRead()">
+      Mark all as read
+    </button>
+
+  </div>
+
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+
+    <div class="summary-card">
+
+      <div class="summary-icon">
+        <span class="material-symbols-outlined">notifications</span>
+      </div>
+
+      <div>
+        <p>Total Notifications</p>
+        <h2>{{ notifications.length }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-icon">
+        <span class="material-symbols-outlined">mark_email_unread</span>
+      </div>
+
+      <div>
+        <p>Unread Notifications</p>
+        <h2>{{ unreadCount }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-icon">
+        <span class="material-symbols-outlined">drafts</span>
+      </div>
+
+      <div>
+        <p>Read Notifications</p>
+        <h2>{{ readCount }}</h2>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+
+    <div class="filters">
+
+      <button
+        [class.active]="activeFilter === 'all'"
+        (click)="setFilter('all')">
+        All Notifications
+      </button>
+
+      <button
+        [class.active]="activeFilter === 'unread'"
+        (click)="setFilter('unread')">
+        Unread
+      </button>
+
+    </div>
+
+    <div class="filter-info">
+      {{ filteredNotifications.length }} notifications
+    </div>
+
+  </div>
+
+
+  <!-- NOTIFICATIONS -->
+  <div class="notification-list">
+
+    <div
+      *ngFor="let notification of filteredNotifications"
+      class="notification-card"
+      [class.unread]="!notification.read"
+      [class.read]="notification.read"
+      (click)="openNotification(notification)"
+    >
+
+      <!-- استبدال الإيموجي بأسلوب Dynamic Icon إذا كانت الدالة تُرجع اسم أيقونة Material -->
+      <div class="notification-icon">
+        <span class="material-symbols-outlined">{{ notification.icon || 'notifications' }}</span>
+      </div>
+
+
+      <div class="notification-content">
+
+        <div class="notification-top">
+
+          <div>
+
+            <span class="notification-type">
+              {{ notification.type }}
+            </span>
+
+            <h3>
+              {{ notification.title }}
+            </h3>
+
+          </div>
+
+          <span
+            *ngIf="!notification.read"
+            class="unread-dot">
+          </span>
+
+        </div>
+
+
+        <p>
+          {{ notification.message }}
+        </p>
+
+        <span class="notification-time">
+          {{ notification.time }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- EMPTY STATE -->
+    <div
+      *ngIf="filteredNotifications.length === 0"
+      class="empty-state">
+
+      <div class="empty-icon">
+        <span class="material-symbols-outlined">notifications_off</span>
+      </div>
+
+      <h3>No notifications found</h3>
+
+      <p>
+        There are no notifications matching your current filter.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>

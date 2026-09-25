@@ -39,12 +39,15 @@ const getResidentTickets = async (req, res) => {
 
 const getTicketDetails = async (req, res) => {
     try {
-        const ticket = await ticketService.getTicketDetails(
+        const result = await ticketService.getTicketDetails(
             req.params.id,
             req.user.userId
         );
 
-        res.status(200).json({ ticket });
+        res.status(200).json({
+            ticket: result.ticket,
+            review: result.review || null,
+        });
     } catch (error) {
         res.status(error.statusCode || 500).json({
             message: error.message || "Failed to get ticket",

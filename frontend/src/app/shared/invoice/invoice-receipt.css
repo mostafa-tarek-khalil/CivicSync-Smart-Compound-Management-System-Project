@@ -1,0 +1,701 @@
+/*
+ * Invoice receipt styling.
+ *
+ * Design goals (Fawry-like, not a copy): a clear issuer header, a prominent
+ * document number, an unmistakable status stamp, a tight two-column line-item
+ * table, and a monospace reference strip at the bottom. The palette reuses the
+ * app's existing blue (#315b8f) so the receipt belongs to this product.
+ */
+
+:host {
+  display: block;
+}
+
+.receipt {
+  background: #ffffff;
+  color: #17253d;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 760px;
+  margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(20, 43, 70, 0.07);
+  font-size: 14px;
+}
+
+/* ============================ Header ============================ */
+
+.receipt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.4rem 1.6rem;
+  background: #315b8f;
+  color: #ffffff;
+}
+
+.issuer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.issuer-mark {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.issuer-mark span {
+  display: block;
+  width: 4px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.issuer-mark span:nth-child(1) {
+  height: 12px;
+}
+
+.issuer-mark span:nth-child(2) {
+  height: 19px;
+}
+
+.issuer-mark span:nth-child(3) {
+  height: 15px;
+}
+
+.issuer-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.issuer-text strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.issuer-text small {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.receipt-head-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: end;
+  gap: 0.15rem;
+}
+
+.doc-type {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.doc-number {
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ============================ Status stamp ============================ */
+
+.receipt-stamp {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 1.6rem;
+  border-bottom: 1px solid #e8eef6;
+}
+
+.stamp-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+}
+
+.stamp-note {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.receipt-stamp.status-paid .stamp-label {
+  background: rgba(25, 135, 84, 0.12);
+  color: #198754;
+}
+
+.receipt-stamp.status-paid {
+  background: rgba(25, 135, 84, 0.05);
+}
+
+.receipt-stamp.status-submitted .stamp-label {
+  background: rgba(49, 91, 143, 0.12);
+  color: #315b8f;
+}
+
+.receipt-stamp.status-submitted {
+  background: rgba(49, 91, 143, 0.05);
+}
+
+.receipt-stamp.status-overdue .stamp-label {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+.receipt-stamp.status-overdue {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.receipt-stamp.status-cancelled .stamp-label {
+  background: rgba(100, 116, 139, 0.16);
+  color: #475569;
+}
+
+.receipt-stamp.status-cancelled {
+  background: rgba(100, 116, 139, 0.06);
+}
+
+.receipt-stamp.status-pending .stamp-label {
+  background: rgba(234, 179, 8, 0.16);
+  color: #a16207;
+}
+
+.receipt-stamp.status-pending {
+  background: rgba(234, 179, 8, 0.06);
+}
+
+/* ============================ Billed to ============================ */
+
+.receipt-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  padding: 1.2rem 1.6rem 0.4rem;
+}
+
+.split-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.block-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8290a5;
+}
+
+.block-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #17253d;
+  word-break: break-word;
+}
+
+.block-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+  word-break: break-word;
+}
+
+/* ============================ Line items ============================ */
+
+.receipt-table {
+  width: calc(100% - 3.2rem);
+  margin: 1.1rem 1.6rem 0;
+  border-collapse: collapse;
+}
+
+.receipt-table thead th {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8290a5;
+  text-align: start;
+  padding: 0 0 0.5rem;
+  border-bottom: 1px solid #dce4f0;
+}
+
+.receipt-table th.col-amount,
+.receipt-table td.col-amount {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.receipt-table tbody td {
+  padding: 0.85rem 0;
+  vertical-align: top;
+  border-bottom: 1px solid #eef2f8;
+}
+
+.receipt-table tbody td.col-desc strong {
+  display: block;
+  font-weight: 600;
+  color: #17253d;
+}
+
+.row-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.receipt-table tfoot td {
+  padding: 0.6rem 0;
+}
+
+.total-row td {
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: #17253d;
+  border-top: 2px solid #315b8f;
+}
+
+.total-row td.col-desc {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #315b8f;
+}
+
+.settled-row td {
+  color: #475569;
+  font-size: 0.88rem;
+  padding-top: 0.25rem;
+}
+
+/* ============================ Dates ============================ */
+
+.receipt-dates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.85rem;
+  padding: 1.1rem 1.6rem;
+  border-top: 1px solid #eef2f8;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.date-cell strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ============================ Reference strip ============================ */
+
+.receipt-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.1rem 1.6rem 1.3rem;
+  border-top: 1px dashed #dce4f0;
+  background: #f8f9ff;
+}
+
+.ref-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ref-code {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 34px;
+}
+
+.ref-code span {
+  display: block;
+  height: 100%;
+  background: #17253d;
+}
+
+.ref-text {
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  color: #475569;
+}
+
+.foot-note {
+  text-align: end;
+}
+
+.foot-note p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #8290a5;
+}
+
+/* ============================ Actions ============================ */
+
+.receipt-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.6rem 1.3rem;
+  border-top: 1px solid #eef2f8;
+}
+
+.btn-print,
+.btn-ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.05rem;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #315b8f;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-print {
+  background: #315b8f;
+  color: #ffffff;
+}
+
+.btn-print:hover {
+  background: #1d3f68;
+  border-color: #1d3f68;
+}
+
+.btn-ticket {
+  background: #ffffff;
+  color: #315b8f;
+}
+
+.btn-ticket:hover {
+  background: #eef3fa;
+}
+
+.btn-print .material-symbols-outlined,
+.btn-ticket .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ============================ Dark mode ============================ */
+
+:host-context(html.dark-mode) .receipt {
+  background: #131d2c;
+  border-color: #29394c;
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .block-value,
+:host-context(html.dark-mode) .receipt-table tbody td.col-desc strong,
+:host-context(html.dark-mode) .total-row td,
+:host-context(html.dark-mode) .date-cell strong {
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .receipt-table thead th,
+:host-context(html.dark-mode) .block-label {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .receipt-table thead th,
+:host-context(html.dark-mode) .receipt-table tbody td,
+:host-context(html.dark-mode) .receipt-dates,
+:host-context(html.dark-mode) .receipt-stamp,
+:host-context(html.dark-mode) .receipt-actions {
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .receipt-foot {
+  background: #111c2e;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .ref-code span {
+  background: #cbd5e1;
+}
+
+:host-context(html.dark-mode) .ref-text,
+:host-context(html.dark-mode) .block-sub,
+:host-context(html.dark-mode) .row-note,
+:host-context(html.dark-mode) .stamp-note,
+:host-context(html.dark-mode) .settled-row td {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .btn-ticket {
+  background: #16233a;
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .btn-ticket:hover {
+  background: #1e2f47;
+}
+
+/* ============================ Print ============================ */
+
+/*
+ * The global rules in styles.css already collapse the page to
+ * `.invoice-print-area`. These only drop the on-screen chrome so the printed
+ * sheet is a clean document.
+ */
+@media print {
+  .receipt {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    margin: 0;
+  }
+
+  .receipt-actions,
+  .no-print {
+    display: none !important;
+  }
+
+  .receipt-head {
+    /* Keep the brand band even on monochrome printers. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .receipt-stamp.status-paid .stamp-label,
+  .receipt-stamp.status-submitted .stamp-label,
+  .receipt-stamp.status-overdue .stamp-label,
+  .receipt-stamp.status-cancelled .stamp-label,
+  .receipt-stamp.status-pending .stamp-label {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .receipt-foot {
+    background: transparent;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .receipt-head,
+  .receipt-split,
+  .receipt-dates,
+  .receipt-foot,
+  .receipt-actions {
+    padding-inline: 1rem;
+  }
+
+  .receipt-table {
+    width: calc(100% - 2rem);
+    margin-inline: 1rem;
+  }
+
+  .receipt-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .receipt-head-meta {
+    align-items: flex-start;
+    text-align: start;
+  }
+
+  .foot-note {
+    text-align: start;
+  }
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css).
+   ========================================================= */
+
+/* The receipt is a 3D document — it lifts off the page and tilts. */
+.receipt {
+  transform-style: preserve-3d;
+  perspective: 1400px;
+  animation: cs-receipt-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease;
+}
+
+.receipt:hover {
+  transform: translateY(-6px) rotateX(3deg);
+  box-shadow: 0 26px 55px rgba(15, 23, 42, 0.16);
+}
+
+@keyframes cs-receipt-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) rotateX(-10deg) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+/* Header block settles first, then the body rows follow. */
+.receipt-head {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.issuer-mark {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.receipt-head-meta {
+  animation: cs-fade-in 0.45s ease 0.24s both;
+}
+
+.receipt-stamp {
+  animation: cs-stamp-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+/* The status stamp presses onto the page. */
+@keyframes cs-stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.6) rotate(-12deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+.receipt-split {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+.split-block {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.split-block:nth-child(1) { animation-delay: 0.32s; }
+.split-block:nth-child(2) { animation-delay: 0.38s; }
+
+/* Line items cascade down the receipt. */
+.receipt-table tbody tr {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.receipt-table tbody tr:nth-child(1) { animation-delay: 0.36s; }
+.receipt-table tbody tr:nth-child(2) { animation-delay: 0.41s; }
+.receipt-table tbody tr:nth-child(3) { animation-delay: 0.46s; }
+.receipt-table tbody tr:nth-child(4) { animation-delay: 0.51s; }
+.receipt-table tbody tr:nth-child(5) { animation-delay: 0.56s; }
+.receipt-table tbody tr:nth-child(6) { animation-delay: 0.61s; }
+.receipt-table tbody tr:nth-child(7) { animation-delay: 0.66s; }
+.receipt-table tbody tr:nth-child(8) { animation-delay: 0.71s; }
+
+.receipt-dates {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.date-cell {
+  animation: cs-fade-in 0.42s ease both;
+}
+
+.date-cell:nth-child(1) { animation-delay: 0.54s; }
+.date-cell:nth-child(2) { animation-delay: 0.6s; }
+
+.receipt-foot {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.62s both;
+}
+
+.ref-code {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ref-code:hover {
+  transform: scale(1.05);
+}
+
+.receipt-actions {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.68s both;
+}
+
+.btn-print,
+.btn-ticket {
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.btn-print:hover,
+.btn-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 43, 70, 0.18);
+}
+
+.btn-print:active,
+.btn-ticket:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Printing must never animate — force the static, final state. */
+@media print {
+  .receipt,
+  .receipt-head,
+  .issuer-mark,
+  .receipt-head-meta,
+  .receipt-stamp,
+  .receipt-split,
+  .split-block,
+  .receipt-table tbody tr,
+  .receipt-dates,
+  .date-cell,
+  .receipt-foot,
+  .receipt-actions {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt,
+  .receipt-head,
+  .issuer-mark,
+  .receipt-head-meta,
+  .receipt-stamp,
+  .receipt-split,
+  .split-block,
+  .receipt-table tbody tr,
+  .receipt-dates,
+  .date-cell,
+  .receipt-foot,
+  .receipt-actions {
+    animation: none;
+  }
+
+  .receipt:hover,
+  .btn-print:hover,
+  .btn-ticket:hover {
+    transform: none;
+  }
+}

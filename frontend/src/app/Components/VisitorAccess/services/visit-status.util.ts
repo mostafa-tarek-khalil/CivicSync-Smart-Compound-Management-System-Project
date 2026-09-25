@@ -16,6 +16,7 @@ export type SecurityViewStatus =
 export function toSecurityStatus(status: string): SecurityViewStatus {
   switch (status) {
     case 'QR_GENERATED':
+    case 'QR_SCANNED':
       return 'Approved';
     case 'APPROVED':
       return 'Approved';
@@ -36,6 +37,22 @@ export function toSecurityStatus(status: string): SecurityViewStatus {
 /** True when a visit row should be considered part of the access history. */
 export function isHistoricalVisit(visit: VisitRecord): boolean {
   return visit.status === 'CHECKED_IN' || visit.status === 'CHECKED_OUT' || visit.status === 'EXPIRED';
+}
+
+/** True when the visit is scheduled for the given day (defaults to today). */
+export function isVisitOnDay(visit: VisitRecord, day: Date = new Date()): boolean {
+  if (!visit.visitDate) {
+    return false;
+  }
+  const visitDate = new Date(visit.visitDate);
+  if (Number.isNaN(visitDate.getTime())) {
+    return false;
+  }
+  return (
+    visitDate.getFullYear() === day.getFullYear() &&
+    visitDate.getMonth() === day.getMonth() &&
+    visitDate.getDate() === day.getDate()
+  );
 }
 
 /** Format an ISO date + HH:mm start time for the `security-visits` cards. */

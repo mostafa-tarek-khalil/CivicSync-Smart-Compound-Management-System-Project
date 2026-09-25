@@ -680,3 +680,212 @@
 :host-context(html.dark-mode) .role-content span {
   color: #94a3b8;
 }
+/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.background-shape {
+  animation: cs-reg-drift 16s ease-in-out infinite;
+}
+
+.shape-one {
+  animation: cs-reg-drift 20s ease-in-out infinite reverse;
+}
+
+.shape-two {
+  animation: cs-reg-drift 24s ease-in-out infinite;
+}
+
+@keyframes cs-reg-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -26px) scale(1.07);
+  }
+}
+
+/* Split layout: showcase enters left, form card enters right. */
+.register-showcase {
+  animation: cs-slide-in-left 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.register-form-section,
+.register-card {
+  animation: cs-slide-in-right 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.brand {
+  animation: cs-fade-in 0.5s ease 0.16s both;
+}
+
+.brand-icon {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* Progress steps light up one after another. */
+.step {
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.step:nth-child(1) { animation-delay: 0.3s; }
+.step:nth-child(2) { animation-delay: 0.38s; }
+.step:nth-child(3) { animation-delay: 0.46s; }
+
+.step-number {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s ease;
+}
+
+.step:hover .step-number {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.12);
+}
+
+.progress-eyebrow,
+.form-eyebrow {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.register-heading {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.showcase-footer {
+  animation: cs-fade-in 0.5s ease 0.5s both;
+}
+
+.error-message {
+  animation: cs-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes cs-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Role cards are the choice on this screen — they pop in and tilt. */
+.role-list {
+  perspective: 1200px;
+}
+
+.role-card {
+  transform-style: preserve-3d;
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.36s ease, border-color 0.25s ease;
+}
+
+.role-card:nth-child(1) { animation-delay: 0.22s; }
+.role-card:nth-child(2) { animation-delay: 0.3s; }
+.role-card:nth-child(3) { animation-delay: 0.38s; }
+
+.role-card:hover {
+  transform: translateY(-5px) rotateX(5deg) rotateY(-5deg);
+  box-shadow: 0 20px 42px rgba(20, 43, 70, 0.15);
+}
+
+.role-icon {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.role-card:hover .role-icon {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+.role-check {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.role-card:hover .role-check {
+  transform: scale(1.15);
+}
+
+.register-submit {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.44s both;
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.register-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(49, 91, 143, 0.3);
+}
+
+.register-submit:hover:not(:disabled) .submit-arrow {
+  transform: translateX(4px);
+}
+
+.submit-arrow {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.register-submit:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.back-button {
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+  transition: transform 0.22s ease, background-color 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateY(-2px);
+}
+
+.login-link,
+.security-note {
+  animation: cs-fade-in 0.45s ease 0.54s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-shape,
+  .shape-one,
+  .shape-two,
+  .register-showcase,
+  .register-form-section,
+  .register-card,
+  .brand,
+  .brand-icon,
+  .step,
+  .progress-eyebrow,
+  .form-eyebrow,
+  .register-heading,
+  .showcase-footer,
+  .error-message,
+  .role-card,
+  .register-submit,
+  .back-button,
+  .login-link,
+  .security-note {
+    animation: none;
+  }
+
+  .role-card:hover,
+  .register-submit:hover,
+  .back-button:hover {
+    transform: none;
+  }
+}

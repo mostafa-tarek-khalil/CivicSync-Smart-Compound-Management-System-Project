@@ -1,0 +1,271 @@
+
+<div class="page">
+
+  <!-- PICKER: no visit pre-selected, security chooses who to check in/out -->
+ <ng-container *ngIf="pickerMode; else visitView">
+
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">SECURITY • ACCESS CONTROL</p>
+        <h1>Check-in / Check-out</h1>
+        <p class="subtitle">
+          Choose a visitor to confirm their entry or departure.
+        </p>
+      </div>
+    </div>
+
+    <div class="error-banner" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      {{ errorMessage }}
+    </div>
+
+    <section class="picker-card">
+
+      <div class="loading-row" *ngIf="candidatesLoading">
+        <span class="material-symbols-outlined">hourglass_top</span>
+        Loading visitors…
+      </div>
+
+      <div class="empty-row" *ngIf="!candidatesLoading && candidates.length === 0">
+        <span class="material-symbols-outlined">event_available</span>
+        <h3>Nothing to check in or out</h3>
+        <p>Visitors appear here once their pass is approved and until they leave.</p>
+      </div>
+
+      <!-- Rows only render once the candidate lookup has settled, so a stale
+           list never sits underneath the loading placeholder. -->
+      <button
+        class="candidate-row"
+        type="button"
+        *ngFor="let candidate of !candidatesLoading ? candidates : []"
+        (click)="selectVisit(candidate.id)">
+
+        <div class="avatar">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+
+        <div class="candidate-main">
+          <strong>{{ candidate.visitorName }}</strong>
+          <p>Visiting {{ candidate.residentName }}</p>
+          <small>{{ candidate.visitDate }} · {{ candidate.startTime }}</small>
+        </div>
+
+        <span
+          class="action-tag"
+          [class.check-in]="candidate.action === 'in'"
+          [class.check-out]="candidate.action === 'out'">
+          <span class="material-symbols-outlined">
+            {{ candidate.action === 'in' ? 'login' : 'logout' }}
+          </span>
+          {{ candidate.action === 'in' ? 'Check in' : 'Check out' }}
+        </span>
+
+      </button>
+
+    </section>
+
+    <button class="visitors-btn" (click)="goToVisitors()">
+      <span class="material-symbols-outlined">groups</span>
+      Back to Today's Visitors
+    </button>
+
+ </ng-container>
+
+  <!-- VISIT VIEW: a specific visit is being handled -->
+ <ng-template #visitView>
+
+ <div class="page-header">
+
+    <div>
+      <button class="back-btn" (click)="changeVisitor()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Choose another visitor
+      </button>
+
+      <p class="eyebrow">SECURITY • ACCESS CONTROL</p>
+      <h1>Visit Check-in / Check-out</h1>
+      <p class="subtitle">
+        Confirm visitor entry and departure.
+      </p>
+    </div>
+
+    <div class="status-pill"
+      [class.approved]="visitStatus === 'Approved'"
+      [class.checked-in]="visitStatus === 'Checked In'"
+      [class.checked-out]="visitStatus === 'Checked Out'">
+
+      <span class="material-symbols-outlined">
+        {{ visitStatus === 'Approved'
+          ? 'pending'
+          : visitStatus === 'Checked In'
+          ? 'login'
+          : 'logout' }}
+      </span>
+
+      {{ visitStatus }}
+    </div>
+
+  </div>
+
+  <section class="visitor-summary">
+
+    <div class="error-banner" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      {{ errorMessage }}
+    </div>
+
+    <div class="avatar">
+      <span class="material-symbols-outlined">person</span>
+    </div>
+
+    <div class="visitor-main">
+      <span class="label">VISITOR</span>
+      <h2>{{ visitorName }}</h2>
+      <p>Visiting {{ residentName }} • {{ purpose }}</p>
+    </div>
+
+    <div class="summary-item">
+      <span>Visit Date</span>
+      <strong>{{ visitDate }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Start Time</span>
+      <strong>{{ startTime }}</strong>
+    </div>
+
+  </section>
+
+  <section class="timeline-card">
+
+    <div class="timeline-header">
+      <div>
+        <span class="section-label">ACCESS TIMELINE</span>
+        <h2>Visit Activity</h2>
+      </div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-item completed">
+        <div class="timeline-dot">
+          <span class="material-symbols-outlined">verified</span>
+        </div>
+
+        <div>
+          <strong>QR Pass Verified</strong>
+          <p>Visitor pass has been verified successfully.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item"
+        [class.completed]="visitStatus === 'Checked In' || visitStatus === 'Checked Out'"
+        [class.active]="visitStatus === 'Approved'">
+
+        <div class="timeline-dot">
+          <span class="material-symbols-outlined">
+            {{ visitStatus === 'Approved' ? 'radio_button_unchecked' : 'login' }}
+          </span>
+        </div>
+
+        <div>
+          <strong>Check In</strong>
+          <p>
+            {{ checkInTime
+              ? 'Checked in at ' + checkInTime
+              : 'Visitor has not checked in yet.' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item"
+        [class.completed]="visitStatus === 'Checked Out'"
+        [class.active]="visitStatus === 'Checked In'">
+
+        <div class="timeline-dot">
+          <span class="material-symbols-outlined">
+            {{ visitStatus === 'Checked Out' ? 'logout' : 'radio_button_unchecked' }}
+          </span>
+        </div>
+
+        <div>
+          <strong>Check Out</strong>
+          <p>
+            {{ checkOutTime
+              ? 'Checked out at ' + checkOutTime
+              : 'Check out will be available after entry.' }}
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="action-card">
+
+    <div>
+      <span class="section-label">SECURITY ACTION</span>
+
+      <h2>
+        {{ visitStatus === 'Approved'
+          ? 'Confirm visitor entry'
+          : visitStatus === 'Checked In'
+          ? 'Confirm visitor departure'
+          : 'Visit completed' }}
+      </h2>
+
+      <p>
+        {{
+          visitStatus === 'Approved'
+          ? 'Make sure the visitor information matches the verified pass before checking in.'
+          : visitStatus === 'Checked In'
+          ? 'Record the visitor departure when they leave the compound.'
+          : 'This visit has been completed. No further access action is required.'
+        }}
+      </p>
+    </div>
+
+    <div class="actions">
+
+      <button
+        *ngIf="visitStatus === 'Approved'"
+        class="primary-btn"
+        [disabled]="actionLoading"
+        (click)="checkIn()">
+
+        <span class="material-symbols-outlined">login</span>
+        {{ actionLoading ? 'Processing…' : 'Confirm Check In' }}
+      </button>
+
+      <button
+        *ngIf="visitStatus === 'Checked In'"
+        class="primary-btn"
+        [disabled]="actionLoading"
+        (click)="checkOut()">
+
+        <span class="material-symbols-outlined">logout</span>
+        {{ actionLoading ? 'Processing…' : 'Confirm Check Out' }}
+      </button>
+
+      <div
+        *ngIf="visitStatus === 'Checked Out'"
+        class="completed">
+
+        <span class="material-symbols-outlined">task_alt</span>
+        Access Completed
+      </div>
+
+    </div>
+
+  </section>
+
+   <button class="visitors-btn" (click)="goToVisitors()">
+      <span class="material-symbols-outlined">groups</span>
+      Back to Today's Visitors
+   </button>
+
+   </ng-template>
+
+  </div>
+

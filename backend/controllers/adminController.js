@@ -88,6 +88,35 @@ const rejectUser = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        const user = await adminService.updateUser(
+            req.params.userId,
+            req.body || {}
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                status: user.status,
+                unitId: user.unitId,
+                createdAt: user.createdAt,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 const getBuildings = async (req, res) => {
     try {
         const buildings =
@@ -246,7 +275,6 @@ const updateInvoiceStatus = async (req, res) => {
                 req.params.invoiceId,
                 req.body.status
             );
-
         res.status(200).json({
             success: true,
             message: "Invoice status updated successfully",
@@ -282,14 +310,14 @@ const getMaintenanceTickets = async (req, res) => {
 
 const getMaintenanceTicketById = async (req, res) => {
     try {
-        const ticket =
+        const details =
             await adminService.getMaintenanceTicketById(
                 req.params.ticketId
             );
 
         res.status(200).json({
             success: true,
-            data: ticket,
+            data: details,
         });
     } catch (error) {
         res.status(404).json({
@@ -395,6 +423,23 @@ const getReports = async (req, res) => {
     }
 };
 
+/** Full compound dataset for the downloadable report. */
+const getFullReport = async (req, res) => {
+    try {
+        const report = await adminService.getFullCompoundReport();
+
+        res.status(200).json({
+            success: true,
+            data: report,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 const expireStaleVisits = async (req, res) => {
     try {
         const result =
@@ -415,11 +460,32 @@ const expireStaleVisits = async (req, res) => {
 };
 
 
+const getInvoiceById = async (req, res) => {
+    try {
+        const invoice =
+            await adminService.getInvoiceById(
+                req.params.invoiceId
+            );
+
+        res.status(200).json({
+            success: true,
+            data: invoice,
+        });
+    } catch (error) {
+        res.status(error.statusCode || 400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
 module.exports = {
     getUsers,
     getUserById,
     approveUser,
     rejectUser,
+    updateUser,
     getBuildings,
     createBuilding,
     updateBuilding,
@@ -427,6 +493,7 @@ module.exports = {
     createUnit,
     updateUnit,
     getInvoices,
+    getInvoiceById,
     createInvoice,
     updateInvoiceStatus,
     getMaintenanceTickets,
@@ -436,5 +503,6 @@ module.exports = {
     getVisitById,
     getDashboard,
     getReports,
+    getFullReport,
     expireStaleVisits,
 };

@@ -1864,4 +1864,252 @@
   .theme-toggle-button {
     transition: none;
   }
+}/* =========================================================
+   LOCKED MAINTENANCE CONVERSATION
+   Replaces the composer once a job is resolved / closed.
+   ========================================================= */
+
+.chat-locked-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 12px 16px 16px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f6f7fb;
+}
+
+.chat-locked-banner .material-symbols-outlined {
+  font-size: 22px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.chat-locked-banner strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #202238;
+  margin-bottom: 3px;
+}
+
+.chat-locked-banner p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+html.dark-mode .chat-locked-banner {
+  background: #151f2d;
+  border-color: #29394c;
+}
+
+html.dark-mode .chat-locked-banner strong {
+  color: #f1f5f9;
+}
+
+html.dark-mode .chat-locked-banner p {
+  color: #94a3b8;
+}/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+/* The two chat columns assemble from their sides. */
+.conversations-panel {
+  animation: cs-slide-in-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.chat-panel {
+  animation: cs-slide-in-right 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.sidebar-header {
+  animation: cs-fade-in 0.45s ease 0.12s both;
+}
+
+.new-chat-button {
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.new-chat-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.26);
+}
+
+.new-chat-panel {
+  animation: cs-fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Conversation rows cascade into the list. */
+.conversation-item {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 0.2s ease, transform 0.22s ease;
+}
+
+.conversation-item:nth-child(1) { animation-delay: 0.14s; }
+.conversation-item:nth-child(2) { animation-delay: 0.19s; }
+.conversation-item:nth-child(3) { animation-delay: 0.24s; }
+.conversation-item:nth-child(4) { animation-delay: 0.29s; }
+.conversation-item:nth-child(5) { animation-delay: 0.34s; }
+.conversation-item:nth-child(6) { animation-delay: 0.39s; }
+.conversation-item:nth-child(7) { animation-delay: 0.44s; }
+.conversation-item:nth-child(8) { animation-delay: 0.49s; }
+
+.conversation-item:hover {
+  transform: translateX(3px);
+}
+
+.conversation-avatar,
+.chat-header-avatar,
+.member-avatar {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.conversation-item:hover .conversation-avatar {
+  transform: scale(1.08);
+}
+
+.unread-badge {
+  animation: cs-pop-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* Message bubbles rise into the thread, playing the conversation back. */
+.message-row,
+.bubble-row {
+  animation: cs-chat-bubble 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.message-row:nth-child(1),
+.bubble-row:nth-child(1) { animation-delay: 0.12s; }
+
+.message-row:nth-child(2),
+.bubble-row:nth-child(2) { animation-delay: 0.17s; }
+
+.message-row:nth-child(3),
+.bubble-row:nth-child(3) { animation-delay: 0.22s; }
+
+.message-row:nth-child(4),
+.bubble-row:nth-child(4) { animation-delay: 0.27s; }
+
+.message-row:nth-child(5),
+.bubble-row:nth-child(5) { animation-delay: 0.32s; }
+
+.message-row:nth-child(6),
+.bubble-row:nth-child(6) { animation-delay: 0.37s; }
+
+@keyframes cs-chat-bubble {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-header {
+  animation: cs-fade-in 0.45s ease 0.16s both;
+}
+
+.group-members-button,
+.theme-toggle-button {
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    background-color 0.2s ease;
+}
+
+.group-members-button:hover,
+.theme-toggle-button:hover {
+  transform: translateY(-2px);
+}
+
+.group-members-button:active,
+.theme-toggle-button:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.conversation-menu {
+  animation: cs-pop-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: top right;
+}
+
+.new-chat-user {
+  animation: cs-slide-in-left 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.new-chat-user:nth-child(1) { animation-delay: 0.04s; }
+.new-chat-user:nth-child(2) { animation-delay: 0.08s; }
+.new-chat-user:nth-child(3) { animation-delay: 0.12s; }
+.new-chat-user:nth-child(4) { animation-delay: 0.16s; }
+.new-chat-user:nth-child(5) { animation-delay: 0.2s; }
+
+.new-chat-user:hover {
+  transform: translateX(4px);
+}
+
+.conversation-skeleton {
+  animation: cs-skeleton 1.6s ease-in-out infinite;
+}
+
+@keyframes cs-skeleton {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.empty-conversations,
+.chat-empty-state,
+.new-chat-empty,
+.new-chat-loading {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.empty-new-chat-button {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.empty-new-chat-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.26);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversations-panel,
+  .chat-panel,
+  .sidebar-header,
+  .new-chat-panel,
+  .conversation-item,
+  .unread-badge,
+  .message-row,
+  .bubble-row,
+  .chat-header,
+  .conversation-menu,
+  .new-chat-user,
+  .conversation-skeleton,
+  .empty-conversations,
+  .chat-empty-state,
+  .new-chat-empty,
+  .new-chat-loading {
+    animation: none;
+  }
+
+  .conversation-item:hover,
+  .new-chat-user:hover,
+  .new-chat-button:hover,
+  .group-members-button:hover,
+  .theme-toggle-button:hover {
+    transform: none;
+  }
 }

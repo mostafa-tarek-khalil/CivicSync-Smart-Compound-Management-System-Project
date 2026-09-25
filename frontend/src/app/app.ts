@@ -1,27 +1,31 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { Topbar } from './Components/VisitorAccess/layout/topbar/topbar';
-import { AuthService } from './Services/auth-service';
 
+import { NotificationToastComponent } from './Components/shared/notification-toast/notification-toast';
+import { DialogComponent } from './shared/components/dialog/dialog';
+
+import { AuthService } from './core/services/auth.service';
+
+/**
+ * Application root.
+ *
+ * The chrome (topbar + sidebar) now belongs to AuthenticatedLayoutComponent,
+ * so the root only hosts the router outlet plus the global toast and dialog
+ * stacks.
+ */
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, Topbar],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    NotificationToastComponent,
+    DialogComponent
+  ],
+  templateUrl: './app.html'
 })
 export class App {
-  protected readonly title = signal('ecommerce');
 
   constructor(public authService: AuthService) {}
-
-  get showTopbar(): boolean {
-    const publicPaths = [
-      '/', '', '/login', '/register', '/register/role', '/register/details',
-      '/visitor-entry', '/visitor-lookup',
-      '/visitor-request', '/otp-verification', '/visitor-request-status',
-      '/qr-code-display', '/visit-status'
-    ];
-    return this.authService.isLoggedIn() && !publicPaths.includes(location.pathname);
-  }
 }

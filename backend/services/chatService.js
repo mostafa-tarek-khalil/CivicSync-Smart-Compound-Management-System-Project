@@ -9,6 +9,7 @@ const Building = require("../models/building");
 const Visit = require("../models/visit");
 const MaintenanceTicket = require("../models/maintenanceTicket");
 const { createNotification } = require("./notificationService");
+const { isTicketChatLocked } = require("../utils/statusConstants");
 
 const isValidObjectId = (id) => {
     return mongoose.Types.ObjectId.isValid(id);
@@ -97,12 +98,59 @@ const canResidentAndTechnicianChat = async (
     residentId,
     technicianId
 ) => {
-    const ticket = await MaintenanceTicket.findOne({
+    const tickets = await MaintenanceTicket.find({
         residentId,
         assignedTo: technicianId,
-    }).select("_id");
+    }).select("status _id");
 
-    return !!ticket;
+    // A resident and a technician may talk while at least ONE shared ticket is
+    // still live. Once every shared job is finished (RESOLVED / CLOSED) the
+    // channel closes with it.
+    return tickets.some(
+        (ticket) => !isTicketChatLocked(ticket.status)
+    );
+};
+
+/**
+ * Throw a 403 when the maintenance conversation tied to this ticket is locked.
+ *
+ * The link is derived from the conversation's two participants: for a
+ * resident <-> technician DIRECT chat the active ticket is the one they share.
+ */
+const assertMaintenanceChatOpen = async (sender, receiver) => {
+    const isResidentTechnicianPair =
+        (sender.role === "RESIDENT" && receiver.role === "TECHNICIAN") ||
+        (sender.role === "TECHNICIAN" && receiver.role === "RESIDENT");
+
+    if (!isResidentTechnicianPair) {
+        return;
+    }
+
+    const residentId =
+        sender.role === "RESIDENT" ? sender._id : receiver._id;
+    const technicianId =
+        sender.role === "TECHNICIAN" ? sender._id : receiver._id;
+
+    const tickets = await MaintenanceTicket.find({
+        residentId,
+        assignedTo: technicianId,
+    }).select("status title");
+
+    if (tickets.length === 0) {
+        return;
+    }
+
+    const anyOpen = tickets.some(
+        (ticket) => !isTicketChatLocked(ticket.status)
+    );
+
+    if (!anyOpen) {
+        const error = new Error(
+            "This maintenance conversation is closed because the job is finished."
+        );
+        error.statusCode = 403;
+        throw error;
+    }
 };
 
 const canDirectChat = async (sender, receiver) => {
@@ -504,6 +552,148 @@ const getBuildingGroup = async (
     return conversation;
 };
 
+/**
+ * Ensure a conversation contains every id in `memberIds`, without ever
+ * removing an existing participant.
+ *
+ * `$addToSet` is used so concurrent calls (two residents approved at once)
+ * cannot clobber each other the way a read-modify-write `save()` would.
+ */
+const addParticipantsToConversation = async (conversationId, memberIds) => {
+    if (!conversationId || memberIds.length === 0) {
+        return;
+    }
+
+    await Conversation.updateOne(
+        { _id: conversationId },
+        {
+            $addToSet: { participants: { $each: memberIds } },
+            $pull: { deletedFor: { $in: memberIds } },
+        }
+    );
+};
+
+/**
+ * Add a resident to the two system groups every resident belongs to:
+ *  1. the compound-wide group, and
+ *  2. their own building group.
+ *
+ * Called whenever a resident becomes usable (admin approval) or their unit
+ * association changes, so the groups show up in their chat list with no manual
+ * "join" step. Safe to call repeatedly: the lookups are by (type, groupType,
+ * buildingId) and membership is added with $addToSet.
+ */
+const syncResidentGroupMemberships = async (resident) => {
+    if (!resident || resident.role !== "RESIDENT") {
+        return { compound: null, building: null };
+    }
+
+    const residentId = resident._id || resident.id;
+    const result = { compound: null, building: null };
+
+    // 1. Compound group — created on demand so a brand-new compound still gets
+    //    a group as soon as its first resident is approved.
+    const compoundParticipants = await User.find({
+        role: { $in: ["RESIDENT", "SECURITY", "ADMIN"] },
+        status: "ACTIVE",
+    }).select("_id");
+
+    let compoundGroup = await Conversation.findOne({
+        type: "GROUP",
+        groupType: "COMPOUND",
+    });
+
+    if (!compoundGroup) {
+        try {
+            compoundGroup = await Conversation.create({
+                type: "GROUP",
+                groupType: "COMPOUND",
+                participants: compoundParticipants.map((user) => user._id),
+            });
+        } catch (error) {
+            if (error.code === 11000) {
+                compoundGroup = await Conversation.findOne({
+                    type: "GROUP",
+                    groupType: "COMPOUND",
+                });
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    if (compoundGroup) {
+        await addParticipantsToConversation(compoundGroup._id, [residentId]);
+        result.compound = compoundGroup._id;
+    }
+
+    // 2. Building group — only possible when the resident has a unit.
+    if (!resident.unitId) {
+        return result;
+    }
+
+    const unit = await Unit.findById(resident.unitId).select("buildingId");
+
+    if (!unit || !unit.buildingId) {
+        return result;
+    }
+
+    const buildingId = unit.buildingId;
+
+    const units = await Unit.find({ buildingId }).select("_id");
+    const unitIds = units.map((item) => item._id);
+
+    const residentsInBuilding = await User.find({
+        role: "RESIDENT",
+        status: "ACTIVE",
+        unitId: { $in: unitIds },
+    }).select("_id");
+
+    const staff = await User.find({
+        role: { $in: ["SECURITY", "ADMIN"] },
+        status: "ACTIVE",
+    }).select("_id");
+
+    const buildingParticipants = [
+        ...residentsInBuilding.map((item) => item._id),
+        ...staff.map((item) => item._id),
+    ];
+
+    let buildingGroup = await Conversation.findOne({
+        type: "GROUP",
+        groupType: "BUILDING",
+        buildingId,
+    });
+
+    if (!buildingGroup) {
+        try {
+            buildingGroup = await Conversation.create({
+                type: "GROUP",
+                groupType: "BUILDING",
+                buildingId,
+                participants: buildingParticipants,
+            });
+        } catch (error) {
+            if (error.code === 11000) {
+                buildingGroup = await Conversation.findOne({
+                    type: "GROUP",
+                    groupType: "BUILDING",
+                    buildingId,
+                });
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    if (buildingGroup) {
+        await addParticipantsToConversation(buildingGroup._id, [residentId]);
+        result.building = buildingGroup._id;
+    }
+
+    return result;
+};
+
 // =========================================================
 // VISITOR TOKEN
 // =========================================================
@@ -756,6 +946,47 @@ const getLastVisibleMessage = async (
         );
 };
 
+/**
+ * Whether a DIRECT conversation is a finished maintenance thread.
+ *
+ * The client uses this to render a read-only composer instead of letting the
+ * user type a message the server would reject. Returns false for group and
+ * visitor conversations, which have their own lifecycles.
+ */
+const isConversationChatLocked = async (conversation) => {
+    if (!conversation || conversation.type !== "DIRECT") {
+        return false;
+    }
+
+    const participants = conversation.participants || [];
+
+    const ids = participants.map((participant) =>
+        String(participant._id || participant)
+    );
+
+    const users = await User.find({ _id: { $in: ids } }).select(
+        "_id role"
+    );
+
+    const resident = users.find((user) => user.role === "RESIDENT");
+    const technician = users.find((user) => user.role === "TECHNICIAN");
+
+    if (!resident || !technician) {
+        return false;
+    }
+
+    const tickets = await MaintenanceTicket.find({
+        residentId: resident._id,
+        assignedTo: technician._id,
+    }).select("status");
+
+    if (tickets.length === 0) {
+        return false;
+    }
+
+    return tickets.every((ticket) => isTicketChatLocked(ticket.status));
+};
+
 // =========================================================
 // GET MY CONVERSATIONS
 // =========================================================
@@ -828,6 +1059,11 @@ const getMyConversations = async (
 
                     object.unreadCount =
                         unreadCount;
+
+                    object.chatLocked =
+                        await isConversationChatLocked(
+                            conversation
+                        );
 
                     return object;
                 }
@@ -918,7 +1154,11 @@ const getConversationById = async (
         throw error;
     }
 
-    return conversation;
+    const object = conversation.toObject();
+
+    object.chatLocked = await isConversationChatLocked(conversation);
+
+    return object;
 };
 
 // =========================================================
@@ -1001,6 +1241,26 @@ const sendUserMessage = async (
             const error = new Error("Visitor chat is no longer available");
             error.statusCode = 403;
             throw error;
+        }
+    }
+
+    if (conversation.type === "DIRECT") {
+        // Maintenance conversations close with the job. Resolve the OTHER
+        // participant so the resident/technician pair can be checked against
+        // the ticket state machine.
+        const otherParticipantId = conversation.participants.find(
+            (participantId) =>
+                participantId.toString() !== sender._id.toString()
+        );
+
+        if (otherParticipantId) {
+            const other = await User.findById(otherParticipantId).select(
+                "_id role status"
+            );
+
+            if (other) {
+                await assertMaintenanceChatOpen(sender, other);
+            }
         }
     }
 
@@ -1783,6 +2043,9 @@ module.exports = {
     getCompoundGroup,
     getBuildingGroup,
 
+    syncResidentGroupMemberships,
+    addParticipantsToConversation,
+
     verifyVisitorChatToken,
     getOrCreateVisitorConversation,
 
@@ -1799,6 +2062,7 @@ module.exports = {
     markVisitorMessagesAsRead,
 
     getUnreadCount,
+    isConversationChatLocked,
 
     deleteMessageForMe,
     deleteMessageForEveryone,

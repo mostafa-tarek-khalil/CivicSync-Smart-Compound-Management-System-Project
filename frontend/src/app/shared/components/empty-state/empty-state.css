@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 40px 20px;
+  min-height: 220px;
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.state-icon {
+  font-size: 40px;
+  color: var(--cs-primary, #315b8f);
+  opacity: 0.65;
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.state-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--cs-text, #202238);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.state-message {
+  margin: 0;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cs-text-soft, #64748b);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+}
+
+.state-action {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--cs-primary, #315b8f);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.state-action:hover {
+  background: var(--cs-primary-dark, #1d3f68);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.26);
+}
+
+.state-action:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-block,
+  .state-icon,
+  .state-title,
+  .state-message,
+  .state-action {
+    animation: none;
+  }
+
+  .state-action:hover {
+    transform: none;
+  }
+}
+
+html.dark-mode .state-title {
+  color: #f1f5f9;
+}
+
+html.dark-mode .state-message {
+  color: #94a3b8;
+}
+
+html.dark-mode .state-icon {
+  color: #8eb2e8;
+}

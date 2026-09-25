@@ -1,0 +1,643 @@
+
+.page {
+  padding: 32px;
+  max-width: 1250px;
+  margin: auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.back-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+
+.eyebrow,
+.section-label,
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #64748b;
+}
+
+h1 {
+  margin: 7px 0;
+  color: #0f2747;
+  font-size: 34px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #64748b;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-pill.approved {
+  background: #fff5df;
+  color: #a16207;
+}
+
+.status-pill.checked-in {
+  background: #e8f5ee;
+  color: #18794e;
+}
+
+.status-pill.checked-out {
+  background: #e8eef6;
+  color: #365b80;
+}
+
+.visitor-summary,
+.timeline-card,
+.action-card {
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.visitor-summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 22px;
+}
+
+.avatar {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: #eef3f8;
+  color: #0f2747;
+}
+
+.visitor-main h2 {
+  margin: 4px 0;
+  color: #0f2747;
+}
+
+.visitor-main p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.summary-item {
+  padding-left: 24px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.summary-item span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.summary-item strong {
+  color: #0f2747;
+  font-size: 14px;
+}
+
+.timeline-card {
+  margin-top: 24px;
+  padding: 26px;
+}
+
+.timeline-header h2 {
+  margin: 7px 0 24px;
+  color: #0f2747;
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 22px;
+  bottom: 22px;
+  width: 1px;
+  background: #dbe5ef;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 28px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.timeline-item.completed .timeline-dot {
+  background: #e8f5ee;
+  color: #18794e;
+}
+
+.timeline-item.active .timeline-dot {
+  background: #eef3f8;
+  color: #0f2747;
+}
+
+.timeline-item strong {
+  display: block;
+  margin-top: 5px;
+  color: #0f2747;
+}
+
+.timeline-item p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.action-card {
+  margin-top: 24px;
+  padding: 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  background: #f8fafc;
+}
+
+.action-card h2 {
+  margin: 8px 0;
+  color: #0f2747;
+}
+
+.action-card p {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.primary-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #0f2747;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.completed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #18794e;
+  font-weight: 700;
+}
+
+.visitors-btn {
+  margin-top: 18px;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Picker (no visit pre-selected) */
+
+.picker-card {
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.candidate-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.candidate-row + .candidate-row {
+  border-top: 1px solid #eef2f7;
+}
+
+.candidate-row:hover {
+  background: #f4f8fc;
+}
+
+.candidate-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.candidate-main strong {
+  display: block;
+  color: #0f2747;
+  font-size: 15px;
+}
+
+.candidate-main p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.candidate-main small {
+  display: block;
+  margin-top: 2px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.action-tag.check-in {
+  background: #e8f5ee;
+  color: #18794e;
+}
+
+.action-tag.check-out {
+  background: #e8eef6;
+  color: #365b80;
+}
+
+.action-tag .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.loading-row,
+.empty-row {
+  padding: 50px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.empty-row .material-symbols-outlined {
+  font-size: 40px;
+  color: #94a3b8;
+}
+
+.empty-row h3 {
+  margin: 10px 0 4px;
+  color: #0f2747;
+}
+
+.empty-row p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: #fff0f1;
+  color: #b42318;
+}
+
+/* Dark Mode */
+
+:host-context(html.dark-mode) h1,
+:host-context(html.dark-mode) .visitor-main h2,
+:host-context(html.dark-mode) .summary-item strong,
+:host-context(html.dark-mode) .timeline-header h2,
+:host-context(html.dark-mode) .timeline-item strong,
+:host-context(html.dark-mode) .action-card h2 {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .subtitle,
+:host-context(html.dark-mode) .back-btn,
+:host-context(html.dark-mode) .visitor-main p,
+:host-context(html.dark-mode) .summary-item span,
+:host-context(html.dark-mode) .timeline-item p,
+:host-context(html.dark-mode) .action-card p,
+:host-context(html.dark-mode) .visitors-btn {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .visitor-summary,
+:host-context(html.dark-mode) .timeline-card,
+:host-context(html.dark-mode) .action-card {
+  background: #111c2d;
+  border-color: #24344a;
+}
+
+:host-context(html.dark-mode) .action-card {
+  background: #0d1726;
+}
+
+:host-context(html.dark-mode) .avatar {
+  background: #1b2a3d;
+  color: #dbeafe;
+}
+
+:host-context(html.dark-mode) .summary-item {
+  border-color: #24344a;
+}
+
+:host-context(html.dark-mode) .timeline::before {
+  background: #24344a;
+}
+
+:host-context(html.dark-mode) .picker-card {
+  background: #111c2d;
+  border-color: #24344a;
+}
+
+:host-context(html.dark-mode) .candidate-row + .candidate-row {
+  border-color: #24344a;
+}
+
+:host-context(html.dark-mode) .candidate-row:hover {
+  background: #16233a;
+}
+
+:host-context(html.dark-mode) .candidate-main strong,
+:host-context(html.dark-mode) .empty-row h3 {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .candidate-main p,
+:host-context(html.dark-mode) .candidate-main small,
+:host-context(html.dark-mode) .loading-row,
+:host-context(html.dark-mode) .empty-row {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .action-tag.check-in {
+  background: #14311f;
+  color: #6ee7a0;
+}
+
+:host-context(html.dark-mode) .action-tag.check-out {
+  background: #1e2f47;
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .error-banner {
+  background: #3a1d22;
+  color: #f7a6ad;
+}
+
+@media (max-width: 850px) {
+  .page {
+    padding: 20px;
+  }
+
+  .visitor-summary {
+    grid-template-columns: auto 1fr;
+  }
+
+  .summary-item {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .action-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 550px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .visitor-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .visitor-main {
+    order: -1;
+  }
+}
+
+/* =========================================================
+   MOTION LAYER
+   Keyframes are global (styles.css); this only wires them onto the
+   classes this page uses.
+   ========================================================= */
+
+.page-header,
+.page-title {
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.eyebrow {
+  animation: cs-fade-in 0.45s ease 0.06s both;
+}
+
+.card,
+.panel,
+.check-card,
+.visitor-card {
+  transform-style: preserve-3d;
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.36s ease, border-color 0.25s ease;
+}
+
+.card:hover,
+.panel:hover,
+.check-card:hover,
+.visitor-card:hover {
+  transform: translateY(-4px) rotateX(3deg);
+  box-shadow: 0 18px 38px rgba(20, 43, 70, 0.13);
+}
+
+.info-row,
+.detail-row,
+.list-row {
+  animation: cs-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 0.2s ease;
+}
+
+.info-row:nth-child(1),
+.detail-row:nth-child(1),
+.list-row:nth-child(1) { animation-delay: 0.18s; }
+
+.info-row:nth-child(2),
+.detail-row:nth-child(2),
+.list-row:nth-child(2) { animation-delay: 0.24s; }
+
+.info-row:nth-child(3),
+.detail-row:nth-child(3),
+.list-row:nth-child(3) { animation-delay: 0.3s; }
+
+.info-row:nth-child(4),
+.detail-row:nth-child(4),
+.list-row:nth-child(4) { animation-delay: 0.36s; }
+
+.info-row:hover,
+.detail-row:hover,
+.list-row:hover {
+  background-color: #f8fafe;
+}
+
+button,
+.btn,
+.primary-btn,
+.confirm-btn,
+.check-in-btn,
+.check-out-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled),
+.confirm-btn:hover:not(:disabled),
+.check-in-btn:hover:not(:disabled),
+.check-out-btn:hover:not(:disabled),
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 43, 70, 0.18);
+}
+
+.primary-btn:active:not(:disabled),
+.confirm-btn:active:not(:disabled),
+.check-in-btn:active:not(:disabled),
+.check-out-btn:active:not(:disabled),
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.status-badge,
+.pill {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .status-badge,
+.card:hover .pill {
+  transform: scale(1.06);
+}
+
+.empty-state,
+.loading,
+.error,
+.alert {
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.modal-backdrop,
+.overlay {
+  animation: cs-fade-in 0.2s ease both;
+}
+
+.modal-card,
+.modal,
+.dialog {
+  perspective: 1400px;
+  animation: cs-pop-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header,
+  .page-title,
+  .eyebrow,
+  .card,
+  .panel,
+  .check-card,
+  .visitor-card,
+  .info-row,
+  .detail-row,
+  .list-row,
+  .empty-state,
+  .loading,
+  .error,
+  .alert,
+  .modal-backdrop,
+  .overlay,
+  .modal-card,
+  .modal,
+  .dialog {
+    animation: none;
+  }
+
+  .card:hover,
+  .panel:hover,
+  .check-card:hover,
+  .visitor-card:hover,
+  .primary-btn:hover,
+  .confirm-btn:hover,
+  .check-in-btn:hover,
+  .check-out-btn:hover {
+    transform: none;
+  }
+}

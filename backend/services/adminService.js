@@ -3,25 +3,83 @@ const Building = require("../models/building");
 const Unit = require("../models/unit");
 const Invoice = require("../models/invoice");
 const MaintenanceTicket = require("../models/maintenanceTicket");
-const { createNotification } = require("./notificationService");
+const Review = require("../models/review");
+const { createNotification, notifyRole } = require("./notificationService");
+const { syncResidentGroupMemberships } = require("./chatService");
+const { isTicketChatLocked } = require("../utils/statusConstants");
 const Visit = require("../models/visit");
 
-const getAllUsers = async (filters = {}) => {
+/**
+ * Normalise a filter value coming from a query string or dropdown.
+ *
+ * `ALL`, empty string, and the literal strings "undefined"/"null" all mean
+ * "no filter". Before this existed, `?status=ALL` was passed straight into the
+ * Mongo query and matched nothing — which is why selecting ALL in an admin
+ * dropdown returned an empty table.
+ */
+const normalizeFilter = (value) => {
+    if (value === undefined || value === null) {
+        return null;
+    }
+
+    const text = String(value).trim();
+
+    if (!text || text.toUpperCase() === "ALL") {
+        return null;
+    }
+
+    if (text === "undefined" || text === "null") {
+        return null;
+    }
+
+    return text;
+};
+
+/**
+ * Build a Mongo query from an allow-list of (filter field -> document path)
+ * pairs, skipping any value that means "everything".
+ */
+const buildFilterQuery = (filters, fieldMap) => {
     const query = {};
 
-    if (filters.role) {
-        query.role = filters.role;
+    for (const [field, path] of Object.entries(fieldMap)) {
+        const value = normalizeFilter(filters[field]);
+
+        if (value !== null) {
+            query[path] = value;
+        }
     }
 
-    if (filters.status) {
-        query.status = filters.status;
-    }
+    return query;
+};
 
-    if (filters.search) {
-        const searchRegex = new RegExp(
-            filters.search,
-            "i"
+/**
+ * Best-effort membership sync for the default system groups.
+ *
+ * A chat-group failure must never reject a successful approval, so the error
+ * is logged and swallowed, exactly like notification fan-out.
+ */
+const syncGroupsSilently = async (user) => {
+    try {
+        await syncResidentGroupMemberships(user);
+    } catch (error) {
+        console.error(
+            "Failed to sync default chat groups:",
+            error.message
         );
+    }
+};
+
+const getAllUsers = async (filters = {}) => {
+    const query = buildFilterQuery(filters, {
+        role: "role",
+        status: "status",
+    });
+
+    const search = normalizeFilter(filters.search);
+
+    if (search) {
+        const searchRegex = new RegExp(search, "i");
 
         query.$or = [
             { name: searchRegex },
@@ -83,7 +141,6 @@ const approveUser = async (userId) => {
 
         return user;
     }
-
     if (!user.unitId) {
         throw new Error(
             "Resident must have a unit"
@@ -123,6 +180,10 @@ const approveUser = async (userId) => {
             message: "Your CivicSync account is ready to use.",
             relatedId: user._id,
         });
+
+        // A newly approved resident joins the compound + building groups so
+        // both conversations appear in their chat list immediately.
+        await syncGroupsSilently(user);
 
         return user;
     } catch (error) {
@@ -190,6 +251,50 @@ const rejectUser = async (userId) => {
     return user;
 };
 
+/**
+ * Update the fields an admin is allowed to touch on any account.
+ *
+ * Deliberately limited to EMAIL and PHONE. A user's display name is their own
+ * identity and is owned by the profile page (`PATCH /api/auth/me`), so an
+ * admin editing it here would silently rename somebody else's account.
+ * Any `name` sent by the client is ignored rather than rejected, so an older
+ * client that still posts it does not break.
+ */
+const updateUser = async (userId, data = {}) => {
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    if (data.phone !== undefined) {
+        user.phone = data.phone ? String(data.phone).trim() : null;
+    }
+
+    if (data.email !== undefined) {
+        const normalizedEmail = String(data.email).trim().toLowerCase();
+
+        if (!normalizedEmail) {
+            throw new Error("Email is required");
+        }
+
+        const existing = await User.findOne({
+            email: normalizedEmail,
+            _id: { $ne: user._id },
+        });
+
+        if (existing) {
+            throw new Error("Email is already in use");
+        }
+
+        user.email = normalizedEmail;
+    }
+
+    await user.save();
+
+    return user;
+};
+
 const getBuildings = async () => {
     const buildings = await Building.find().sort({
         buildingNumber: 1,
@@ -205,6 +310,7 @@ const createBuilding = async (data) => {
         description,
         imageUrl,
         floorsCount,
+        unitsCount,
     } = data;
 
     if (
@@ -235,6 +341,7 @@ const createBuilding = async (data) => {
             description || null,
         imageUrl: imageUrl || null,
         floorsCount,
+        unitsCount: unitsCount ?? 0,
     });
 
     return building;
@@ -293,26 +400,21 @@ const updateBuilding = async (
             data.floorsCount;
     }
 
+    if (data.unitsCount !== undefined) {
+        building.unitsCount = data.unitsCount;
+    }
+
     await building.save();
 
     return building;
 };
 
 const getUnits = async (filters = {}) => {
-    const query = {};
-
-    if (filters.buildingId) {
-        query.buildingId =
-            filters.buildingId;
-    }
-
-    if (filters.status) {
-        query.status = filters.status;
-    }
-
-    if (filters.type) {
-        query.type = filters.type;
-    }
+    const query = buildFilterQuery(filters, {
+        buildingId: "buildingId",
+        status: "status",
+        type: "type",
+    });
 
     const units = await Unit.find(query)
         .populate(
@@ -513,21 +615,11 @@ const updateUnit = async (
 const getInvoices = async (
     filters = {}
 ) => {
-    const query = {};
-
-    if (filters.status) {
-        query.status = filters.status;
-    }
-
-    if (filters.residentId) {
-        query.residentId =
-            filters.residentId;
-    }
-
-    if (filters.ticketId) {
-        query.ticketId =
-            filters.ticketId;
-    }
+    const query = buildFilterQuery(filters, {
+        status: "status",
+        residentId: "residentId",
+        ticketId: "ticketId",
+    });
 
     const invoices = await Invoice.find(
         query
@@ -547,24 +639,79 @@ const getInvoices = async (
     return invoices;
 };
 
+/**
+ * A single invoice with everything a receipt needs to render: the resident
+ * (with their unit), the originating maintenance ticket, and the unit record.
+ *
+ * Used by the admin invoice receipt screen and the print action, so the
+ * printable view has real data instead of the row already on the client.
+ */
+const getInvoiceById = async (
+    invoiceId
+) => {
+    const invoice = await Invoice.findById(invoiceId)
+        .populate(
+            "residentId",
+            "name email phone role status unitId"
+        )
+        .populate(
+            "ticketId",
+            "title category priority status createdAt"
+        )
+        .populate(
+            "unitId",
+            "unitNumber floor type status buildingId"
+        )
+        .lean();
+
+    if (!invoice) {
+        const error = new Error("Invoice not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    // The unit can live on the invoice or, for a ticket invoice, on the
+    // resident. Fall back to the resident's unit so the receipt always shows
+    // a location when one exists.
+    let unit = invoice.unitId || null;
+
+    if (!unit && invoice.residentId?.unitId) {
+        unit = await Unit.findById(invoice.residentId.unitId)
+            .select("unitNumber floor type status buildingId")
+            .populate("buildingId", "name buildingNumber")
+            .lean();
+    } else if (unit && unit.buildingId) {
+        unit = await Unit.findById(unit._id)
+            .select("unitNumber floor type status buildingId")
+            .populate("buildingId", "name buildingNumber")
+            .lean();
+    }
+
+    return {
+        ...invoice,
+        unit,
+    };
+};
+
 const createInvoice = async (
     data
 ) => {
     const {
         residentId,
         ticketId,
+        unitId,
+        description,
         amount,
         dueDate,
     } = data;
 
     if (
         !residentId ||
-        !ticketId ||
         amount === undefined ||
         !dueDate
     ) {
         throw new Error(
-            "Resident, ticket, amount and due date are required"
+            "Resident, amount and due date are required"
         );
     }
 
@@ -586,6 +733,31 @@ const createInvoice = async (
         throw new Error(
             "Invoice must belong to a resident"
         );
+    }
+
+    // Standalone invoice (no maintenance ticket): allowed for any resident /
+    // unit. The admin console uses this to bill residents directly.
+    if (!ticketId) {
+        const invoice = await Invoice.create({
+            residentId,
+            ticketId: null,
+            unitId: unitId || resident.unitId || null,
+            description: description || null,
+            amount,
+            dueDate,
+            status: "PENDING",
+            paidAt: null,
+        });
+
+        await createNotification({
+            userId: residentId,
+            type: "INVOICE_CREATED",
+            title: "New invoice",
+            message: `A new invoice for ${amount} has been issued to your account.`,
+            relatedId: invoice._id,
+        });
+
+        return invoice;
     }
 
     const ticket =
@@ -629,6 +801,8 @@ const createInvoice = async (
         await Invoice.create({
             residentId,
             ticketId,
+            unitId: unitId || resident.unitId || null,
+            description: description || null,
             amount,
             dueDate,
             status: "PENDING",
@@ -643,6 +817,25 @@ const createInvoice = async (
         relatedId: invoice._id,
     });
 
+    // Keep the other admins' invoices list and dashboard in step, and let the
+    // technician on the job know the work has been billed.
+    await notifyRole("ADMIN", {
+        type: "INVOICE_CREATED",
+        title: "Invoice raised",
+        message: `An invoice for ${amount} was raised for \"${ticket.title}\".`,
+        relatedId: invoice._id,
+    });
+
+    if (ticket.assignedTo) {
+        await createNotification({
+            userId: ticket.assignedTo,
+            type: "INVOICE_CREATED",
+            title: "Job invoice raised",
+            message: `The job \"${ticket.title}\" has been invoiced to the resident.`,
+            relatedId: invoice._id,
+        });
+    }
+
     return invoice;
 };
 
@@ -652,6 +845,7 @@ const updateInvoiceStatus = async (
 ) => {
     const allowedStatuses = [
         "PENDING",
+        "PAYMENT_SUBMITTED",
         "PAID",
         "OVERDUE",
         "CANCELLED",
@@ -678,8 +872,15 @@ const updateInvoiceStatus = async (
         );
     }
 
+    // Admin transitions. PAYMENT_SUBMITTED is the resident's claim; only the
+    // admin can move it on to PAID (approve) or back to OVERDUE / CANCELLED.
     const allowedTransitions = {
         PENDING: [
+            "PAID",
+            "OVERDUE",
+            "CANCELLED",
+        ],
+        PAYMENT_SUBMITTED: [
             "PAID",
             "OVERDUE",
             "CANCELLED",
@@ -712,6 +913,7 @@ const updateInvoiceStatus = async (
             new Date();
     } else if (
         status === "PENDING" ||
+        status === "PAYMENT_SUBMITTED" ||
         status === "OVERDUE" ||
         status === "CANCELLED"
     ) {
@@ -720,47 +922,97 @@ const updateInvoiceStatus = async (
 
     await invoice.save();
 
-    if (status === "OVERDUE" && previousStatus !== "OVERDUE") {
-        await createNotification({
-            userId: invoice.residentId,
-            type: "INVOICE_DUE",
-            title: "Invoice overdue",
-            message: "A maintenance invoice is now overdue.",
-            relatedId: invoice._id,
-        });
-    }
+    if (status === "PAID" && previousStatus !== "PAID") {
+            await createNotification({
+                userId: invoice.residentId,
+                type: "INVOICE_PAID",
+                title: "Payment confirmed",
+                message: `Your payment of ${invoice.amount} has been confirmed. Thank you.`,
+                relatedId: invoice._id,
+            });
+            }
 
-    return invoice;
-};
+            if (status === "OVERDUE" && previousStatus !== "OVERDUE") {
+                await createNotification({
+                    userId: invoice.residentId,
+                    type: "INVOICE_DUE",
+                    title: "Invoice overdue",
+                    message: "A maintenance invoice is now overdue.",
+                    relatedId: invoice._id,
+                });
+            }
+
+            // Any other transition (e.g. PENDING -> CANCELLED) still has to reach the
+            // resident, otherwise their invoices page keeps showing a status the admin
+            // has already changed.
+            if (
+                status !== previousStatus &&
+                status !== "PAID" &&
+                status !== "OVERDUE"
+            ) {
+                await createNotification({
+                    userId: invoice.residentId,
+                    type: "INVOICE_UPDATED",
+                    title: "Invoice updated",
+                    message: `Invoice INV-${String(invoice._id)
+                        .slice(-6)
+                        .toUpperCase()} is now ${status.toLowerCase()}.`,
+                    relatedId: invoice._id,
+                });
+            }
+
+            // ------------------------------------------------------------------
+            // Realtime fan-out to the OTHER parties watching this invoice.
+            //
+            // The calls above only reach the resident. Without this, the admin
+            // invoices list and dashboard stayed stale after a status change (the
+            // admin who made the change never gets told, and a second admin watching
+            // the compound is not a recipient at all), and the assigned technician
+            // never learned that the bill for their job had been settled.
+            //
+            // This notifies: every active ADMIN (drives admin invoices + dashboard)
+            // and the technician on the originating ticket, when there is one.
+            // ------------------------------------------------------------------
+            if (status !== previousStatus) {
+                await notifyRole("ADMIN", {
+                    type: "INVOICE_UPDATED",
+                    title: "Invoice updated",
+                    message: `Invoice INV-${String(invoice._id)
+                        .slice(-6)
+                        .toUpperCase()} is now ${status.toLowerCase()}.`,
+                    relatedId: invoice._id,
+                });
+
+                if (invoice.ticketId) {
+                    const ticket = await MaintenanceTicket.findById(invoice.ticketId)
+                        .select("assignedTo title")
+                        .lean();
+
+                    if (ticket?.assignedTo) {
+                        await createNotification({
+                            userId: ticket.assignedTo,
+                            type: "INVOICE_UPDATED",
+                            title: "Job invoice updated",
+                            message: `The invoice for \"${ticket.title}\" is now ${status.toLowerCase()}.`,
+                            relatedId: invoice._id,
+                        });
+                    }
+                }
+            }
+
+            return invoice;
+        };
 
 const getMaintenanceTickets = async (
     filters = {}
 ) => {
-    const query = {};
-
-    if (filters.status) {
-        query.status = filters.status;
-    }
-
-    if (filters.priority) {
-        query.priority =
-            filters.priority;
-    }
-
-    if (filters.category) {
-        query.category =
-            filters.category;
-    }
-
-    if (filters.residentId) {
-        query.residentId =
-            filters.residentId;
-    }
-
-    if (filters.assignedTo) {
-        query.assignedTo =
-            filters.assignedTo;
-    }
+    const query = buildFilterQuery(filters, {
+        status: "status",
+        priority: "priority",
+        category: "category",
+        residentId: "residentId",
+        assignedTo: "assignedTo",
+    });
 
     const tickets =
         await MaintenanceTicket.find(
@@ -798,7 +1050,7 @@ const getMaintenanceTicketById = async (
             )
             .populate(
                 "assignedTo",
-                "name email phone role rating totalReviews"
+                "name email phone role rating totalReviews specializations"
             )
             .populate(
                 "skippedBy",
@@ -811,7 +1063,56 @@ const getMaintenanceTicketById = async (
         );
     }
 
-    return ticket;
+    // The admin console needs the resolution outcome, not just the ticket row:
+    // the resident's review (who rated which technician, and how) plus the
+    // invoice that was raised for this job, if any.
+    const [review, invoice, location] = await Promise.all([
+        Review.findOne({ ticketId: ticket._id })
+            .populate("residentId", "name email")
+            .populate("technicianId", "name email role"),
+        Invoice.findOne({ ticketId: ticket._id })
+            .select("amount status dueDate paidAt description createdAt")
+            .lean(),
+        getTicketLocation(ticket.residentId),
+    ]);
+
+    return {
+        ticket,
+        review,
+        invoice,
+        location,
+    };
+};
+
+/**
+ * Resolve the building + unit a resident lives in, so the admin can see where
+ * a ticket physically is. Mirrors the technician-side helper.
+ */
+const getTicketLocation = async (resident) => {
+    const unitId =
+        resident && resident.unitId ? resident.unitId : null;
+
+    if (!unitId) {
+        return null;
+    }
+
+    const unit = await Unit.findById(unitId)
+        .select("unitNumber floor type status buildingId")
+        .populate("buildingId", "name buildingNumber")
+        .lean();
+
+    if (!unit) {
+        return null;
+    }
+
+    return {
+        unitNumber: unit.unitNumber,
+        floor: unit.floor,
+        type: unit.type,
+        status: unit.status,
+        buildingName: unit.buildingId?.name || null,
+        buildingNumber: unit.buildingId?.buildingNumber ?? null,
+    };
 };
 
 const updateMaintenanceTicketStatus =
@@ -887,6 +1188,9 @@ const updateMaintenanceTicketStatus =
 
         const previousStatus = ticket.status;
         ticket.status = status;
+        // Keep the persisted lock flag in step with the state machine so a
+        // ticket finished from the admin console closes its chat as well.
+        ticket.chatLocked = isTicketChatLocked(status);
         await ticket.save();
 
         if (status !== previousStatus) {
@@ -897,6 +1201,18 @@ const updateMaintenanceTicketStatus =
                 message: `Maintenance request "${ticket.title}" is now ${status.toLowerCase().replace("_", " ")}.`,
                 relatedId: ticket._id,
             });
+
+            // The assigned technician tracks the same job and needs to see an
+            // admin-driven change (e.g. force-closing it) without a reload.
+            if (ticket.assignedTo) {
+                await createNotification({
+                    userId: ticket.assignedTo,
+                    type: "TICKET_STATUS_CHANGED",
+                    title: "Maintenance request updated",
+                    message: `"${ticket.title}" is now ${status.toLowerCase().replace("_", " ")}.`,
+                    relatedId: ticket._id,
+                });
+            }
         }
 
         return ticket;
@@ -905,32 +1221,13 @@ const updateMaintenanceTicketStatus =
 const getVisits = async (
     filters = {}
 ) => {
-    const query = {};
-
-    if (filters.status) {
-        query.status =
-            filters.status;
-    }
-
-    if (filters.residentId) {
-        query.residentId =
-            filters.residentId;
-    }
-
-    if (filters.buildingId) {
-        query.buildingId =
-            filters.buildingId;
-    }
-
-    if (filters.unitId) {
-        query.unitId =
-            filters.unitId;
-    }
-
-    if (filters.source) {
-        query.source =
-            filters.source;
-    }
+    const query = buildFilterQuery(filters, {
+        status: "status",
+        residentId: "residentId",
+        buildingId: "buildingId",
+        unitId: "unitId",
+        source: "source",
+    });
 
     const visits = await Visit.find(
         query
@@ -1015,6 +1312,7 @@ const getDashboardOverview =
             openMaintenance,
             overdueInvoices,
             totalVisits,
+            invoiceTotals,
         ] = await Promise.all([
             User.countDocuments(),
             User.countDocuments({
@@ -1053,6 +1351,7 @@ const getDashboardOverview =
                 status: "OVERDUE",
             }),
             Visit.countDocuments(),
+            getInvoiceTotals(),
         ]);
 
         return {
@@ -1080,6 +1379,12 @@ const getDashboardOverview =
 
             invoices: {
                 overdue: overdueInvoices,
+                // Financial headline numbers, summed directly from the invoice
+                // collection so they can never drift from the invoices table.
+                totalBilled: invoiceTotals.totalBilled,
+                totalCollected: invoiceTotals.totalCollected,
+                totalOutstanding: invoiceTotals.totalOutstanding,
+                awaitingApproval: invoiceTotals.awaitingApproval,
             },
 
             visits: {
@@ -1087,6 +1392,49 @@ const getDashboardOverview =
             },
         };
     };
+
+/**
+ * Compound-wide money totals.
+ *
+ * `totalBilled` is the sum of every non-cancelled invoice ever generated;
+ * `totalCollected` is only what has actually been confirmed as PAID. Cancelled
+ * invoices are excluded from billing entirely — they were never owed.
+ */
+const getInvoiceTotals = async () => {
+    const rows = await Invoice.aggregate([
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 },
+                total: { $sum: "$amount" },
+            },
+        },
+    ]);
+
+    const byStatus = rows.reduce((accumulator, row) => {
+        accumulator[row._id] = {
+            count: row.count,
+            total: row.total || 0,
+        };
+        return accumulator;
+    }, {});
+
+    const totalBilled = rows
+        .filter((row) => row._id !== "CANCELLED")
+        .reduce((sum, row) => sum + (row.total || 0), 0);
+
+    const totalCollected = byStatus.PAID?.total || 0;
+
+    const totalOutstanding = ["PENDING", "OVERDUE", "PAYMENT_SUBMITTED"]
+        .reduce((sum, status) => sum + (byStatus[status]?.total || 0), 0);
+
+    return {
+        totalBilled,
+        totalCollected,
+        totalOutstanding,
+        awaitingApproval: byStatus.PAYMENT_SUBMITTED?.count || 0,
+    };
+};
 
 const getReportsAndAnalytics =
     async () => {
@@ -1098,6 +1446,8 @@ const getReportsAndAnalytics =
             invoicesByStatus,
             visitsByStatus,
             unitsByStatus,
+            visitsOverTime,
+            revenueSummary,
         ] = await Promise.all([
             User.aggregate([
                 {
@@ -1178,6 +1528,12 @@ const getReportsAndAnalytics =
                     },
                 },
             ]),
+
+            // Visitors per day for the last 30 days, zero-filled on the client
+            // so gaps in the chart read as "no visits", not "no data".
+            getVisitsOverTime(30),
+
+            getRevenueSummary(),
         ]);
 
         return {
@@ -1201,20 +1557,150 @@ const getReportsAndAnalytics =
             visits: {
                 byStatus:
                     visitsByStatus,
+                overTime:
+                    visitsOverTime,
             },
 
             units: {
                 byStatus:
                     unitsByStatus,
             },
+
+            revenue: revenueSummary,
         };
     };
+
+/**
+ * Visits grouped by calendar day for the trailing `days` window.
+ *
+ * Uses the visit DATE (not createdAt) so the series matches the operational
+ * meaning of "visits on a day".
+ */
+const getVisitsOverTime = async (days = 30) => {
+    const since = new Date();
+    since.setHours(0, 0, 0, 0);
+    since.setDate(since.getDate() - (days - 1));
+
+    const rows = await Visit.aggregate([
+        {
+            $match: {
+                visitDate: { $gte: since },
+            },
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: "$visitDate",
+                    },
+                },
+                count: { $sum: 1 },
+                checkedIn: {
+                    $sum: {
+                        $cond: [
+                            { $eq: ["$status", "CHECKED_IN"] },
+                            1,
+                            0,
+                        ],
+                    },
+                },
+            },
+        },
+        { $sort: { _id: 1 } },
+    ]);
+
+    return rows.map((row) => ({
+        date: row._id,
+        count: row.count,
+        checkedIn: row.checkedIn,
+    }));
+};
+
+/** Totals the billing console needs for its summary cards. */
+const getRevenueSummary = async () => {
+    const rows = await Invoice.aggregate([
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 },
+                total: { $sum: "$amount" },
+            },
+        },
+    ]);
+
+    const byStatus = rows.reduce((accumulator, row) => {
+        accumulator[row._id] = {
+            count: row.count,
+            total: row.total || 0,
+        };
+        return accumulator;
+    }, {});
+
+    const totals = await getInvoiceTotals();
+
+    return {
+        totalBilled: totals.totalBilled,
+        paid: totals.totalCollected,
+        outstanding: totals.totalOutstanding,
+        overdue: byStatus.OVERDUE?.total || 0,
+        awaitingApproval: totals.awaitingApproval,
+        byStatus,
+    };
+};
+
+/**
+ * The complete compound dataset behind the "Download full report" button.
+ *
+ * Returned as structured JSON so the client can render CSV or PDF from one
+ * source of truth, instead of the server deciding a file format.
+ */
+const getFullCompoundReport = async () => {
+    const [dashboard, analytics, users, buildings, units, tickets, invoices, visits] =
+        await Promise.all([
+            getDashboardOverview(),
+            getReportsAndAnalytics(),
+            User.find()
+                .select("name email phone role status unitId createdAt")
+                .populate("unitId", "unitNumber floor type buildingId")
+                .sort({ createdAt: -1 }),
+            Building.find().sort({ buildingNumber: 1 }),
+            Unit.find()
+                .populate("buildingId", "name buildingNumber")
+                .sort({ buildingId: 1, floor: 1, unitNumber: 1 }),
+            MaintenanceTicket.find()
+                .populate("residentId", "name email")
+                .populate("assignedTo", "name email")
+                .sort({ createdAt: -1 }),
+            Invoice.find()
+                .populate("residentId", "name email")
+                .sort({ createdAt: -1 }),
+            Visit.find()
+                .populate("buildingId", "name buildingNumber")
+                .populate("unitId", "unitNumber floor")
+                .sort({ visitDate: -1 })
+                .limit(500),
+        ]);
+
+    return {
+        generatedAt: new Date().toISOString(),
+        overview: dashboard,
+        analytics,
+        users,
+        buildings,
+        units,
+        maintenance: tickets,
+        invoices,
+        visits,
+    };
+};
 
 module.exports = {
     getAllUsers,
     getUserById,
     approveUser,
     rejectUser,
+    updateUser,
     getBuildings,
     createBuilding,
     updateBuilding,
@@ -1222,6 +1708,7 @@ module.exports = {
     createUnit,
     updateUnit,
     getInvoices,
+    getInvoiceById,
     createInvoice,
     updateInvoiceStatus,
     getMaintenanceTickets,
@@ -1231,4 +1718,6 @@ module.exports = {
     getVisitById,
     getDashboardOverview,
     getReportsAndAnalytics,
+    getFullCompoundReport,
+    normalizeFilter,
 };

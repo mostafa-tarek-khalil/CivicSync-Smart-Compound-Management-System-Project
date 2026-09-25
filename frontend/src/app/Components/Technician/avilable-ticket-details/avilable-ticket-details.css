@@ -1,0 +1,672 @@
+.ticket-details-page {
+  background: #f8f9ff;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #315b8f;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.back-link:hover {
+  color: #1d3f68;
+}
+
+.page-title {
+  color: #142b46;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+.details-card {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+}
+
+.ticket-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.category-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 12px;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+
+.ticket-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.ticket-heading h4 {
+  color: #142b46;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ticket-heading span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.priority {
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.priority.medium {
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+}
+
+.priority.high {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+}
+
+.priority.urgent {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.section {
+  padding-top: 22px;
+}
+
+.section h5 {
+  color: #142b46;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #64748b;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9ff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.info-box > i {
+  color: #315b8f;
+  font-size: 17px;
+  width: 20px;
+  text-align: center;
+}
+
+.info-box span {
+  display: block;
+  color: #718096;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.info-box strong {
+  display: block;
+  color: #142b46;
+  font-size: 13px;
+}
+
+.attachment-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #315b8f;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attachment-btn:hover {
+  color: #1d3f68;
+}
+
+.offer-card {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+}
+
+.offer-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
+  border-radius: 14px;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+}
+
+.offer-card h4 {
+  color: #142b46;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.offer-card p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.create-offer-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 15px;
+  border-radius: 9px;
+  background: #315b8f;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.create-offer-btn:hover {
+  background: #1d3f68;
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+
+  .ticket-details-page {
+    padding: 20px !important;
+  }
+
+  .details-card,
+  .offer-card {
+    padding: 18px;
+  }
+
+  .ticket-top {
+    align-items: flex-start;
+  }
+
+  .ticket-heading h4 {
+    font-size: 18px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .ticket-details-page {
+    padding: 15px !important;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .ticket-top {
+    flex-wrap: wrap;
+  }
+
+  .priority {
+    margin-left: 67px;
+  }
+
+}
+
+/* Loading / Error / Empty states */
+
+.loading-box {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-box .spinner-border {
+  color: #315b8f !important;
+}
+
+.loading-box p {
+  color: #64748b;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.error-box {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #dc2626;
+}
+
+.error-box span {
+  flex: 1;
+}
+
+.retry-btn {
+  border: 1px solid #315b8f;
+  background: #ffffff;
+  color: #315b8f;
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retry-btn:hover {
+  background: #315b8f;
+  color: #ffffff;
+}
+
+.empty-state {
+  background: #ffffff;
+  border: 1px solid #dce4f0;
+  border-radius: 14px;
+  padding: 70px 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
+}
+
+.empty-icon {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(49, 91, 143, 0.10);
+  color: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+.empty-state h4 {
+  color: #142b46;
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  background: #315b8f;
+  border: 1px solid #315b8f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refresh-btn:hover {
+  background: #1d3f68;
+  border-color: #1d3f68;
+}
+/* =========================================================
+   RESIDENT & LOCATION PANEL
+   Added so a technician sees who to contact and exactly
+   where the unit is, straight from the ticket view.
+   ========================================================= */
+
+.resident-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.resident-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8f9ff;
+}
+
+.resident-row i {
+  font-size: 17px;
+  color: #315b8f;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.resident-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.resident-row span {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #8290a5;
+}
+
+.resident-row strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #17253d;
+  word-break: break-word;
+}
+
+/* ---- Attachment preview -------------------------------------------------- */
+
+.attachment-preview {
+  display: block;
+  margin: 4px 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  max-width: 420px;
+}
+
+.attachment-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  background: #f1f3f9;
+}
+
+/* ---- Dark mode ---------------------------------------------------------- */
+
+html.dark-mode .resident-row {
+  background: #151f2d;
+  border-color: #29394c;
+}
+
+html.dark-mode .resident-row strong {
+  color: #e8eef6;
+}
+
+html.dark-mode .attachment-preview {
+  border-color: #29394c;
+}
+
+html.dark-mode .attachment-preview img {
+  background: #111c2e;
+}
+
+/* ---------------- Ticket Details / Job Details dark mode ---------------- */
+
+:host-context(html.dark-mode) .back-link {
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .back-link:hover {
+  color: #b1cdf0;
+}
+
+:host-context(html.dark-mode) .ticket-top {
+  border-bottom-color: #29394c;
+}
+
+:host-context(html.dark-mode) .category-icon,
+:host-context(html.dark-mode) .offer-icon,
+:host-context(html.dark-mode) .empty-icon {
+  background: rgba(49, 91, 143, 0.22);
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .ticket-heading h4,
+:host-context(html.dark-mode) .offer-card h4,
+:host-context(html.dark-mode) .section h5 {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .ticket-heading span,
+:host-context(html.dark-mode) .description,
+:host-context(html.dark-mode) .offer-card p {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .priority {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .priority.medium {
+  background: #1e2f47;
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .priority.high {
+  background: rgba(220, 38, 38, 0.14);
+  color: #f87171;
+}
+
+:host-context(html.dark-mode) .priority.urgent {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .info-box {
+  background: #111c2e;
+  border-color: #29394c;
+}
+
+:host-context(html.dark-mode) .info-box > i {
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .info-box span {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .info-box strong {
+  color: #e8eef6;
+}
+
+:host-context(html.dark-mode) .attachment-btn {
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .attachment-btn:hover {
+  color: #b1cdf0;
+}
+
+:host-context(html.dark-mode) .offer-card h4 {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .offer-card p {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .create-offer-btn {
+  background: #315b8f;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .create-offer-btn:hover {
+  background: #4072ad;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .skip-btn {
+  background: transparent;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-mode) .skip-btn:hover {
+  background: #1e293b;
+  border-color: #64748b;
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-mode) .loading-box p {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .error-box {
+  background: #151f2d;
+  border-color: #29394c;
+  color: #f87171;
+}
+
+:host-context(html.dark-mode) .retry-btn {
+  background: #16233a;
+  border-color: #2a3a4e;
+  color: #8eb2e8;
+}
+
+:host-context(html.dark-mode) .retry-btn:hover {
+  background: #315b8f;
+  border-color: #315b8f;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .empty-state p {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-mode) .refresh-btn {
+  background: #315b8f;
+  border-color: #315b8f;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .refresh-btn:hover {
+  background: #4072ad;
+  border-color: #4072ad;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .btn-primary {
+  background: #315b8f;
+  border-color: #315b8f;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .btn-primary:hover {
+  background: #4072ad;
+  border-color: #4072ad;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .btn-success {
+  background: #198754;
+  border-color: #198754;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .alert-success {
+  background: rgba(25, 135, 84, 0.16);
+  border-color: rgba(25, 135, 84, 0.35);
+  color: #75d6a3;
+}/* =========================================================
+   WORK ORDER PRINT BUTTON
+   Prints the job details card only (see core/utils/print.ts).
+   ========================================================= */
+
+.print-job-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 9px;
+  background: #315b8f;
+  border: 1px solid #315b8f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.print-job-btn:hover {
+  background: #1d3f68;
+  border-color: #1d3f68;
+}
+
+:host-context(html.dark-mode) .print-job-btn {
+  background: #315b8f;
+  border-color: #315b8f;
+  color: #ffffff;
+}
+
+:host-context(html.dark-mode) .print-job-btn:hover {
+  background: #4072ad;
+}

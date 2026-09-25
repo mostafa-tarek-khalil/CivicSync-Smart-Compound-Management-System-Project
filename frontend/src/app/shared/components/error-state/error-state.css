@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 40px 20px;
+  min-height: 220px;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  border-radius: 16px;
+  background: rgba(220, 38, 38, 0.04);
+  animation: cs-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.state-icon {
+  font-size: 40px;
+  color: #dc2626;
+  animation: cs-shake-in 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.06s both;
+}
+
+/* A short shake draws attention to the failure without being alarming. */
+@keyframes cs-shake-in {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scale(0.8);
+  }
+
+  25% {
+    transform: translateX(-5px) scale(1);
+  }
+
+  45% {
+    transform: translateX(5px);
+  }
+
+  65% {
+    transform: translateX(-3px);
+  }
+
+  85% {
+    transform: translateX(3px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.state-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--cs-text, #202238);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+.state-message {
+  margin: 0;
+  max-width: 460px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cs-text-soft, #64748b);
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.state-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--cs-primary, #315b8f);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  animation: cs-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.state-action:hover {
+  background: var(--cs-primary-dark, #1d3f68);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(49, 91, 143, 0.26);
+}
+
+.state-action:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-block,
+  .state-icon,
+  .state-title,
+  .state-message,
+  .state-action {
+    animation: none;
+  }
+
+  .state-action:hover {
+    transform: none;
+  }
+}
+
+.state-action .material-symbols-outlined {
+  font-size: 18px;
+}
+
+html.dark-mode .state-block {
+  background: rgba(220, 38, 38, 0.09);
+  border-color: rgba(248, 113, 113, 0.28);
+}
+
+html.dark-mode .state-title {
+  color: #f1f5f9;
+}
+
+html.dark-mode .state-message {
+  color: #94a3b8;
+}

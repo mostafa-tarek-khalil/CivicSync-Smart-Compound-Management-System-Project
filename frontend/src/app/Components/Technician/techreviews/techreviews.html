@@ -1,0 +1,181 @@
+<div class="reviews-page container-fluid p-3 p-md-4 p-lg-5">
+
+  <div class="page-header mb-4">
+
+    <div>
+      <h2 class="page-title">
+        Reviews
+      </h2>
+
+      <p class="page-subtitle">
+        See what residents say about your work.
+      </p>
+    </div>
+
+    <div class="rating-box">
+
+      <i class="fa-solid fa-star"></i>
+
+      <div>
+        <strong>
+          {{ getAverageRating() }}
+        </strong>
+
+        <span>
+          Average Rating
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div class="spinner-border"></div>
+
+      <p>
+        Loading reviews...
+      </p>
+
+    </div>
+
+  }
+
+  @else if (errorMessage) {
+
+    <div class="error-box">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="loadReviews()">
+
+        Try Again
+
+      </button>
+
+    </div>
+
+  }
+
+  @else {
+
+    @if (reviews.length > 0) {
+
+      <div class="reviews-card">
+
+        <div class="reviews-header">
+
+          <div>
+            <h5>
+              Resident Reviews
+            </h5>
+
+            <p>
+              {{ reviews.length }} reviews received
+            </p>
+          </div>
+
+        </div>
+
+
+        @for (
+          review of reviews;
+          track review._id
+        ) {
+
+          <div class="review-row">
+
+            <div class="avatar">
+              {{ getResidentName(review).charAt(0).toUpperCase() }}
+            </div>
+
+
+            <div class="review-content">
+
+              <div class="review-top">
+
+                <div>
+                  <strong>
+                    {{ getResidentName(review) }}
+                  </strong>
+
+                  <small>
+                    {{ review.createdAt | date:'MMM d, y' }}
+                  </small>
+                </div>
+
+
+                <div class="stars">
+
+                  @for (
+                    star of getStars(review.rating);
+                    track $index
+                  ) {
+
+                    <i
+                      class="fa-star"
+                      [class.fa-solid]="star === 'full'"
+                      [class.fa-regular]="star === 'empty'">
+                    </i>
+
+                  }
+
+                </div>
+
+              </div>
+
+
+              @if (review.comment) {
+
+                <p class="review-comment">
+                  "{{ review.comment }}"
+                </p>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+    @else {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+
+          <i class="fa-regular fa-star"></i>
+
+        </div>
+
+        <h4>
+          No Reviews Yet
+        </h4>
+
+        <p>
+          You haven't received any reviews from residents yet.
+        </p>
+
+      </div>
+
+    }
+
+  }
+
+</div>

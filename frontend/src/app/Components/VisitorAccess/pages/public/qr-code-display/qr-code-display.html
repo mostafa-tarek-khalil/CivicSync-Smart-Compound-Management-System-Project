@@ -1,0 +1,299 @@
+<div class="qr-page">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="page-header">
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+      aria-label="Go back"
+    >
+      <span class="icon">←</span>
+    </button>
+
+    <div class="header-copy">
+      <span class="eyebrow">VISITOR ACCESS</span>
+
+      <h1>Your QR Pass</h1>
+
+      <p>
+        Your visit has been approved. Present this QR code at the security gate.
+      </p>
+    </div>
+
+    <div class="approval-badge">
+      <span class="check-icon">✓</span>
+      <span>Approved</span>
+    </div>
+  </header>
+
+  <main class="qr-layout">
+    <section class="pass-card">
+
+      <div class="pass-top">
+        <div class="brand-mark">
+          <span class="brand-icon">
+            <span></span><span></span><span></span>
+          </span>
+
+          <div>
+            <strong>CivicSync</strong>
+            <small>Secure Visitor Access</small>
+          </div>
+        </div>
+
+        <div class="request-number">
+          <span>REQUEST ID</span>
+          <strong>#{{ requestId }}</strong>
+        </div>
+      </div>
+
+      <div class="qr-section">
+        <div class="qr-glow"></div>
+
+        <div class="qr-frame">
+          <div class="qr-code">
+
+            <div
+              class="qr-loading"
+              *ngIf="loading"
+            >
+              Preparing your pass...
+            </div>
+
+            <img
+              *ngIf="qrImage && !notYetAvailable"
+              class="qr-image"
+              [src]="qrImage"
+              alt="Scannable CivicSync visitor QR pass"
+            />
+
+            <!-- The pass exists but the 1-hour window has not opened yet. -->
+            <div
+              class="qr-scheduled"
+              *ngIf="notYetAvailable && !loading"
+              role="status"
+            >
+              <span class="material-symbols-outlined">schedule</span>
+
+              <strong>QR code not available yet</strong>
+
+              <p>
+                QR code will be available 1 hour prior to your visit
+                scheduled time.
+              </p>
+
+              <small *ngIf="availableFrom">
+                Available from {{ availableFrom }}
+              </small>
+            </div>
+
+            <div
+              class="qr-error"
+              *ngIf="errorMessage"
+              role="alert"
+            >
+              {{ errorMessage }}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="scan-hint">
+          <span class="scan-icon">
+            <span class="material-symbols-outlined">qr_code_scanner</span>
+          </span>
+
+          <span>
+            Scan this code at the security gate
+          </span>
+        </div>
+      </div>
+
+      <div class="visitor-preview">
+        <div class="avatar">
+          {{ initials }}
+        </div>
+
+        <div class="visitor-info">
+          <span>VISITOR</span>
+
+          <strong>
+            {{ visitorName }}
+          </strong>
+
+          <small>
+            {{ visitorEmail }}
+          </small>
+        </div>
+      </div>
+
+      <div class="ticket-divider">
+        <span></span>
+        <div></div>
+        <span></span>
+      </div>
+
+      <div class="visit-grid">
+
+        <div class="info-item">
+          <div class="info-icon">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+
+          <div class="info-content">
+            <small>HOST</small>
+
+            <strong>
+              {{ residentName }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <span class="material-symbols-outlined">apartment</span>
+          </div>
+
+          <div class="info-content">
+            <small>LOCATION</small>
+
+            <strong>
+              {{ building }} · {{ unit }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <span class="material-symbols-outlined">event</span>
+          </div>
+
+          <div class="info-content">
+            <small>VISIT DATE</small>
+
+            <strong>
+              {{ visitDate }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <span class="material-symbols-outlined">schedule</span>
+          </div>
+
+          <div class="info-content">
+            <small>START TIME</small>
+
+            <strong>
+              {{ startTime }}
+            </strong>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <aside class="details-panel">
+
+      <div class="details-heading">
+        <span class="section-label">
+          VISIT DETAILS
+        </span>
+
+        <h2>
+          Access Information
+        </h2>
+
+        <p>
+          Keep this pass available during your visit.
+        </p>
+      </div>
+
+      <div class="status-card">
+        <div class="status-icon">
+          <span class="material-symbols-outlined">verified</span>
+        </div>
+
+        <div>
+          <span>PASS STATUS</span>
+
+          <strong>
+            {{ status }}
+          </strong>
+
+          <small>
+            Your visit is authorized.
+          </small>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-icon">
+          <span class="material-symbols-outlined">flag</span>
+        </div>
+
+        <div>
+          <span>PURPOSE</span>
+
+          <strong>
+            {{ purpose }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="expiration-card">
+        <div class="expiration-top">
+
+          <div>
+            <span>PASS EXPIRES</span>
+
+            <strong>
+              {{ expiresAt }}
+            </strong>
+          </div>
+
+          <span class="timer-icon">
+            <span class="material-symbols-outlined">timer</span>
+          </span>
+
+        </div>
+
+        <div class="progress">
+          <div class="progress-value"></div>
+        </div>
+
+        <p>
+          This QR pass will become invalid after the expiration time.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="status-button"
+        (click)="viewVisitStatus()"
+      >
+        <span>
+          View Visit Status
+        </span>
+
+        <span class="button-arrow">
+          →
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="secondary-button"
+        (click)="goBack()"
+      >
+        <span class="button-arrow">
+          ←
+        </span>
+        <span>Back to Request</span>
+      </button>
+    </aside>
+  </main>
+</div>

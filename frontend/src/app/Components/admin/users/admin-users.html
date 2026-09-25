@@ -1,0 +1,153 @@
+<div class="admin-section">
+
+  <header class="section-header">
+    <div>
+      <span class="eyebrow">ADMINISTRATION</span>
+      <h1>Users</h1>
+      <p>Review registrations and manage every account in the compound.</p>
+    </div>
+
+    <span class="header-count">
+      {{ users.length }} account(s)
+      @if (pendingCount > 0) {
+      · {{ pendingCount }} pending
+      }
+    </span>
+  </header>
+
+  @if (errorMessage) {
+  <div class="alert">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+  }
+
+  <!-- Filters -->
+  <div class="filters">
+    <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+      <option value="">All statuses</option>
+      @for (status of statuses; track status) {
+      @if (status) {
+      <option [value]="status">{{ status }}</option>
+      }
+      }
+    </select>
+
+    <select [(ngModel)]="roleFilter" (change)="applyFilters()">
+      <option value="">All roles</option>
+      @for (role of roles; track role) {
+      @if (role) {
+      <option [value]="role">{{ role }}</option>
+      }
+      }
+    </select>
+
+    <input type="text" placeholder="Search name or email" [(ngModel)]="search" (keyup.enter)="applyFilters()" />
+
+    <button type="button" (click)="applyFilters()">Apply</button>
+  </div>
+
+  <!-- Table -->
+  <div class="panel">
+    @if (loading) {
+    <div class="loading">Loading users…</div>
+    } @else if (users.length === 0) {
+    <div class="table-empty">
+      <span class="material-symbols-outlined">group_off</span>
+      <span>No users match these filters</span>
+      <small>Try clearing the filters above.</small>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Unit</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (user of users; track user._id) {
+          <tr>
+            <td><strong>{{ user.name }}</strong></td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ unitLabel(user.unitId) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="statusClass(user.status)">
+                {{ user.status }}
+              </span>
+            </td>
+            <td>{{ formatDate(user.createdAt) }}</td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="btn-sm" (click)="openEditUser(user)">
+                  Edit
+                </button>
+
+                @if (user.status === 'PENDING') {
+                <button type="button" class="btn-sm approve" [disabled]="actionUserId === user._id"
+                  (click)="approve(user)">
+                  Approve
+                </button>
+
+                <button type="button" class="btn-sm reject" [disabled]="actionUserId === user._id"
+                  (click)="reject(user)">
+                  Reject
+                </button>
+                }
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+
+</div>
+
+<!-- ===================== EDIT USER MODAL ===================== -->
+@if (userModalOpen) {
+<div class="modal-backdrop" (click)="closeUserModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-head">
+      <h3>Edit User</h3>
+      <button type="button" class="modal-close" (click)="closeUserModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-field">
+        <label>Full name <small>(read-only)</small></label>
+        <input type="text" [ngModel]="userForm.name" readonly disabled />
+      </div>
+
+      <div class="form-field">
+        <label>Email address</label>
+        <input type="email" [(ngModel)]="userForm.email" />
+      </div>
+
+      <div class="form-field">
+        <label>Phone <small>(optional)</small></label>
+        <input type="text" [(ngModel)]="userForm.phone" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeUserModal()" [disabled]="savingUser">Cancel</button>
+      <button type="button" class="btn-primary" (click)="saveUser()" [disabled]="savingUser">
+        {{ savingUser ? 'Saving…' : 'Save changes' }}
+      </button>
+    </div>
+  </div>
+</div>
+}

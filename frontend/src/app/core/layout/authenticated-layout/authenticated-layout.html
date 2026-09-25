@@ -1,0 +1,77 @@
+<div class="app-shell" [class.sidebar-collapsed]="collapsed()">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.mobile-open]="mobileOpen()">
+
+    <div class="sidebar-brand">
+      <!-- The brand itself is the desktop toggle. On desktop the logo is always
+           rendered (icon-only when collapsed) so the affordance never
+           disappears; on mobile it is inert and the close button takes over. -->
+      <button
+        class="brand-toggle"
+        type="button"
+        (click)="toggleNavigation()"
+        [attr.aria-expanded]="!collapsed()"
+        aria-label="Toggle navigation"
+        title="Toggle navigation">
+
+        <span class="brand-mark">
+          <span></span><span></span><span></span>
+        </span>
+
+        <span class="brand-text" *ngIf="!collapsed()">
+          <span class="brand-title">CivicSync</span>
+          <span class="brand-sub">Smart Compound Management System</span>
+        </span>
+      </button>
+
+      <button class="sidebar-close d-mobile" type="button" (click)="closeMobile()" aria-label="Close navigation">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of navItems" class="nav-item" [routerLink]="item.route" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }" (click)="closeMobile()" [title]="item.label">
+
+        <span class="material-symbols-outlined nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="!collapsed()">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <!-- LOGOUT BUTTON -->
+      <button class="logout-button" type="button" (click)="logout()" title="Logout">
+        <span class="material-symbols-outlined">logout</span>
+        <span class="nav-label" *ngIf="!collapsed()">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop d-mobile" *ngIf="mobileOpen()" (click)="closeMobile()"></div>
+
+  <!-- Main area -->
+  <div class="main-area">
+
+    <div class="shell-topbar">
+      <!-- Mobile-only menu affordance. On desktop the brand mark in the sidebar
+           is the toggle, so this stays hidden to avoid the two icons fighting
+           over the same corner. -->
+      <button
+        class="nav-toggle d-mobile"
+        type="button"
+        (click)="toggleNavigation()"
+        [attr.aria-expanded]="mobileOpen()"
+        aria-label="Open navigation">
+
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+
+      <app-topbar></app-topbar>
+    </div>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

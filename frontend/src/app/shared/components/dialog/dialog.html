@@ -1,0 +1,25 @@
+<div class="dialog-backdrop" *ngIf="modalService.activeRequest() as request" (click)="onBackdropClick()">
+
+  <div class="dialog" [class]="'dialog-' + request.variant" role="alertdialog" aria-modal="true"
+    (click)="$event.stopPropagation()">
+
+    <div class="dialog-icon" [class]="'icon-' + request.variant">
+      <span class="material-symbols-outlined">{{ request.icon }}</span>
+    </div>
+
+    <h3 class="dialog-title">{{ request.title }}</h3>
+
+    <p class="dialog-message">{{ request.message }}</p>
+
+    <div class="dialog-actions">
+      <button *ngFor="let button of request.buttons" type="button" class="dialog-button"
+        [class]="'button-' + (button.kind || 'secondary')" (click)="modalService.resolve(button.value)">
+
+        {{ button.label }}
+
+      </button>
+    </div>
+
+  </div>
+
+</div>

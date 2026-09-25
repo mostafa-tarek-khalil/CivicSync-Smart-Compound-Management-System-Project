@@ -1,0 +1,523 @@
+<div class="ticket-details-page container-fluid p-3 p-md-4 p-lg-5">
+
+  @if (loading) {
+
+    <div class="loading-box">
+
+      <div class="spinner-border"></div>
+
+      <p>
+        Loading request details...
+      </p>
+
+    </div>
+
+  }
+
+  @else if (errorMessage) {
+
+    <div class="error-box">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+
+      <span>
+        {{ errorMessage }}
+      </span>
+
+      <button
+        type="button"
+        class="retry-btn"
+        (click)="retry()">
+
+        Try Again
+
+      </button>
+
+    </div>
+
+  }
+
+  @else if (ticket) {
+
+    <div class="page-header mb-4">
+
+      <div>
+        <a
+          (click)="goBack()"
+          class="back-link"
+          style="cursor: pointer;">
+
+          <i class="fa-solid fa-arrow-left"></i>
+
+          @if (mode === 'available') {
+            Back to Available Requests
+          } @else {
+            Back to Assigned Jobs
+          }
+
+        </a>
+
+        <h2 class="page-title">
+          @if (mode === 'available') {
+            Ticket Details
+          } @else {
+            Job Details
+          }
+        </h2>
+
+        @if (mode === 'available') {
+          <p class="page-subtitle">
+            Review the maintenance request before making an offer.
+          </p>
+        } @else {
+          <p class="page-subtitle">
+            Manage your assigned job: start, track, and resolve it.
+          </p>
+        }
+      </div>
+
+      <!-- Prints the invoice receipt for this job. The receipt renders in its
+           own section below; the global print rules emit only that. -->
+      @if (ticket && invoice) {
+      <button type="button" class="print-job-btn no-print" (click)="printInvoice()">
+        <i class="fa-solid fa-print"></i>
+        Print invoice
+      </button>
+      }
+
+    </div>
+
+
+    <div class="row g-4">
+
+      <div class="col-12 col-xl-8">
+
+        <div class="details-card">
+
+          <div class="ticket-top">
+
+            <div class="category-icon">
+
+              <i
+                class="fa-solid"
+                [class]="getCategoryIcon(ticket.category)">
+              </i>
+
+            </div>
+
+            <div class="ticket-heading">
+
+              <h4>
+                {{ ticket.title }}
+              </h4>
+
+              <span>
+                {{ ticket.category }}
+              </span>
+
+            </div>
+
+            <span
+              class="priority"
+              [class]="getPriorityClass(ticket.priority)">
+
+              {{ ticket.priority }}
+
+            </span>
+
+          </div>
+
+
+          <div class="section">
+
+            <h5>
+              Description
+            </h5>
+
+            <p class="description">
+              {{ ticket.description }}
+            </p>
+
+          </div>
+
+
+          <!-- Resident contact + exact location, so the technician knows
+               who to meet and which door to knock on. -->
+          <div class="section">
+
+            <h5>
+              Resident &amp; Location
+            </h5>
+
+            <div class="resident-panel">
+
+              <div class="resident-row">
+
+                <i class="fa-solid fa-user"></i>
+
+                <div>
+                  <span>Resident</span>
+                  <strong>{{ residentName }}</strong>
+                </div>
+
+              </div>
+
+              <div class="resident-row">
+
+                <i class="fa-solid fa-phone"></i>
+
+                <div>
+                  <span>Contact</span>
+
+                  <strong>
+                    {{ residentPhone || 'Not provided' }}
+                  </strong>
+                </div>
+
+              </div>
+
+              <div class="resident-row">
+
+                <i class="fa-solid fa-envelope"></i>
+
+                <div>
+                  <span>Email</span>
+
+                  <strong>
+                    {{ residentEmail || 'Not provided' }}
+                  </strong>
+                </div>
+
+              </div>
+
+              <div class="resident-row">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                <div>
+                  <span>Location</span>
+                  <strong>{{ locationLabel }}</strong>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="info-grid">
+
+            <div class="info-box">
+
+              <i class="fa-regular fa-calendar"></i>
+
+              <div>
+                <span>
+                  Created
+                </span>
+
+                <strong>
+                  {{ ticket.createdAt | date:'MMM d, y, h:mm a' }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-circle-info"></i>
+
+              <div>
+                <span>
+                  Status
+                </span>
+
+                <strong>
+                  {{ ticket.status }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-flag"></i>
+
+              <div>
+                <span>
+                  Priority
+                </span>
+
+                <strong>
+                  {{ ticket.priority }}
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <i class="fa-solid fa-layer-group"></i>
+
+              <div>
+                <span>
+                  Category
+                </span>
+
+                <strong>
+                  {{ ticket.category }}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          @if (ticket.attachmentUrl) {
+
+            <div class="section">
+
+              <h5>
+                Attachment
+              </h5>
+
+              <a
+                [href]="attachmentUrl"
+                target="_blank"
+                rel="noopener"
+                class="attachment-preview">
+
+                <img
+                  [src]="attachmentUrl"
+                  alt="Ticket attachment"
+                  loading="lazy" />
+
+              </a>
+
+              <a
+                [href]="attachmentUrl"
+                target="_blank"
+                rel="noopener"
+                class="attachment-btn">
+
+                <i class="fa-solid fa-paperclip"></i>
+
+                View Attachment
+
+              </a>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <div class="col-12 col-xl-4">
+
+        @if (mode === 'available') {
+
+          <div class="offer-card">
+
+            <div class="offer-icon">
+
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+
+            </div>
+
+            @if (existingOffer) {
+
+              <h4>
+                Offer already sent
+              </h4>
+
+              <p>
+                You already sent an offer for this request
+                ({{ existingOffer.status }}). You can follow it up from My Offers.
+              </p>
+
+              <a
+                [routerLink]="[
+                  '/technician/offer',
+                  existingOffer._id,
+                  'negotiation'
+                ]"
+                class="create-offer-btn">
+
+                <i class="fa-solid fa-comments"></i>
+
+                Go To My Offer
+
+              </a>
+
+            } @else {
+
+              <h4>
+                Interested in this request?
+              </h4>
+
+              <p>
+                Submit your price and estimated duration to offer your services.
+              </p>
+
+              <a
+                [routerLink]="[
+                  '/technician/job',
+                  ticket._id,
+                  'create-offer'
+                ]"
+                class="create-offer-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Create Offer
+
+              </a>
+
+              <button
+                type="button"
+                class="skip-btn btn btn-outline-secondary w-100 mt-2"
+                [disabled]="isProcessing"
+                (click)="skipTicket()">
+
+                <i class="fa-solid fa-forward"></i>
+
+                Skip This Request
+
+              </button>
+
+            }
+
+          </div>
+
+        } @else {
+
+          <div class="offer-card">
+
+            <div class="offer-icon">
+
+              <i class="fa-solid fa-briefcase"></i>
+
+            </div>
+
+            <h4>
+              Manage this job
+            </h4>
+
+            <p>
+              Update the job status as you progress with the work.
+            </p>
+
+            @if (ticket.status === 'ASSIGNED') {
+
+              <button
+                type="button"
+                class="btn btn-primary w-100"
+                [disabled]="isProcessing"
+                (click)="startTicket()">
+
+                <i class="fa-solid fa-play"></i>
+
+                Start Job
+
+              </button>
+
+            }
+
+            @if (ticket.status === 'IN_PROGRESS') {
+
+              <button
+                type="button"
+                class="btn btn-success w-100"
+                [disabled]="isProcessing"
+                (click)="resolveTicket()">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                Mark as Resolved
+
+              </button>
+
+            }
+
+            @if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+
+              <div class="alert alert-success text-center mb-0">
+                <i class="fa-solid fa-circle-check"></i>
+                This job is completed.
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================== INVOICE RECEIPT =====================
+         The same shared receipt component the admin and resident use, so the
+         printed document is identical across all three roles. Shown only once
+         an admin has raised the invoice for this (closed) ticket. -->
+    @if (invoice) {
+    <div class="row g-4 mt-1 no-print-wrap">
+      <div class="col-12">
+        <app-invoice-receipt
+          [invoice]="invoice"
+          [viewerRole]="'Technician'"
+          [showActions]="false">
+        </app-invoice-receipt>
+      </div>
+    </div>
+    }
+
+  }
+
+  @else {
+
+    <div class="empty-state">
+
+      <div class="empty-icon">
+
+        <i class="fa-solid fa-screwdriver-wrench"></i>
+
+      </div>
+
+      <h4>
+        No Request Loaded
+      </h4>
+
+      <p>
+        This request is not available to you anymore. Pick another one from the list.
+      </p>
+
+      <button
+        type="button"
+        class="refresh-btn"
+        (click)="goBack()">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        @if (mode === 'available') {
+          Back to Available Requests
+        } @else {
+          Back to Assigned Jobs
+        }
+
+      </button>
+
+    </div>
+
+  }
+
+</div>

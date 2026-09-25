@@ -32,7 +32,34 @@
 
     <!-- IDENTITY CARD -->
     <section class="card identity-card">
-      <div class="avatar">{{ initials }}</div>
+      <div class="avatar-upload">
+        <app-avatar
+          [profileImage]="profile.profileImage"
+          [name]="profile.name"
+          size="xl"></app-avatar>
+
+        <input
+          #avatarInput
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          hidden
+          (change)="onAvatarSelected($event)" />
+
+        <button
+          class="avatar-edit-btn"
+          type="button"
+          (click)="avatarInput.click()"
+          [disabled]="uploadingAvatar"
+          aria-label="Change profile picture">
+
+          <span class="material-symbols-outlined">
+            {{ uploadingAvatar ? 'hourglass_top' : 'photo_camera' }}
+          </span>
+
+        </button>
+      </div>
+
+      <p class="avatar-hint">Click the camera to change your picture.</p>
 
       <h2>{{ profile.name }}</h2>
       <span class="role-badge">{{ roleLabel }}</span>
@@ -122,6 +149,67 @@
         <button class="primary-btn" type="button" (click)="save()" [disabled]="!isDirty || saving">
           <span class="material-symbols-outlined">save</span>
           {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- PASSWORD CARD -->
+    <section class="card password-card">
+      <div class="card-heading">
+        <span class="material-symbols-outlined">lock_reset</span>
+        <div>
+          <h3>Update password</h3>
+          <p>Change the password you use to sign in.</p>
+        </div>
+      </div>
+
+      <div class="alert success" *ngIf="passwordSuccess">
+        <span class="material-symbols-outlined">check_circle</span>
+        {{ passwordSuccess }}
+      </div>
+
+      <div class="alert error" *ngIf="passwordError">
+        <span class="material-symbols-outlined">error</span>
+        {{ passwordError }}
+      </div>
+
+      <div class="form-group">
+        <label for="currentPassword">Current password</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">lock</span>
+          <input id="currentPassword" [type]="showPasswords ? 'text' : 'password'"
+            [(ngModel)]="currentPassword" placeholder="Enter your current password" autocomplete="current-password" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="newPassword">New password</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">key</span>
+          <input id="newPassword" [type]="showPasswords ? 'text' : 'password'" [(ngModel)]="newPassword"
+            placeholder="At least 8 characters" autocomplete="new-password" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm new password</label>
+        <div class="input-wrapper">
+          <span class="material-symbols-outlined">key</span>
+          <input id="confirmPassword" [type]="showPasswords ? 'text' : 'password'" [(ngModel)]="confirmPassword"
+            placeholder="Re-type the new password" autocomplete="new-password" />
+        </div>
+      </div>
+
+      <label class="show-passwords">
+        <input type="checkbox" [(ngModel)]="showPasswords" />
+        <span>Show passwords</span>
+      </label>
+
+      <div class="form-actions">
+        <button class="primary-btn" type="button" (click)="changePassword()"
+          [disabled]="changingPassword || !currentPassword || !newPassword || !confirmPassword">
+          <span class="material-symbols-outlined">lock_reset</span>
+          {{ changingPassword ? 'Updating…' : 'Update password' }}
         </button>
       </div>
     </section>

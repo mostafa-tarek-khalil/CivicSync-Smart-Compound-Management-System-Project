@@ -25,6 +25,79 @@ html, body {
   padding: 0;
 }
 
+/* Global box model reset (previously duplicated inside several component
+   stylesheets). Declared once here so components do not each repeat it. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* =========================================================
+   UNIFIED THEME (single palette for the whole app)
+   Overrides Bootstrap so its components adopt the CivicSync
+   palette instead of the default Bootstrap blue.
+   ========================================================= */
+
+:root {
+  --cs-primary: #315b8f;
+  --cs-primary-dark: #1d3f68;
+  --cs-primary-soft: rgba(49, 91, 143, 0.10);
+
+  --cs-page-bg: #f7f8fc;
+  --cs-surface: #ffffff;
+  --cs-surface-soft: #f4f7fc;
+  --cs-border: #e2e8f0;
+  --cs-text: #202238;
+  --cs-text-soft: #64748b;
+
+  /* Bootstrap variable overrides */
+  --bs-primary: #315b8f;
+  --bs-primary-rgb: 49, 91, 143;
+  --bs-link-color: #315b8f;
+  --bs-link-color-rgb: 49, 91, 143;
+  --bs-link-hover-color: #1d3f68;
+  --bs-body-font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+body {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+/* Bootstrap components -> app palette */
+.btn-primary {
+  --bs-btn-bg: #315b8f;
+  --bs-btn-border-color: #315b8f;
+  --bs-btn-hover-bg: #1d3f68;
+  --bs-btn-hover-border-color: #1d3f68;
+  --bs-btn-active-bg: #16324f;
+  --bs-btn-active-border-color: #16324f;
+  --bs-btn-disabled-bg: #315b8f;
+  --bs-btn-disabled-border-color: #315b8f;
+}
+
+.text-primary {
+  color: #315b8f !important;
+}
+
+.bg-primary {
+  background-color: #315b8f !important;
+}
+
+.border-primary {
+  border-color: #315b8f !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #315b8f;
+  box-shadow: 0 0 0 0.2rem rgba(49, 91, 143, 0.15);
+}
+
 /* =========================================================
    GLOBAL DARK MODE BASELINE
    Applied when ThemeService adds `dark-mode` to <html>.
@@ -41,6 +114,210 @@ html.dark-mode,
 html.dark-mode body {
   background: #0d1420;
   color: #e8eef6;
+}
+
+/* Bootstrap surfaces in dark mode */
+html.dark-mode .text-muted {
+  color: #94a3b8 !important;
+}
+
+html.dark-mode .bg-white,
+html.dark-mode .card,
+html.dark-mode .modal-content,
+html.dark-mode .dropdown-menu {
+  background-color: #151f2d !important;
+  color: #e8eef6;
+}
+
+html.dark-mode .border,
+html.dark-mode .border-top,
+html.dark-mode .border-bottom,
+html.dark-mode .border-end,
+html.dark-mode .border-start {
+  border-color: #29394c !important;
+}
+
+html.dark-mode .form-control,
+html.dark-mode .form-select {
+  background-color: #16233a;
+  border-color: #2a3a4e;
+  color: #e8eef6;
+}
+
+html.dark-mode .form-control::placeholder {
+  color: #66778d;
+}
+
+html.dark-mode .table {
+  color: #e8eef6;
+}
+
+html.dark-mode .list-group-item {
+  background-color: #151f2d;
+  border-color: #29394c;
+  color: #e8eef6;
+}
+
+/* =========================================================
+   UNIFIED DARK MODE for dashboard surfaces
+   (resident + technician portals use hard-coded light colors;
+    these overrides keep them consistent with the app theme)
+   ========================================================= */
+
+html.dark-mode .dashboard-page,
+html.dark-mode main {
+  background: #0d1420 !important;
+  color: #e8eef6;
+}
+
+html.dark-mode .page-title,
+html.dark-mode .section-header h1,
+html.dark-mode .section-header h2,
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6 {
+  color: #f1f5f9;
+}
+
+html.dark-mode .page-subtitle,
+html.dark-mode .text-muted,
+html.dark-mode p,
+html.dark-mode small,
+html.dark-mode label {
+  color: #94a3b8;
+}
+
+/* Cards / surfaces */
+html.dark-mode .stat-card,
+html.dark-mode .dashboard-card,
+html.dark-mode .card,
+html.dark-mode .ticket-card,
+html.dark-mode .offer-card,
+html.dark-mode .review-card,
+html.dark-mode .review-row,
+html.dark-mode .list-group-item,
+html.dark-mode .bg-white,
+html.dark-mode .bg-light {
+  background-color: #172235 !important;
+  border-color: #29394c !important;
+  color: #e8eef6;
+}
+
+html.dark-mode .stat-card,
+html.dark-mode .dashboard-card {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+html.dark-mode .stat-icon,
+html.dark-mode .ticket-icon,
+html.dark-mode .empty-small,
+html.dark-mode .badge.bg-light,
+html.dark-mode .status,
+html.dark-mode .priority {
+  background-color: #1e2f47 !important;
+  color: #8eb2e8;
+}
+
+html.dark-mode .section-header {
+  border-color: #29394c !important;
+}
+
+html.dark-mode .view-link {
+  color: #8eb2e8;
+}
+
+/* Tables */
+html.dark-mode table,
+html.dark-mode .table {
+  color: #e8eef6;
+}
+
+html.dark-mode .table > :not(caption) > * > * {
+  background-color: transparent;
+  border-color: #29394c;
+  color: #e8eef6;
+}
+
+html.dark-mode thead th {
+  color: #94a3b8;
+  border-color: #29394c;
+}
+
+/* Inputs */
+html.dark-mode input,
+html.dark-mode textarea,
+html.dark-mode select,
+html.dark-mode .form-control,
+html.dark-mode .form-select {
+  background-color: #16233a;
+  border-color: #2a3a4e;
+  color: #e8eef6;
+}
+
+html.dark-mode input::placeholder,
+html.dark-mode textarea::placeholder {
+  color: #66778d;
+}
+
+/* Empty / alerts */
+html.dark-mode .empty-state,
+html.dark-mode .alert {
+  background-color: #131f31;
+  border-color: #29394c;
+  color: #cbd5e1;
+}
+
+html.dark-mode .sidebar {
+  background-color: #111c2e !important;
+  border-color: #29394c !important;
+}
+
+html.dark-mode .nav-item {
+  color: #94a3b8;
+}
+
+html.dark-mode .nav-item:hover {
+  background-color: #1e2f47;
+  color: #e8eef6;
+}
+
+html.dark-mode .nav-link-custom.active {
+  background-color: #315b8f;
+  color: #ffffff;
+}
+
+/* Text colors used by the resident/technician portals.
+   These elements are written with dark-navy / gray text that only
+   works on light backgrounds — force readable colors in dark mode. */
+html.dark-mode .page-title,
+html.dark-mode .page-subtitle,
+html.dark-mode .section-header h5,
+html.dark-mode .section-header h4,
+html.dark-mode .offer-title,
+html.dark-mode .review-top strong,
+html.dark-mode .stat-info strong,
+html.dark-mode [class*='-title'],
+html.dark-mode [class*='-name'] {
+  color: #f1f5f9 !important;
+}
+
+html.dark-mode .stat-label,
+html.dark-mode .ticket-meta,
+html.dark-mode .review-content p,
+html.dark-mode .section-header p,
+html.dark-mode .page-subtitle,
+html.dark-mode .text-secondary {
+  color: #94a3b8 !important;
+}
+
+/* Light-gray chips / badges flipped for dark */
+html.dark-mode .priority-low,
+html.dark-mode .badge-light {
+  background-color: #1e2f47 !important;
+  color: #cbd5e1 !important;
 }
 
 /* Smooth the transition for the whole app. */
@@ -64,4 +341,362 @@ html.dark-mode ::-webkit-scrollbar-thumb {
 
 html.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: #435a75;
+}
+/* =========================================================
+   PRINT — INVOICE ONLY
+   =========================================================
+   When an invoice is on screen, its receipt is marked with
+   `.invoice-print-area`. Everything else in the shell (sidebar,
+   topbar, toolbar, buttons, page headings, other cards) is hidden so
+   `window.print()` emits the invoice ALONE.
+
+   How it works: `body:has(.invoice-print-area)` scopes every rule below
+   to "a printable invoice is present". Pages that merely contain the word
+   print but no receipt are completely unaffected — so printing a report or
+   any other screen keeps its normal behaviour.
+
+   Note: the app sets `display` on almost every element, so the hide rule
+   uses `display: none !important` rather than `visibility`, which would
+   still reserve layout space and produce blank pages.
+   ========================================================= */
+
+@media print {
+  /* Hide every direct child of the shell, then re-show only the branch that
+     contains the invoice. This is what keeps the sidebar and topbar out of
+     the printout regardless of how deeply the receipt is nested. */
+  body:has(.invoice-print-area) .sidebar,
+  body:has(.invoice-print-area) .shell-topbar,
+  body:has(.invoice-print-area) .sidebar-backdrop,
+  body:has(.invoice-print-area) app-topbar,
+  body:has(.invoice-print-area) .receipt-actions,
+  body:has(.invoice-print-area) .no-print {
+    display: none !important;
+  }
+
+  /* Strip the shell chrome so the receipt is not offset or clipped. */
+  body:has(.invoice-print-area) .app-shell,
+  body:has(.invoice-print-area) .main-area,
+  body:has(.invoice-print-area) .content,
+  body:has(.invoice-print-area) .invoice-print-page {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    min-height: 0 !important;
+  }
+
+  /* Neutralise the modal/overlay wrapper when the receipt is shown inside one,
+     so a print from a dialog is not cropped to the dialog's scroll area. */
+  body:has(.invoice-print-area) .modal-backdrop,
+  body:has(.invoice-print-area) .modal-card {
+    position: static !important;
+    display: block !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-height: none !important;
+    max-width: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Any sibling content around the receipt (page headings, filters, tables)
+     is removed. `:has` keeps this safely scoped to invoice pages. */
+  body:has(.invoice-print-area) .content > *:not(:has(.invoice-print-area)),
+  body:has(.invoice-print-area) .content > * > *:not(:has(.invoice-print-area)) {
+    display: none !important;
+  }
+
+  /* Force the receipt itself to full width with no screen-only decoration. */
+  .invoice-print-area {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* A printed document must not inherit the on-screen dark theme. */
+  html.dark-mode body:has(.invoice-print-area),
+  html.dark-mode body:has(.invoice-print-area) .app-shell,
+  html.dark-mode body:has(.invoice-print-area) .content {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Preserve the brand band and status colours on colour printers while
+     staying legible on monochrome ones. */
+  .invoice-print-area,
+  .invoice-print-area * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+}/* =========================================================
+   PRINT — SINGLE ELEMENT (e.g. a technician work order)
+   =========================================================
+   Used by `printElement()` in core/utils/print.ts. While
+   `body.printing-element` is set, only the element carrying
+   `print-target` is emitted. The classes are added right before
+   window.print() and removed on afterprint, so normal rendering is
+   untouched the moment the dialog closes.
+   ========================================================= */
+
+@media print {
+  body.printing-element .sidebar,
+  body.printing-element .shell-topbar,
+  body.printing-element .sidebar-backdrop,
+  body.printing-element app-topbar,
+  body.printing-element .no-print {
+    display: none !important;
+  }
+
+  /* Hide every sibling along the path to the target, keeping the target's own
+     ancestor chain so it is not orphaned. */
+  body.printing-element .content *:not(.print-target):not(.print-target *):not(:has(.print-target)) {
+    display: none !important;
+  }
+
+  body.printing-element .app-shell,
+  body.printing-element .main-area,
+  body.printing-element .content {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  body.printing-element .print-target {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.printing-element .print-target,
+  body.printing-element .print-target * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}/* =========================================================
+   MOTION LAYER
+   Shared keyframes, 3D depth helpers and reveal utilities used
+   across every page. Declared once globally so pages only need
+   to reference a class (or an animation name) instead of each
+   redefining the same keyframes.
+   ========================================================= */
+
+/* ---------- Keyframes ---------- */
+
+@keyframes cs-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cs-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cs-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cs-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cs-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cs-nudge-right {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+/* ---------- 3D depth helpers ----------
+   These give flat cards a sense of tilt / depth. The parent must
+   provide the perspective, otherwise the rotation looks flat. */
+
+.cs-3d-scene {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+
+/* A card that lifts toward the viewer and tilts slightly on hover. */
+.cs-3d-card {
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.cs-3d-card:hover {
+  transform: translateY(-6px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+  box-shadow: 0 22px 45px rgba(20, 43, 70, 0.16),
+    0 4px 12px rgba(20, 43, 70, 0.08);
+}
+
+/* Children float above the tilted surface for a layered look. */
+.cs-3d-layer {
+  transform: translateZ(28px);
+}
+
+/* A gentler variant for wide panels where a strong tilt would look odd. */
+.cs-3d-card-soft {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.cs-3d-card-soft:hover {
+  transform: translateY(-4px) rotateX(2.5deg);
+  box-shadow: 0 18px 38px rgba(20, 43, 70, 0.14);
+}
+
+/* Press feedback — the surface pushes away from the viewer. */
+.cs-3d-press:active {
+  transform: translateZ(-12px) scale(0.985);
+}
+
+/* ---------- Reveal utilities ---------- */
+
+.cs-reveal {
+  animation: cs-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cs-reveal-fast {
+  animation: cs-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cs-reveal-pop {
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cs-reveal-right {
+  animation: cs-slide-in-right 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Delay helpers so grids can cascade without per-page rules. */
+.cs-delay-1 { animation-delay: 0.06s; }
+.cs-delay-2 { animation-delay: 0.12s; }
+.cs-delay-3 { animation-delay: 0.18s; }
+.cs-delay-4 { animation-delay: 0.24s; }
+.cs-delay-5 { animation-delay: 0.3s; }
+.cs-delay-6 { animation-delay: 0.36s; }
+.cs-delay-7 { animation-delay: 0.42s; }
+.cs-delay-8 { animation-delay: 0.48s; }
+
+/* ---------- Global surface polish ----------
+   Applied to the common card class names the whole app uses, so
+   every page picks up a consistent lift without edits per page. */
+
+.cs-hover-lift {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease;
+}
+
+.cs-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(20, 43, 70, 0.12);
+}
+
+/* Icon nudge used on buttons that "go somewhere". */
+.cs-hover-lift:hover .cs-arrow-slide,
+a:hover .cs-arrow-slide {
+  transform: translateX(4px);
+}
+
+.cs-arrow-slide {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Accessibility ----------
+   One place to switch all decorative motion off. */
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-reveal,
+  .cs-reveal-fast,
+  .cs-reveal-pop,
+  .cs-reveal-right,
+  .cs-3d-card,
+  .cs-3d-card-soft,
+  .cs-hover-lift,
+  .cs-arrow-slide {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .cs-3d-card:hover,
+  .cs-3d-card-soft:hover {
+    transform: none !important;
+  }
 }

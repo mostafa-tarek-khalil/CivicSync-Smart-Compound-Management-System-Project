@@ -59,6 +59,18 @@ const maintenanceTicketSchema = new mongoose.Schema(
             default: "OPEN",
         },
 
+        /**
+         * Maintenance chats are locked automatically once a ticket reaches a
+         * final state. Stored explicitly (instead of only being derived from
+         * `status`) so an admin can also lock a conversation manually, and so
+         * the client can render the read-only composer without re-deriving the
+         * rule from the status list.
+         */
+        chatLocked: {
+            type: Boolean,
+            default: false,
+        },
+
         assignedTo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

@@ -1,0 +1,153 @@
+<!--
+  Printable payment receipt.
+
+  The `invoice-print-area` class is the contract with the global print rules in
+  styles.css: only this subtree is emitted by window.print().
+-->
+<div class="invoice-print-area receipt" *ngIf="view">
+
+  <!-- ===================== Header band ===================== -->
+  <header class="receipt-head">
+    <div class="issuer">
+      <div class="issuer-mark" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+
+      <div class="issuer-text">
+        <strong>CivicSync</strong>
+        <small>Smart Compound Management System</small>
+      </div>
+    </div>
+
+    <div class="receipt-head-meta">
+      <span class="doc-type">PAYMENT INVOICE</span>
+      <span class="doc-number">{{ view.number }}</span>
+    </div>
+  </header>
+
+  <!-- Status stamp: the single most important state on a receipt. -->
+  <div class="receipt-stamp" [ngClass]="view.statusClass">
+    <span class="stamp-label">{{ view.statusLabel }}</span>
+    <span class="stamp-note" *ngIf="view.isSettled && view.paidLabel !== '—'">
+      Settled {{ view.paidLabel }}
+    </span>
+    <span class="stamp-note" *ngIf="view.status === 'PAYMENT_SUBMITTED'">
+      Awaiting admin confirmation
+    </span>
+    <span class="stamp-note" *ngIf="view.status === 'OVERDUE'">
+      Past due {{ view.dueLabel }}
+    </span>
+    <span class="stamp-note" *ngIf="view.status === 'CANCELLED'">
+      Void — no payment required
+    </span>
+  </div>
+
+  <!-- ===================== Billed to / summary ===================== -->
+  <section class="receipt-split">
+    <div class="split-block">
+      <span class="block-label">Billed to</span>
+      <strong class="block-value">{{ view.residentName }}</strong>
+      <small class="block-sub" *ngIf="view.residentContact">{{ view.residentContact }}</small>
+    </div>
+
+    <div class="split-block">
+      <span class="block-label">Unit</span>
+      <strong class="block-value">{{ view.unitLabel }}</strong>
+    </div>
+  </section>
+
+  <!-- ===================== Line items ===================== -->
+  <table class="receipt-table">
+    <thead>
+      <tr>
+        <th class="col-desc">Description</th>
+        <th class="col-amount">Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td class="col-desc">
+          <strong>{{ view.description }}</strong>
+
+          <small class="row-note" *ngIf="view.isMaintenance && view.ticketLabel !== '—'">
+            Linked maintenance ticket: {{ view.ticketLabel }}
+          </small>
+
+          <small class="row-note" *ngIf="view.ticketId">
+            Ticket reference: {{ view.ticketId }}
+          </small>
+        </td>
+
+        <td class="col-amount">{{ formatEgp(view.amount) }}</td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr class="total-row">
+        <td class="col-desc">Total due</td>
+        <td class="col-amount">{{ formatEgp(view.amount) }}</td>
+      </tr>
+
+      <tr class="settled-row" *ngIf="view.isSettled">
+        <td class="col-desc">Amount paid</td>
+        <td class="col-amount">{{ formatEgp(view.amount) }}</td>
+      </tr>
+
+      <tr class="settled-row" *ngIf="view.isSettled">
+        <td class="col-desc">Balance</td>
+        <td class="col-amount">{{ formatEgp(0) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- ===================== Dates ===================== -->
+  <section class="receipt-dates">
+    <div class="date-cell">
+      <span class="block-label">Invoice date</span>
+      <strong>{{ view.issuedLabel }}</strong>
+    </div>
+
+    <div class="date-cell">
+      <span class="block-label">Due date</span>
+      <strong>{{ view.dueLabel }}</strong>
+    </div>
+
+    <div class="date-cell" *ngIf="view.isSettled">
+      <span class="block-label">Payment date</span>
+      <strong>{{ view.paidLabel }}</strong>
+    </div>
+  </section>
+
+  <!-- ===================== Reference strip ===================== -->
+  <footer class="receipt-foot">
+    <div class="ref-block">
+      <span class="block-label">Payment reference</span>
+      <div class="ref-code" aria-hidden="true">
+        <!-- Decorative barcode-ish strip built from the invoice number; it is a
+             visual affordance only and encodes nothing. -->
+        <span *ngFor="let bar of barcodeFor(view.number)" [style.width.px]="bar"></span>
+      </div>
+      <span class="ref-text">{{ view.number }}</span>
+    </div>
+
+    <div class="foot-note">
+      <p>This is a system-generated invoice from CivicSync.</p>
+      <p *ngIf="viewerRole">Issued to {{ viewerRole | titlecase }} portal.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== Actions (never printed) ===================== -->
+  <div class="receipt-actions no-print" *ngIf="showActions">
+    <button type="button" class="btn-print" (click)="print()">
+      <span class="material-symbols-outlined">print</span>
+      Print invoice
+    </button>
+
+    <button type="button" class="btn-ticket" *ngIf="view.ticketId" (click)="goToTicket()">
+
+      <span class="material-symbols-outlined">confirmation_number</span>
+      View maintenance ticket
+    </button>
+  </div>
+</div>

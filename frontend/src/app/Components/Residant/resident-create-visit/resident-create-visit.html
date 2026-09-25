@@ -1,0 +1,157 @@
+<div class="create-visit-page">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">RESIDENT • VISITOR ACCESS</span>
+      <h1>Invite a Visitor</h1>
+      <p>Create an invitation for a guest. They will be expected at the gate on the selected date and time.</p>
+    </div>
+  </header>
+
+  <div class="alert success" *ngIf="successMessage">
+    <span class="material-symbols-outlined">check_circle</span>
+    {{ successMessage }}
+  </div>
+
+  <div class="alert error" *ngIf="errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    {{ errorMessage }}
+  </div>
+
+  <div class="layout">
+
+    <!-- Invite form -->
+    <section class="panel form-panel">
+      <div class="panel-header">
+        <span class="material-symbols-outlined">person_add</span>
+        <h5>Visitor Details</h5>
+      </div>
+
+      <form class="form-body" (ngSubmit)="submit()">
+
+        <div class="form-group">
+          <label for="visitorName">Visitor name</label>
+          <input
+            id="visitorName"
+            type="text"
+            name="visitorName"
+            placeholder="Enter the visitor's full name"
+            [(ngModel)]="form.visitorName"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="visitorEmail">Email address</label>
+          <input
+            id="visitorEmail"
+            type="email"
+            name="visitorEmail"
+            placeholder="visitor@example.com"
+            [(ngModel)]="form.visitorEmail"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="visitorPhone">Phone number <span class="optional">(optional)</span></label>
+          <input
+            id="visitorPhone"
+            type="tel"
+            name="visitorPhone"
+            placeholder="Enter a phone number"
+            [(ngModel)]="form.visitorPhone"
+          >
+        </div>
+
+        <div class="two-columns">
+          <div class="form-group">
+            <label for="visitDate">Visit date</label>
+            <input
+              id="visitDate"
+              type="date"
+              name="visitDate"
+              [min]="minDate"
+              [(ngModel)]="form.visitDate"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="visitStartTime">Start time</label>
+            <input
+              id="visitStartTime"
+              type="time"
+              name="visitStartTime"
+              [(ngModel)]="form.visitStartTime"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="purpose">Purpose <span class="optional">(optional)</span></label>
+          <textarea
+            id="purpose"
+            name="purpose"
+            rows="3"
+            placeholder="e.g. Family visit, delivery, contractor"
+            [(ngModel)]="form.purpose"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary-btn" [disabled]="submitting">
+            <span class="material-symbols-outlined">send</span>
+            {{ submitting ? 'Creating…' : 'Create Invitation' }}
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Existing invitations -->
+    <section class="panel list-panel">
+      <div class="panel-header">
+        <span class="material-symbols-outlined">list_alt</span>
+        <h5>Your Invitations</h5>
+      </div>
+
+      <div class="list-empty" *ngIf="loadingVisits">
+        <span class="material-symbols-outlined">hourglass_top</span>
+        <p>Loading…</p>
+      </div>
+
+      <div class="list-empty" *ngIf="!loadingVisits && visits.length === 0">
+        <span class="material-symbols-outlined">group_off</span>
+        <p>You haven't invited any visitors yet.</p>
+      </div>
+
+      <ul class="visit-list" *ngIf="!loadingVisits && visits.length > 0">
+        <li class="visit-row" *ngFor="let visit of visits">
+          <div class="visit-avatar">{{ visit.visitorName.charAt(0).toUpperCase() }}</div>
+
+          <div class="visit-main">
+            <div class="visit-name-row">
+              <strong>{{ visit.visitorName }}</strong>
+              <span class="status-badge" [attr.data-status]="visit.status">{{ visit.statusLabel }}</span>
+            </div>
+            <div class="visit-meta">
+              <span>
+                <span class="material-symbols-outlined">mail</span>
+                {{ visit.visitorEmail }}
+              </span>
+              <span>
+                <span class="material-symbols-outlined">event</span>
+                {{ visit.visitDate }} · {{ visit.startTime }}
+              </span>
+              <span>
+                <span class="material-symbols-outlined">category</span>
+                {{ visit.purpose }}
+              </span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+</div>
