@@ -80,8 +80,14 @@ const getAssignedTicketDetails = async (req, res) => {
     );
     res.status(200).json(details);
   } catch (error) {
+    // The client always reads `ticket`, so an error response that omits the key
+    // leaves the job screen with no ticket at all — which rendered every
+    // "Details" click as "No Request Loaded". Match the available-details
+    // handler and always answer with the same top-level shape.
     res.status(error.statusCode || 500).json({
       message: error.message || "Failed to get ticket details",
+      ticket: null,
+      invoice: null,
     });
   }
 };

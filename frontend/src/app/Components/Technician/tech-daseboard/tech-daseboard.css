@@ -1,87 +1,69 @@
+@import '../shared/tech-theme.css';
+
+
+/* =========================
+   PAGE
+========================= */
+
 .dashboard-page {
-  background: #f8f9ff;
   min-height: 100vh;
+  background-color: var(--page-bg);
 }
 
 
 /* =========================
-   ENTRANCE ANIMATIONS
+   HEADER
 ========================= */
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.94);
-  }
-
-  60% {
-    opacity: 1;
-    transform: scale(1.01);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Page Header */
-
 .page-title {
-  color: #142b46;
+  margin: 0 0 4px;
+
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 6px;
+
+  color: var(--text-primary);
 }
 
 .page-subtitle {
-  color: #64748b;
-  margin-bottom: 0;
+  margin: 0;
+
+  font-size: 12.5px;
+
+  color: var(--text-muted);
 }
 
 /* The title block and the loading / error states ride in first. */
 .dashboard-page > .mb-4 {
-  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cs-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 
-/* Statistics */
+/* =========================
+   STAT CARDS
+========================= */
 
 .stat-card {
-  background: #ffffff;
-  border: 1px solid #dce4f0;
-  border-radius: 14px;
-  padding: 20px;
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 13px;
+
+  padding: 17px;
+
   display: flex;
   align-items: center;
-  gap: 15px;
+
+  gap: 13px;
+
+  box-shadow: var(--shadow-sm);
+
   height: 100%;
-  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
-  transition: 0.2s ease;
-  animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  animation: cs-pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease;
 }
 
 /* The four stat cards cascade in one after another. */
@@ -103,57 +85,101 @@
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(20, 43, 70, 0.10);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  border-radius: 10px;
+
+  background: var(--primary-soft);
+  color: var(--primary);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Each summary card carries its own accent, the same way the resident
+   dashboard colours Visitors / Maintenance / Completed / Paid. */
+.stat-icon.available {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.stat-icon.assigned {
+  color: var(--cat-electricity);
+  background: var(--cat-electricity-soft);
+}
+
+.stat-icon.offers {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.stat-icon.rating {
+  color: var(--cat-electricity);
+  background: var(--cat-electricity-soft);
 }
 
 .stat-card:hover .stat-icon {
   transform: scale(1.1) rotate(-5deg);
 }
 
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: 12px;
-  background: rgba(49, 91, 143, 0.10);
-  color: #315b8f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
 .stat-card span {
   display: block;
-  color: #64748b;
-  font-size: 14px;
-  margin-bottom: 4px;
+
+  color: var(--text-muted);
+
+  font-size: 11.5px;
+  font-weight: 600;
+
+  margin-bottom: 2px;
 }
 
 .stat-card strong {
   display: block;
-  color: #142b46;
-  font-size: 24px;
+
+  color: var(--text-primary);
+
+  font-size: 20px;
   font-weight: 700;
+
+  line-height: 1.2;
 }
 
 
-/* Dashboard Cards */
+/* =========================
+   PANELS
+========================= */
 
 .dashboard-card {
-  background: #ffffff;
-  border: 1px solid #dce4f0;
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
   border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 2px 8px rgba(20, 43, 70, 0.06);
-  animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+
+  padding: 20px;
+
+  box-shadow: var(--shadow-sm);
+
+  animation: cs-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+
   transition: box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
 .dashboard-card:hover {
-  border-color: #cfdcee;
-  box-shadow: 0 10px 28px rgba(20, 43, 70, 0.09);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
 /* Each card waits a beat longer than the one above it. */
@@ -165,70 +191,87 @@
   animation-delay: 0.46s;
 }
 
-
-/* Section Header */
-
 .section-header {
   display: flex;
-  align-items: flex-start;
+
+  align-items: center;
   justify-content: space-between;
+
   gap: 15px;
+
   margin-bottom: 18px;
 }
 
 .section-header h5 {
-  color: #142b46;
+  margin: 0 0 3px;
+
+  color: var(--text-primary);
+
   font-weight: 700;
-  margin-bottom: 5px;
+  font-size: 14.5px;
 }
 
 .section-header p {
-  color: #64748b;
-  font-size: 14px;
+  color: var(--text-muted);
+
+  font-size: 11.5px;
+
   margin-bottom: 0;
 }
 
 .view-link {
-  color: #315b8f;
+  color: var(--primary);
+
   text-decoration: none;
-  font-size: 14px;
+
+  font-size: 11px;
   font-weight: 600;
+
   white-space: nowrap;
+
   transition: color 0.18s ease;
 }
 
 .view-link:hover {
-  color: #1d3f68;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
 
-/* Ticket Rows */
+/* =========================
+   TICKET ROWS
+========================= */
 
 .ticket-row {
   display: flex;
+
   align-items: center;
-  gap: 12px;
-  padding: 13px 0;
-  border-bottom: 1px solid #e5e7eb;
-  animation: slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  gap: 11px;
+
+  padding: 11px 0;
+
+  border-bottom: 1px solid var(--border-soft);
+
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
   transition: background 0.2s ease, padding-left 0.2s ease;
 }
 
 .ticket-row:nth-of-type(1) {
-  animation-delay: 0.4s;
+  animation-delay: 0.42s;
 }
 
 .ticket-row:nth-of-type(2) {
-  animation-delay: 0.46s;
+  animation-delay: 0.48s;
 }
 
 .ticket-row:nth-of-type(3) {
-  animation-delay: 0.52s;
+  animation-delay: 0.54s;
 }
 
 .ticket-row:hover {
-  background: #f8fafd;
+  background: var(--surface-hover);
   padding-left: 6px;
 }
 
@@ -237,20 +280,38 @@
 }
 
 .ticket-icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: 10px;
-  background: rgba(49, 91, 143, 0.10);
-  color: #315b8f;
+  width: 31px;
+  height: 31px;
+  min-width: 31px;
+
+  border-radius: 8px;
+
+  background: var(--primary-soft);
+  color: var(--primary);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  font-size: 12px;
+
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ticket-row:hover .ticket-icon {
   transform: scale(1.1);
+}
+
+/* Unclaimed work is brand blue; a job already in hand is amber. The two
+   lists sit side by side, so colour is what tells them apart at a glance. */
+.ticket-icon.available {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.ticket-icon.assigned {
+  color: var(--cat-electricity);
+  background: var(--cat-electricity-soft);
 }
 
 .ticket-info {
@@ -260,8 +321,11 @@
 
 .ticket-info strong {
   display: block;
-  color: #142b46;
-  font-size: 14px;
+
+  color: var(--text-primary);
+
+  font-size: 12px;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -269,97 +333,132 @@
 
 .ticket-info small {
   display: block;
-  color: #64748b;
-  margin-top: 3px;
+
+  color: var(--text-light);
+
+  font-size: 9.5px;
+
+  margin-top: 2px;
 }
 
 
-/* Priority */
+/* =========================
+   BADGES
+========================= */
 
-.priority {
-  padding: 5px 10px;
-  border-radius: 20px;
-  background: #f1f5f9;
-  color: #64748b;
-  font-size: 11px;
+.priority,
+.status {
+  display: inline-block;
+
+  padding: 4px 7px;
+
+  border-radius: 6px;
+
+  font-size: 9px;
   font-weight: 700;
+
   white-space: nowrap;
+
+  color: var(--text-secondary);
+  background: var(--surface-soft);
 }
 
 .priority.high {
-  background: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
+  color: var(--red);
+  background: var(--red-soft);
 }
 
 .priority.urgent {
-  background: #dc2626;
   color: #ffffff;
+  background: var(--red);
+}
+
+.status.assigned {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.status.in-progress {
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.status.resolved {
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.status.closed {
+  color: var(--text-secondary);
+  background: var(--gray-soft);
 }
 
 
-/* Status */
-
-.status {
-  padding: 5px 10px;
-  border-radius: 20px;
-  background: rgba(49, 91, 143, 0.10);
-  color: #315b8f;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-
-/* Buttons */
+/* =========================
+   BUTTONS
+========================= */
 
 .btn-primary {
-  background: #315b8f !important;
-  border-color: #315b8f !important;
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
   color: #ffffff !important;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: #1d3f68 !important;
-  border-color: #1d3f68 !important;
+  background: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.99);
 }
 
 
-/* Empty State */
-
-.empty-small {
-  text-align: center;
-  padding: 25px 10px;
-  color: #718096;
-  font-size: 14px;
-}
-
-
-/* Reviews */
+/* =========================
+   REVIEWS
+========================= */
 
 .review-row {
   display: flex;
+
   align-items: flex-start;
-  gap: 14px;
-  padding: 15px 0;
-  border-bottom: 1px solid #e5e7eb;
-  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid var(--border-soft);
+
+  animation: cs-slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
   transition: background 0.2s ease, padding-left 0.2s ease;
 }
 
 .review-row:nth-child(1) {
-  animation-delay: 0.52s;
+  animation-delay: 0.5s;
 }
 
 .review-row:nth-child(2) {
-  animation-delay: 0.58s;
+  animation-delay: 0.56s;
 }
 
 .review-row:nth-child(3) {
-  animation-delay: 0.64s;
+  animation-delay: 0.62s;
 }
 
 .review-row:hover {
-  background: #f8fafd;
+  background: var(--surface-hover);
   padding-left: 6px;
 }
 
@@ -368,21 +467,31 @@
 }
 
 .avatar {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
   border-radius: 50%;
-  background: #315b8f;
-  color: #ffffff;
+
+  background: var(--primary-soft);
+  color: var(--primary);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  font-size: 12px;
   font-weight: 700;
+
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .review-row:hover .avatar {
   transform: scale(1.08);
+}
+
+.stars i.fa-solid {
+  color: var(--cat-electricity);
 }
 
 .review-content {
@@ -392,31 +501,84 @@
 
 .review-top {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
+
+  gap: 12px;
 }
 
 .review-top strong {
-  color: #142b46;
+  color: var(--text-primary);
+
+  font-size: 12px;
 }
 
 .stars {
-  color: #315b8f;
+  color: var(--primary);
+
+  font-size: 11px;
+
   white-space: nowrap;
 }
 
 .review-content p {
-  color: #64748b;
-  margin: 7px 0 0;
-  font-size: 14px;
+  color: var(--text-muted);
+
+  margin: 6px 0 0;
+
+  font-size: 11.5px;
+  line-height: 1.6;
 }
 
 
-/* Loading */
+/* =========================
+   EMPTY + LOADING
+========================= */
+
+.empty-small {
+  text-align: center;
+
+  padding: 25px 10px;
+
+  color: var(--text-muted);
+
+  font-size: 12px;
+}
 
 .spinner-border {
-  color: #315b8f !important;
+  color: var(--primary) !important;
+}
+
+
+/* =========================
+   STATUS BADGE COUNTERPARTS
+========================= */
+
+.status.open {
+  color: var(--text-secondary);
+  background: var(--surface-soft);
+}
+
+.status.progress,
+.status.in_progress {
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.status.urgent {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.priority.medium {
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.priority.low {
+  color: var(--cat-ac);
+  background: var(--cat-ac-soft);
 }
 
 
@@ -435,7 +597,9 @@
 }
 
 
-/* Responsive */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 767px) {
 
@@ -452,13 +616,13 @@
   }
 
   .stat-icon {
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
   }
 
   .stat-card strong {
-    font-size: 21px;
+    font-size: 18px;
   }
 
   .section-header {
@@ -480,11 +644,11 @@
   }
 
   .page-title {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .page-subtitle {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .stat-card {
@@ -493,18 +657,18 @@
   }
 
   .stat-icon {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 14px;
   }
 
   .stat-card span {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .stat-card strong {
-    font-size: 19px;
+    font-size: 17px;
   }
 
   .ticket-row {
@@ -512,15 +676,15 @@
   }
 
   .ticket-icon {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
   }
 
   .priority,
   .status {
-    font-size: 10px;
-    padding: 4px 7px;
+    font-size: 8.5px;
+    padding: 3px 6px;
   }
 
 }

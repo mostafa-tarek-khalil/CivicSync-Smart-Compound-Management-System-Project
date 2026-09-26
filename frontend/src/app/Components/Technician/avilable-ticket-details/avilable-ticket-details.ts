@@ -4,7 +4,10 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { TechnicianService } from '../../../Services/techinican';
-import { IMaintenanceTicket } from '../../../Models/imaintenance-ticket';
+import {
+  IMaintenanceTicket,
+  normalizeTicketDetails,
+} from '../../../Models/imaintenance-ticket';
 import { IOffer } from '../../../Models/ioffers';
 import { ModalService } from '../../../core/services/modal.service';
 import { printElement } from '../../../core/utils/print';
@@ -43,6 +46,11 @@ export class TechnicianTicketDetailsComponent implements OnInit, OnDestroy {
 
   /** Last requested ticket id - used by the Try Again button. */
   private currentTicketId = '';
+
+  /** Whether a ticket id is present in the URL for this screen. */
+  get hasTicketId(): boolean {
+    return !!this.currentTicketId;
+  }
 
   private routeSubscription: Subscription | null = null;
 
@@ -87,10 +95,23 @@ export class TechnicianTicketDetailsComponent implements OnInit, OnDestroy {
 
     request.subscribe({
       next: (res) => {
-        this.ticket = res.ticket;
+        // The two endpoints disagree on the shape: available nests the ticket
+        // under `ticket`, assigned spreads it at the top level. Reading
+        // `res.ticket` directly therefore worked for one screen and left the
+        // other blank even on a 200.
+        this.ticket = normalizeTicketDetails(res);
         this.existingOffer = res.existingOffer ?? null;
         this.invoice = res.invoice ?? null;
         this.loading = false;
+
+        // A 2xx with no ticket means the endpoint answered in an unexpected
+        // shape. Treat it as a load failure so the user gets a retryable error
+        // instead of the "No Request Loaded" dead end, which reads as if the
+        // job had been taken away from them.
+        if (!this.ticket) {
+          this.errorMessage = 'Unable to load this job. Please try again.';
+        }
+
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -118,11 +139,21 @@ export class TechnicianTicketDetailsComponent implements OnInit, OnDestroy {
     printElement('.invoice-print-area');
   }
 
-  /** Reload the ticket after a failed request. */
+  /**
+   * Reload the ticket after a failed request.
+   *
+   * Also serves the "no request loaded" state: if a ticket id was in the URL
+   * the reload re-fetches it, and if there was none the user is sent back to
+   * the list for their current mode rather than being stranded on an empty
+   * screen.
+   */
   retry(): void {
     if (this.currentTicketId) {
       this.loadTicket(this.currentTicketId);
+      return;
     }
+
+    this.goBack();
   }
 
   /** طلب متاح: تجاهل الطلب وإرجاعه للطلبات المتاحة */
@@ -320,5 +351,29 @@ export class TechnicianTicketDetailsComponent implements OnInit, OnDestroy {
     }
 
     return 'fa-wrench';
+  }
+
+  /**
+   * Accent for a category's icon tile. Drives the `cat-*` class so each
+   * category gets its own hue instead of every tile being brand blue.
+   */
+  getCategoryColor(category: string): string {
+    if (category === 'PLUMBING') {
+      return 'cat-plumbing';
+    }
+
+    if (category === 'ELECTRICITY') {
+      return 'cat-electricity';
+    }
+
+    if (category === 'ELEVATOR') {
+      return 'cat-elevator';
+    }
+
+    if (category === 'AC') {
+      return 'cat-ac';
+    }
+
+    return 'cat-general';
   }
 }

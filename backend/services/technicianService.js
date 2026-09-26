@@ -411,6 +411,10 @@ const getAssignedTicketDetails = async (
     ticketId,
     technicianId
 ) => {
+    // A job stays "assigned to me" for its whole life, not just while it is
+    // ASSIGNED — an IN_PROGRESS or RESOLVED job is still mine to open. Querying
+    // by status here (as an earlier version did) made every Details click on a
+    // started or finished job fail with a 404.
     const ticket =
         await MaintenanceTicket.findOne({
             _id: ticketId,
@@ -436,8 +440,13 @@ const getAssignedTicketDetails = async (
         .select("amount status dueDate paidAt description createdAt residentId unitId")
         .lean();
 
+    // `{ ticket, invoice }` — the same envelope the available-details endpoint
+    // uses, and what `ITicketDetailsResponse` documents. Spreading the ticket
+    // at the top level meant the client had to know that this one endpoint
+    // shaped its response differently, which is precisely how the assigned-job
+    // screen ended up reading `undefined` from a 200.
     return {
-        ...payload,
+        ticket: payload,
         invoice: invoice || null,
     };
 };

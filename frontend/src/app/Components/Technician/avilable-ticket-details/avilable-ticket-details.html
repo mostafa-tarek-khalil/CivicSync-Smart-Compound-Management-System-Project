@@ -96,7 +96,9 @@
 
           <div class="ticket-top">
 
-            <div class="category-icon">
+            <div
+              class="category-icon"
+              [class]="getCategoryColor(ticket.category)">
 
               <i
                 class="fa-solid"
@@ -494,24 +496,37 @@
       </div>
 
       <h4>
-        No Request Loaded
+        @if (mode === 'available') {
+          No Request Loaded
+        } @else {
+          No Job Loaded
+        }
       </h4>
 
       <p>
-        This request is not available to you anymore. Pick another one from the list.
+        @if (mode === 'available') {
+          This request is not available to you anymore. Pick another one from the list.
+        } @else {
+          This job could not be loaded. Pick another one from your assigned jobs.
+        }
       </p>
 
       <button
         type="button"
         class="refresh-btn"
-        (click)="goBack()">
+        (click)="retry()">
 
-        <i class="fa-solid fa-arrow-left"></i>
-
-        @if (mode === 'available') {
-          Back to Available Requests
+        @if (hasTicketId) {
+          <i class="fa-solid fa-rotate-right"></i>
+          Try Again
         } @else {
-          Back to Assigned Jobs
+          <i class="fa-solid fa-arrow-left"></i>
+
+          @if (mode === 'available') {
+            Back to Available Requests
+          } @else {
+            Back to Assigned Jobs
+          }
         }
 
       </button>

@@ -1,28 +1,16 @@
 /**
- * Shared dark-mode layer for every Technician page.
+ * Shared layer for every Technician page.
  *
- * The technician screens were written with hard-coded light colours (#f8f9ff
- * page, #ffffff cards, #142b46 headings, #64748b muted text) and share the same
- * handful of class names, so instead of repeating a dark-mode block in each of
- * the page stylesheets this file is imported once per page and covers them all.
+ * Colour lives in `tech-theme.css`: each technician stylesheet imports it and
+ * then references the same semantic tokens the resident portal uses, so a
+ * single `:host-context(.dark-mode)` variable block themes the whole section —
+ * exactly the way the resident screens already work.
  *
- * Only colour is overridden — layout, spacing and the existing light styles are
- * left untouched.
+ * What is left here is only what is genuinely shared and non-colour: the motion
+ * layer (the pages reuse the same class names, so animating them once covers
+ * them all) and the work-order print button. Animation keyframes are global
+ * (`cs-fade-up`, `cs-pop-in`, ... in src/styles.css).
  */
-
-/* ---------------- Page background + headings ---------------- */
-
-:host-context(html.dark-mode) .dashboard-page,
-:host-context(html.dark-mode) .available-page,
-:host-context(html.dark-mode) .assigned-page,
-:host-context(html.dark-mode) .offers-page,
-:host-context(html.dark-mode) .reviews-page,
-:host-context(html.dark-mode) .ticket-details-page,
-:host-context(html.dark-mode) .create-offer-page,
-:host-context(html.dark-mode) .negotiation-page {
-  background: #0d1420;
-  color: #e8eef6;
-}
 
 /* =========================================================
    MOTION LAYER FOR THE TECHNICIAN PORTAL
@@ -213,223 +201,7 @@
   }
 }
 
-:host-context(html.dark-mode) .page-title,
-:host-context(html.dark-mode) .section-header h5,
-:host-context(html.dark-mode) .request-title,
-:host-context(html.dark-mode) .job-title,
-:host-context(html.dark-mode) .offer-title,
-:host-context(html.dark-mode) .empty-state h4,
-:host-context(html.dark-mode) .review-top strong,
-:host-context(html.dark-mode) .ticket-info strong,
-:host-context(html.dark-mode) .info-item strong {
-  color: #f1f5f9;
-}
-
-:host-context(html.dark-mode) .page-subtitle,
-:host-context(html.dark-mode) .section-header p,
-:host-context(html.dark-mode) .stat-card span,
-:host-context(html.dark-mode) .request-category,
-:host-context(html.dark-mode) .request-description,
-:host-context(html.dark-mode) .job-category,
-:host-context(html.dark-mode) .job-description,
-:host-context(html.dark-mode) .info-item span,
-:host-context(html.dark-mode) .info-item i,
-:host-context(html.dark-mode) .empty-state p,
-:host-context(html.dark-mode) .empty-small,
-:host-context(html.dark-mode) .review-content p,
-:host-context(html.dark-mode) .ticket-info small {
-  color: #94a3b8;
-}
-
-/* ---------------- Cards + surfaces ---------------- */
-
-:host-context(html.dark-mode) .stat-card,
-:host-context(html.dark-mode) .dashboard-card,
-:host-context(html.dark-mode) .request-card,
-:host-context(html.dark-mode) .job-card,
-:host-context(html.dark-mode) .offer-card,
-:host-context(html.dark-mode) .details-card,
-:host-context(html.dark-mode) .reviews-card,
-:host-context(html.dark-mode) .negotiation-card,
-:host-context(html.dark-mode) .offer-form-card,
-:host-context(html.dark-mode) .rating-box,
-:host-context(html.dark-mode) .loading-box,
-:host-context(html.dark-mode) .error-box,
-:host-context(html.dark-mode) .empty-state,
-:host-context(html.dark-mode) .requests-count,
-:host-context(html.dark-mode) .jobs-count {
-  background: #151f2d;
-  border-color: #29394c;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-:host-context(html.dark-mode) .stat-card strong {
-  color: #f1f5f9;
-}
-
-:host-context(html.dark-mode) .stat-icon,
-:host-context(html.dark-mode) .ticket-icon,
-:host-context(html.dark-mode) .category-icon,
-:host-context(html.dark-mode) .job-icon,
-:host-context(html.dark-mode) .empty-icon {
-  background: rgba(49, 91, 143, 0.22);
-  color: #8eb2e8;
-}
-
-/* ---------------- Inner separators + nested boxes ---------------- */
-
-:host-context(html.dark-mode) .ticket-row,
-:host-context(html.dark-mode) .review-row,
-:host-context(html.dark-mode) .request-info,
-:host-context(html.dark-mode) .job-info {
-  border-color: #29394c;
-}
-
-:host-context(html.dark-mode) .offer-price-box,
-:host-context(html.dark-mode) .negotiation-message,
-:host-context(html.dark-mode) .input-group-text,
-:host-context(html.dark-mode) .description-box {
-  background: #111c2e;
-  border-color: #29394c;
-  color: #cbd5e1;
-}
-
-/* ---------------- Pills ---------------- */
-
-:host-context(html.dark-mode) .priority.low,
-:host-context(html.dark-mode) .priority.medium,
-:host-context(html.dark-mode) .status,
-:host-context(html.dark-mode) .status.assigned,
-:host-context(html.dark-mode) .status.resolved,
-:host-context(html.dark-mode) .status.withdrawn {
-  background: #1e2f47;
-  color: #94a3b8;
-}
-
-/* ---------------- Buttons ---------------- */
-
-:host-context(html.dark-mode) .retry-btn {
-  background: #16233a;
-  border-color: #2a3a4e;
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .cancel-btn {
-  background: #1e2f47;
-  color: #cbd5e1;
-}
-
-/* ---------------- Forms ---------------- */
-
-:host-context(html.dark-mode) .form-control,
-:host-context(html.dark-mode) .form-select,
-:host-context(html.dark-mode) input,
-:host-context(html.dark-mode) textarea,
-:host-context(html.dark-mode) select {
-  background: #16233a;
-  border-color: #2a3a4e;
-  color: #e8eef6;
-}
-
-:host-context(html.dark-mode) input::placeholder,
-:host-context(html.dark-mode) textarea::placeholder {
-  color: #64748b;
-}
-
-:host-context(html.dark-mode) label {
-  color: #cbd5e1;
-}
-
-/* ---------------- Offers page ---------------- */
-
-:host-context(html.dark-mode) .offers-count {
-  background: #151f2d;
-  border-color: #29394c;
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .offer-icon {
-  background: rgba(49, 91, 143, 0.22);
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .info-item {
-  background: #111c2e;
-  border-color: #29394c;
-}
-
-:host-context(html.dark-mode) .info-item > i {
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .offer-note {
-  background: #111c2e;
-  border-color: #29394c;
-}
-
-:host-context(html.dark-mode) .offer-note span {
-  color: #94a3b8;
-}
-
-:host-context(html.dark-mode) .offer-note p {
-  color: #cbd5e1;
-}
-
-:host-context(html.dark-mode) .offer-date {
-  color: #94a3b8;
-}
-
-:host-context(html.dark-mode) .offer-date i {
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .status.pending {
-  background: #1e2f47;
-  color: #8eb2e8;
-}
-
-:host-context(html.dark-mode) .status.accepted {
-  background: #315b8f;
-  color: #ffffff;
-}
-
-:host-context(html.dark-mode) .status.rejected {
-  background: rgba(220, 38, 38, 0.14);
-  color: #f87171;
-}
-
-:host-context(html.dark-mode) .status.withdrawn {
-  background: #1e293b;
-  color: #94a3b8;
-}
-
-:host-context(html.dark-mode) .details-btn {
-  background: #315b8f;
-  color: #ffffff;
-}
-
-:host-context(html.dark-mode) .details-btn:hover {
-  background: #4072ad;
-}
-
-:host-context(html.dark-mode) .withdraw-btn {
-  background: rgba(220, 38, 38, 0.14);
-  color: #f87171;
-}
-
-:host-context(html.dark-mode) .withdraw-btn:hover {
-  background: #dc2626;
-  color: #ffffff;
-}
-
-:host-context(html.dark-mode) .browse-btn {
-  background: #315b8f;
-  color: #ffffff;
-}
-
-:host-context(html.dark-mode) .browse-btn:hover {
-  background: #4072ad;
-}/* =========================================================
+/* =========================================================
    WORK ORDER PRINT BUTTON
    Added with the print feature: prints this job's details card only.
    ========================================================= */
@@ -440,27 +212,24 @@
   gap: 8px;
   padding: 9px 15px;
   border-radius: 9px;
-  background: #315b8f;
-  border: 1px solid #315b8f;
+  background: var(--primary);
+  border: 1px solid var(--primary);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .print-job-btn:hover {
-  background: #1d3f68;
-  border-color: #1d3f68;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+
+  transform: translateY(-1px);
 }
 
-:host-context(html.dark-mode) .print-job-btn {
-  background: #315b8f;
-  border-color: #315b8f;
-  color: #ffffff;
-}
-
-:host-context(html.dark-mode) .print-job-btn:hover {
-  background: #4072ad;
+.print-job-btn:active {
+  transform: translateY(0) scale(0.98);
 }

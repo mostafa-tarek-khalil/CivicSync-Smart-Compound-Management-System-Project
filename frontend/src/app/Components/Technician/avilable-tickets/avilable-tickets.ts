@@ -85,4 +85,28 @@ export class AvailableRequestsComponent implements OnInit {
 
     return 'fa-wrench';
   }
+
+  /**
+   * Accent for a category's icon tile. Drives the `cat-*` class so each
+   * category gets its own hue instead of every tile being brand blue.
+   */
+  getCategoryColor(category: string): string {
+    if (category === 'PLUMBING') {
+      return 'cat-plumbing';
+    }
+
+    if (category === 'ELECTRICITY') {
+      return 'cat-electricity';
+    }
+
+    if (category === 'ELEVATOR') {
+      return 'cat-elevator';
+    }
+
+    if (category === 'AC') {
+      return 'cat-ac';
+    }
+
+    return 'cat-general';
+  }
 }

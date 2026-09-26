@@ -92,7 +92,9 @@
 
               <div class="request-header">
 
-                <div class="category-icon">
+                <div
+                  class="category-icon"
+                  [class]="getCategoryColor(ticket.category)">
 
                   <i
                     class="fa-solid"

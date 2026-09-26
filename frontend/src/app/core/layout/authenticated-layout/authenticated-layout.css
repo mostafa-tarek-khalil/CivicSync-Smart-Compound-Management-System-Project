@@ -2,8 +2,20 @@
   display: block;
 }
 
+/* One documented stacking order for the shell, so no page has to guess how far
+   up it can reach. Toolkit dialogs and toasts live at 2000+.
+     1    routed content
+     1020 sidebar rail (desktop)
+     1040 topbar and its dropdowns (1200)
+     1045 mobile drawer backdrop
+     1050 mobile drawer
+
+   The drawer deliberately outranks the bar: it is a full-height overlay, and a
+   bar drawn on top of it hides the drawer's own header. */
+
 .app-shell {
   display: flex;
+  align-items: flex-start;
   min-height: 100vh;
   background: var(--cs-page-bg);
 }
@@ -233,6 +245,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .shell-topbar {
@@ -246,6 +259,18 @@
   border-bottom: 1px solid var(--cs-border);
   background: var(--cs-surface);
   padding-inline: 0.65rem;
+
+  /* The topbar owns the stacking order for the whole shell.
+     `z-index` on a flex child only counts when the child is positioned, hence
+     `position: sticky`: the bar stays above the routed content
+     (`.content` creates its own stacking context via its fade animation) and
+     the notification / profile dropdowns inside it can render on top of the
+     page instead of behind it. Without this the dropdowns opened underneath
+     the dashboard cards, which are themselves animated into a stacking
+     context. */
+  position: sticky;
+  top: 0;
+  z-index: 1040;
 }
 
 /* Keep the topbar cluster pinned to the end even on desktop, where the menu
@@ -279,6 +304,11 @@
   flex-grow: 1;
   padding: 1.5rem;
   overflow-x: hidden;
+
+  /* Sits below the topbar and its dropdowns; `:host` below pins the sidebar
+     and the mobile backdrop on their own levels. */
+  position: relative;
+  z-index: 1;
 }
 
 /* Responsive */
@@ -299,10 +329,22 @@
     transition: transform 0.2s ease;
     width: 252px;
     box-shadow: 0 0 40px rgba(15, 23, 42, 0.25);
+
+    /* The drawer is a full-height overlay, so it must sit ABOVE the sticky
+       topbar. It used to inherit the rail's z-index (below the bar), which
+       sliced the drawer's own brand row off behind the topbar and left the
+       two headers fighting over the same strip of screen. */
+    z-index: 1050;
   }
 
   .sidebar.mobile-open {
     transform: translateX(0);
+  }
+
+  /* The drawer's brand row matches the topbar height, so when the drawer is
+     open the two read as one aligned surface instead of two different bars. */
+  .sidebar-brand {
+    min-height: 76px;
   }
 
   .sidebar-collapsed .sidebar,
@@ -360,7 +402,10 @@
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.45);
-    z-index: 30;
+    /* Covers the content AND the topbar while the drawer is open — tapping
+       anywhere outside the drawer closes it. The drawer itself is above at
+       1050, so it stays interactive. */
+    z-index: 1045;
   }
 
   .content {

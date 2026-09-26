@@ -1,8 +1,8 @@
-// Creates (or resets) a QA resident account with known credentials so the
-// authenticated screens can be driven in a browser.
+// Creates (or resets) a QA technician account with known credentials so the
+// technician screens can be driven in a browser.
 //
-// Run from the project root:  node backend/tests/manual/qa-account.js create
-//                             node backend/tests/manual/qa-account.js delete
+// Run from the project root:  node backend/tests/manual/qa-technician.js create
+//                             node backend/tests/manual/qa-technician.js delete
 require("dotenv").config();
 const dns = require("dns");
 const mongoose = require("mongoose");
@@ -14,7 +14,7 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 const User = require("../../models/user");
 
-const EMAIL = "qa.resident@civicsync.test";
+const EMAIL = "qa.technician@civicsync.test";
 const PASSWORD = "Password123";
 
 (async () => {
@@ -36,11 +36,12 @@ const PASSWORD = "Password123";
         // The User schema hashes in a pre-save hook, so the plain password is
         // stored here and hashed by the model.
         const user = await User.create({
-            name: "QA Resident",
+            name: "QA Technician",
             email: EMAIL,
-            phone: "01000000077",
+            phone: "01000000088",
             password: PASSWORD,
-            role: "RESIDENT",
+            role: "TECHNICIAN",
+            specializations: ["PLUMBING", "ELECTRICITY"],
             status: "ACTIVE",
         });
 

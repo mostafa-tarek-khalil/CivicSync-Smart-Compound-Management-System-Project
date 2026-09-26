@@ -11,11 +11,84 @@
   border-bottom: 1px solid #e7ebf0;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   padding: 0 28px;
   position: relative;
-  z-index: 1000;
   font-family: Inter, Arial, sans-serif;
+}
+
+/* Full-width row inside the bar. It carries the entrance animation (see the
+   motion layer at the bottom of this file) and keeps the brand on the left and
+   the action cluster on the right. */
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ---------- Brand ----------
+   The project lockup, shown at EVERY width. Same mark as the sidebar's, so the
+   app is identified the same way everywhere and no second logo is invented.
+   The two copies — rail and bar — are intentional.
+
+   It is deliberately inert: no hover state, no pointer cursor, no navigation.
+   It is a <div>, so it is not focusable and screen readers do not announce it as
+   a control. */
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px;
+}
+
+.topbar-brand-mark {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #315b8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 6px 16px rgba(49, 91, 143, 0.22);
+}
+
+.topbar-brand-mark span {
+  display: block;
+  width: 4px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.topbar-brand-mark span:nth-child(1) { height: 11px; }
+.topbar-brand-mark span:nth-child(2) { height: 18px; }
+.topbar-brand-mark span:nth-child(3) { height: 14px; }
+
+.topbar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar-brand-title {
+  color: #102a43;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.topbar-brand-sub {
+  color: #7b8794;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar-right {
@@ -29,6 +102,10 @@
 
 .notification-wrapper,
 .profile-wrapper {
+  /* Positioned, but deliberately NOT stacked: these are plain anchors for the
+     absolutely positioned dropdowns. Leaving them at `z-index: auto` means the
+     dropdowns are still compared against the shell, not trapped in a local
+     context of their own. */
   position: relative;
   flex-shrink: 0;
 }
@@ -147,7 +224,10 @@
   border-radius: 14px;
   box-shadow: 0 12px 35px rgba(15, 23, 42, 0.14);
   overflow: hidden;
-  z-index: 1100;
+
+  /* Above every page surface, below the toolkit dialogs (2000+) and toasts,
+     which should still cover the menus. */
+  z-index: 1200;
 }
 
 /* Notification Dropdown */
@@ -381,6 +461,16 @@
   .notification-dropdown {
     width: min(350px, calc(100vw - 32px));
   }
+
+  /* Keep the brand compact so the action cluster is not squeezed. */
+  .topbar-brand-sub {
+    display: none;
+  }
+
+  .topbar-brand-mark {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -396,6 +486,14 @@
   .notification-dropdown,
   .profile-dropdown {
     right: -5px;
+  }
+}
+
+@media (max-width: 400px) {
+  /* At the narrowest widths the lockup collapses to the mark alone — the name
+     would otherwise push the notification and profile buttons off-screen. */
+  .topbar-brand-text {
+    display: none;
   }
 }
 
@@ -421,6 +519,14 @@
 
   .profile-name {
     color: #f1f5f9;
+  }
+
+  .topbar-brand-title {
+    color: #f1f5f9;
+  }
+
+  .topbar-brand-sub {
+    color: #94a3b8;
   }
 
   .profile-role,
@@ -492,8 +598,16 @@
    ========================================================= */
 
 /* The bar settles down from above once, then stays put — a shell chrome
-   that re-animated on every navigation would be distracting. */
-.topbar {
+   that re-animated on every navigation would be distracting.
+
+   It animates its INNER row, not `.topbar` itself. An animated element gets a
+   stacking context, and `.topbar` was then a hard ceiling for the dropdowns
+   inside it: `z-index` is not absolute, it is resolved inside the nearest
+   such context, so a page element with a higher z-index still painted over the
+   open notification / profile menus. Keeping the bar free of any stacking
+   context lets the dropdowns escape to the shell's own layer (see
+   authenticated-layout.css). */
+.topbar-inner {
   animation: cs-topbar-drop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -538,7 +652,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .topbar,
+  .topbar-inner,
   .dropdown-menu,
   .notification-dropdown,
   .profile-dropdown,

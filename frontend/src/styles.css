@@ -99,6 +99,26 @@ body {
 }
 
 /* =========================================================
+   SHELL STACKING ORDER
+   =========================================================
+   The authenticated layout declares the order (see
+   authenticated-layout.css): content 1, sidebar rail 1020, mobile drawer
+   backdrop 1030, topbar + its dropdowns 1040/1200.
+
+   Belt and braces for the dropdowns: a routed page can create its own
+   stacking context (the technician/admin cards animate in with `both`, which
+   leaves a transform on them). That context is a child of `.content` — which
+   is z-index 1 — so a dropdown at 1200 in the topbar still wins. This rule
+   guarantees it regardless of what a page does, and it carries
+   `!important` on purpose: it is correcting a stacking bug, not expressing a
+   design preference.
+   ========================================================= */
+
+.shell-topbar .dropdown {
+  z-index: 1200 !important;
+}
+
+/* =========================================================
    GLOBAL DARK MODE BASELINE
    Applied when ThemeService adds `dark-mode` to <html>.
    Pages that define their own variables override these.

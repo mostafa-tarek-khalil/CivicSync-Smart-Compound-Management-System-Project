@@ -1,0 +1,144 @@
+/**
+ * SHARED DESIGN TOKENS FOR EVERY TECHNICIAN PAGE
+ *
+ * The resident portal is built on a small set of semantic CSS variables
+ * (`--primary`, `--surface`, `--text-muted`, ...) declared on `:host`, with a
+ * `:host-context(.dark-mode)` block that only swaps the variables. That is what
+ * lets every resident screen look identical and switch theme for free.
+ *
+ * The technician pages were written earlier with hard-coded hex colours
+ * (#f8f9ff, #ffffff, #142b46, #64748b, #dce4f0 ...). This file declares the
+ * exact same token set the resident pages use, so each technician stylesheet
+ * can drop its hard-coded values and reference the variables instead — the two
+ * portals then render with one consistent palette, one shadow scale and one
+ * dark-mode story.
+ *
+ * Imported once per technician page, before the page's own stylesheet:
+ *
+ *   styleUrls: ['./my-page.css', '../shared/tech-shared.css']
+ *
+ * where my-page.css starts with `@import '../shared/tech-theme.css';`
+ */
+
+:host {
+  display: block;
+
+  /* Brand */
+  --primary: #315b8f;
+  --primary-dark: #1d3f68;
+  --primary-soft: rgba(49, 91, 143, 0.10);
+
+  /* Surfaces */
+  --page-bg: #f8f9ff;
+  --surface: #ffffff;
+  --surface-soft: #f4f7fc;
+  --surface-hover: #f1f5f9;
+
+  /* Text */
+  --text-main: #142b46;
+  --text-primary: #17253d;
+  --text-secondary: #64748b;
+  --text-muted: #718096;
+  --text-light: #8290a5;
+
+  /* Lines + icons */
+  --border: #dce4f0;
+  --border-soft: #e5e7eb;
+  --icon: #8796aa;
+
+  /* Status */
+  --green: #16a34a;
+  --green-soft: rgba(22, 163, 74, 0.10);
+
+  --orange: #d97706;
+  --orange-soft: rgba(217, 119, 6, 0.10);
+
+  --red: #dc2626;
+  --red-soft: rgba(220, 38, 38, 0.10);
+
+  --blue: #2563eb;
+  --blue-soft: rgba(37, 99, 235, 0.10);
+
+  --gray-soft: rgba(100, 116, 139, 0.10);
+
+  /* Category accents — one hue per maintenance category so the icon tiles
+     read at a glance instead of every category looking the same blue. */
+  --cat-plumbing: #2563eb;
+  --cat-plumbing-soft: rgba(37, 99, 235, 0.10);
+
+  --cat-electricity: #d97706;
+  --cat-electricity-soft: rgba(217, 119, 6, 0.10);
+
+  --cat-elevator: #7c3aed;
+  --cat-elevator-soft: rgba(124, 58, 237, 0.10);
+
+  --cat-ac: #0891b2;
+  --cat-ac-soft: rgba(8, 145, 178, 0.10);
+
+  --cat-general: #64748b;
+  --cat-general-soft: rgba(100, 116, 139, 0.10);
+
+  /* Elevation */
+  --shadow-sm: 0 2px 8px rgba(20, 43, 70, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 43, 70, 0.10);
+}
+
+/* =========================================================
+   DARK MODE
+   Only the variables change — every rule below (and every
+   technician page) keeps referencing the same names.
+========================================================= */
+
+:host-context(.dark-mode) {
+  --primary: #6f9fd3;
+  --primary-dark: #8ab4e3;
+  --primary-soft: rgba(111, 159, 211, 0.14);
+
+  --page-bg: #0d1420;
+  --surface: #151f2d;
+  --surface-soft: #1b2736;
+  --surface-hover: #202f41;
+
+  --text-main: #f1f5f9;
+  --text-primary: #e8eef6;
+  --text-secondary: #a9b7c9;
+  --text-muted: #98a8bb;
+  --text-light: #7f90a5;
+
+  --border: #2a3a4e;
+  --border-soft: #304156;
+  --icon: #8091a6;
+
+  --green: #4ade80;
+  --green-soft: rgba(74, 222, 128, 0.10);
+
+  --orange: #f59e0b;
+  --orange-soft: rgba(245, 158, 11, 0.12);
+
+  --red: #f87171;
+  --red-soft: rgba(248, 113, 113, 0.10);
+
+  --blue: #60a5fa;
+  --blue-soft: rgba(96, 165, 250, 0.12);
+
+  --gray-soft: rgba(148, 163, 184, 0.10);
+
+  /* Category accents, lifted for contrast on the dark page. */
+  --cat-plumbing: #60a5fa;
+  --cat-plumbing-soft: rgba(96, 165, 250, 0.14);
+
+  --cat-electricity: #fbbf24;
+  --cat-electricity-soft: rgba(251, 191, 36, 0.14);
+
+  --cat-elevator: #a78bfa;
+  --cat-elevator-soft: rgba(167, 139, 250, 0.14);
+
+  --cat-ac: #22d3ee;
+  --cat-ac-soft: rgba(34, 211, 238, 0.14);
+
+  --cat-general: #94a3b8;
+  --cat-general-soft: rgba(148, 163, 184, 0.12);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.20);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+}

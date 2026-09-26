@@ -1,5 +1,32 @@
 <header class="topbar">
 
+  <!-- The bar's entrance animation is applied to this inner row rather than to
+       `.topbar` itself: an animated element is a stacking context, which would
+       trap the notification / profile dropdowns underneath the page content. -->
+  <div class="topbar-inner">
+
+  <!-- BRAND
+       A plain lockup, not a link: the mark identifies the app, it does not
+       navigate. Clicking it must do nothing, so it is a <div> rather than an
+       <a>/<button> — that also keeps it out of the tab order and off the
+       accessibility tree as an interactive element.
+
+       Deliberately shown at EVERY width, including next to the sidebar brand on
+       desktop. The two copies are intentional. -->
+  <div class="topbar-brand">
+
+    <span class="topbar-brand-mark">
+      <span></span><span></span><span></span>
+    </span>
+
+    <span class="topbar-brand-text">
+      <span class="topbar-brand-title">CivicSync</span>
+      <span class="topbar-brand-sub">Smart Compound Management System</span>
+    </span>
+
+  </div>
+
+
   <!-- RIGHT SIDE -->
   <div class="topbar-right">
 
@@ -199,6 +226,8 @@
       </div>
 
     </div>
+
+  </div>
 
   </div>
 

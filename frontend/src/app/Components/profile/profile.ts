@@ -96,6 +96,23 @@ export class Profile implements OnInit {
     return role.charAt(0) + role.slice(1).toLowerCase();
   }
 
+  /**
+   * Technician rating, rounded to a single decimal.
+   *
+   * The stored value is an exact average (`totalRating / totalReviews`), so it
+   * arrives as something like 4.333333333333333. Showing that raw number was
+   * the bug — one digit after the star is all the identity card needs.
+   */
+  get ratingLabel(): string {
+    const rating = Number(this.profile?.rating ?? 0);
+
+    if (!Number.isFinite(rating) || rating <= 0) {
+      return 'No ratings yet';
+    }
+
+    return rating.toFixed(1);
+  }
+
   get isDirty(): boolean {
     if (!this.profile) return false;
     return (
